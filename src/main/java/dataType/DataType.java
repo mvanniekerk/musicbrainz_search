@@ -1,5 +1,7 @@
+package dataType;
+
 public interface DataType {
     byte[] jsonSearchRepr();
 
-    String getGID();
+    String getGid();
 }

@@ -1,13 +1,15 @@
+package dataType;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jsonSerializer.JacksonSerializer;
+import jsonSerializer.JsonSerializer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@NoArgsConstructor
-@EqualsAndHashCode(of = {"GID"})
+@EqualsAndHashCode(of = {"gid"})
 public class Work implements DataType {
 
     private final Set<String> artists = new HashSet<>();
@@ -15,8 +17,12 @@ public class Work implements DataType {
     private final Set<String> names = new HashSet<>();
 
     @Getter
-    @Setter
-    private String GID;
+    @JsonIgnore
+    private String gid;
+
+    public Work(String gid) {
+        this.gid = gid;
+    }
 
     public void addComposer(String composer) {
         composers.add(composer);
@@ -32,6 +38,8 @@ public class Work implements DataType {
 
     @Override
     public byte[] jsonSearchRepr() {
-        return new byte[0];
+        JsonSerializer serializer = JacksonSerializer.getInstance();
+
+        return serializer.writeAsBytes(this);
     }
 }
