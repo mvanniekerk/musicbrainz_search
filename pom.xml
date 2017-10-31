@@ -158,8 +158,15 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>transport</artifactId>
+            <version>5.6.3</version>
+        </dependency>
+
     </dependencies>
-        <build>
+
+    <build>
         <plugins>
             <plugin>
                 <!-- This plugin will set properties values using dependency information -->
