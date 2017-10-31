@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @EqualsAndHashCode(of = {"gid"})
-public class Artist implements DataType{
+public class Artist implements DataType {
     private final Set<String> names = new HashSet<>();
 
     @Getter
