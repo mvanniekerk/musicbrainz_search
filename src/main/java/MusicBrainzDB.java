@@ -29,7 +29,6 @@ public class MusicBrainzDB {
 
         try {
             connection = DriverManager.getConnection(url, properties);
-            connection.setAutoCommit(false);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
