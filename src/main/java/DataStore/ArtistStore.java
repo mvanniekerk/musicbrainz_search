@@ -46,7 +46,9 @@ public class ArtistStore extends DataStore implements Iterable<Artist> {
             String gid = resultSet.getString("gid");
             Artist artist = find(gid);
             String name = resultSet.getString("name");
-            artist.addName(name);
+            if (name != null) {
+                artist.addName(name);
+            }
         }
     }
 
@@ -74,9 +76,16 @@ public class ArtistStore extends DataStore implements Iterable<Artist> {
         return artists.values().iterator();
     }
 
-    public static void main(String[] args) throws SQLException {
-        ArtistStore artistStore = new ArtistStore(0, 500);
+    public static void main(String[] args) throws Exception {
+        ArtistStore artistStore = new ArtistStore(0, 150);
 
         artistStore.aggregateFromDB();
+
+        for (Artist artist : artistStore) {
+            byte[] json = artist.jsonSearchRepr();
+            String jsonString = new String(json, "utf-8");
+
+            System.out.println(jsonString);
+        }
     }
 }
