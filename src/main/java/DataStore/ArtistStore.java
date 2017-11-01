@@ -1,31 +1,25 @@
+package DataStore;
+
 import dataType.Artist;
-import lombok.NoArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
-public class ArtistStore {
+public class ArtistStore extends DataStore implements Iterable<Artist> {
 
     private final Map<String, Artist> artists;
-    private final int lowerID;
-    private final int higherID;
 
-    ArtistStore(int lowerID, int higherID) {
+    public ArtistStore(int lowerID, int higherID) {
+       super(lowerID, higherID);
        artists = new HashMap<>();
-       this.lowerID = lowerID;
-       this.higherID = higherID;
     }
 
-    Connection getConnection() {
-        return MusicBrainzDB.getConnection();
-    }
-
-    PreparedStatement getArtistAliases() throws SQLException {
+    private PreparedStatement getArtistAliases() throws SQLException {
         Connection conn = getConnection();
 
         return conn.prepareStatement(
@@ -36,7 +30,7 @@ public class ArtistStore {
         );
     }
 
-    PreparedStatement getArtistCredits() throws SQLException {
+    private PreparedStatement getArtistCredits() throws SQLException {
         Connection conn = getConnection();
 
         return conn.prepareStatement(
@@ -47,14 +41,7 @@ public class ArtistStore {
         );
     }
 
-    ResultSet executePreparedStatement(PreparedStatement pstmt) throws SQLException {
-        pstmt.setInt(1, lowerID);
-        pstmt.setInt(2, higherID);
-
-        return pstmt.executeQuery();
-    }
-
-    void populateHashMap(ResultSet resultSet) throws SQLException {
+    private void populateHashMap(ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
             String gid = resultSet.getString("gid");
             Artist artist = find(gid);
@@ -71,7 +58,7 @@ public class ArtistStore {
         populateHashMap(artist_credits);
     }
 
-    Artist find(String gid) {
+    private Artist find(String gid) {
         Artist result = artists.get(gid);
 
         if (result == null) {
@@ -80,6 +67,11 @@ public class ArtistStore {
         }
 
         return result;
+    }
+
+    @Override
+    public Iterator<Artist> iterator() {
+        return artists.values().iterator();
     }
 
     public static void main(String[] args) throws SQLException {
