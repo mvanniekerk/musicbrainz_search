@@ -14,7 +14,6 @@ public class MusicBrainzDB {
     @Nullable
     private static MusicBrainzDB musicBrainzDB;
 
-    @Getter
     private Connection connection;
 
     private MusicBrainzDB() {
