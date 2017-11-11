@@ -139,7 +139,7 @@ public class WorkStore extends DataStore implements Iterable<Work> {
     }
 
     public static void main(String[] args) throws Exception {
-        WorkStore works = new WorkStore(0, 1000);
+        WorkStore works = new WorkStore(3566000, 3567000);
 
         works.aggregateFromDB();
 
