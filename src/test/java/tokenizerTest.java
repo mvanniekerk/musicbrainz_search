@@ -31,4 +31,34 @@ public class tokenizerTest {
     void funkyString() {
         assertThat(Tokenizer.toAscii("Tĥïŝ ĩš â fůňķŷ Šťŕĭńġ")).isEqualTo("This is a funky String");
     }
+
+    @Test
+    void lemmatizerTest() {
+        assertThat(Tokenizer.lemmatize("Tĥïŝ ĩš â fůňķŷ Šťŕĭńġ")).isEqualTo("this is a funky string");
+    }
+
+    @Test
+    void punctuationShouldPersist() {
+        assertThat(Tokenizer.lemmatize("Dora Mae's Funeral")).isEqualTo("dora mae's funeral");
+    }
+
+    @Test
+    void tokenizer() {
+        String[] result = {"justin", "at", "mr", "chin's", "justin's", "theme"};
+        assertThat(Tokenizer.tokenize("Justin at Mr. Chin's (Justin's Theme)")).isEqualTo(result);
+    }
+
+    @Test
+    void classicalTokenizer() {
+        String input = "Cello Suite no. 1 in G major, BWV 1007: I. Prelude";
+        String[] result = {"cello", "suite", "no", "1", "in", "g", "major", "bwv", "1007", "i", "prelude"};
+        assertThat(Tokenizer.tokenize(input)).isEqualTo(result);
+    }
+
+    @Test
+    void withStrangeChars() {
+        String input = "Suite NR. 1 G-DUR, BWV 1007 - Sarabande";
+        String[] result = {"suite", "nr", "1", "g", "dur", "bwv", "1007", "sarabande"};
+        assertThat(Tokenizer.tokenize(input)).isEqualTo(result);
+    }
 }

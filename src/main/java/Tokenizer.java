@@ -18,6 +18,15 @@ public class Tokenizer {
         strangeCharMap = Collections.unmodifiableMap(map);
     }
 
+    static String[] tokenize(String string) {
+        // match any character that is not lowercase ascii, a number or '
+        return lemmatize(string).split("[^a-z|'|0-9]+");
+    }
+
+    static String lemmatize(String string) {
+        return toAscii(string).toLowerCase();
+    }
+
     static String toAscii(String string) {
         StringBuilder sb = new StringBuilder(string.length());
         string = Normalizer.normalize(string, Normalizer.Form.NFKD);
