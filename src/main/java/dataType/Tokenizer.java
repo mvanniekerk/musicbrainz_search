@@ -1,3 +1,5 @@
+package dataType;
+
 import dataType.DataType;
 import edu.emory.mathcs.backport.java.util.Collections;
 import lombok.AllArgsConstructor;
@@ -8,8 +10,6 @@ import java.util.Map;
 
 @AllArgsConstructor
 public class Tokenizer {
-    private DataType dataType;
-
     private static final Map<Character, Character> strangeCharMap;
     static {
         final Map<Character, Character> map = new HashMap<>();

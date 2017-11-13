@@ -9,8 +9,8 @@ import lombok.Getter;
 import java.util.HashSet;
 import java.util.Set;
 
-@EqualsAndHashCode(of = {"gid"})
-public class Artist implements DataType {
+@EqualsAndHashCode(of = {"gid"}, callSuper = false)
+public class Artist extends DataType {
     private final Set<String> names = new HashSet<>();
 
     @Getter
@@ -23,6 +23,10 @@ public class Artist implements DataType {
 
     public void addName(String name) {
         names.add(name);
+    }
+
+    public Set<String> getNameTokens() {
+        return getTokensFromSet(names);
     }
 
     @Override
