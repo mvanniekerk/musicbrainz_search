@@ -1,5 +1,6 @@
 package DataStore;
 
+import Search.SearchMap;
 import dataType.Work;
 
 import java.sql.Connection;
@@ -9,6 +10,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 public class WorkStore extends DataStore implements Iterable<Work> {
 
@@ -105,7 +107,7 @@ public class WorkStore extends DataStore implements Iterable<Work> {
         }
     }
 
-    void aggregateFromDB() throws SQLException {
+    public void aggregateFromDB() throws SQLException {
         ResultSet workNames = executePreparedStatement(getWorkNames());
         populateNames(workNames);
 
@@ -131,6 +133,29 @@ public class WorkStore extends DataStore implements Iterable<Work> {
         }
 
         return result;
+    }
+
+    public void populateSearchMap(SearchMap searchMap) {
+        for (Work work : works.values()) {
+            Set<String> artists = work.getArtistTokens();
+            Set<String> composers = work.getComposerTokens();
+            Set<String> names = work.getNameTokens();
+
+            String gid = work.getGid();
+
+            for (String artist : artists) {
+                searchMap.add(artist, gid);
+            }
+
+            for (String composer : composers) {
+                searchMap.add(composer, gid);
+            }
+
+            for (String name : names) {
+                searchMap.add(name, gid);
+            }
+        }
+
     }
 
     @Override
