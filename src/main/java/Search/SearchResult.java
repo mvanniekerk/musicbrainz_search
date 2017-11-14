@@ -1,13 +1,14 @@
 package Search;
 
-import com.sun.jna.platform.win32.WinBase;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 @NoArgsConstructor
-public class SearchResult {
+public class SearchResult implements Iterable<String> {
     final Set<String> gid_list = new HashSet<>();
 
     public void add(String gid) {
@@ -36,5 +37,12 @@ public class SearchResult {
         }
         sb.append("}");
         return sb.toString();
+    }
+
+
+    @NotNull
+    @Override
+    public Iterator<String> iterator() {
+        return gid_list.iterator();
     }
 }

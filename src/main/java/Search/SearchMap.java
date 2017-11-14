@@ -1,9 +1,12 @@
 package Search;
 
 import DataStore.WorkStore;
+import Database.MusicBrainzDB;
 import lombok.NoArgsConstructor;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,14 +48,41 @@ public class SearchMap {
         return result.toString();
     }
 
+    Connection getConnection() {
+        return MusicBrainzDB.getConnection();
+    }
+
+    /**
+     * Store in the database.
+     */
+    public void store() throws SQLException {
+        Connection conn = getConnection();
+
+        for (Map.Entry<String, SearchResult> entry : index.entrySet()) {
+            for (String gid : entry.getValue()) {
+                PreparedStatement ps = conn.prepareStatement(
+                        "INSERT INTO search(search_string, gid, type) " +
+                            "VALUES (?, ?::uuid, 0) " +
+                            "ON CONFLICT (search_string, gid) DO NOTHING "
+                );
+
+                ps.setString(1, entry.getKey());
+                ps.setObject(2, gid);
+
+                ps.executeUpdate();
+            }
+
+        }
+    }
+
     public static void main(String[] args) throws SQLException {
-        WorkStore works = new WorkStore(3566000, 4000000);
+        WorkStore works = new WorkStore(3566000, 3567000);
 
         works.aggregateFromDB();
 
         SearchMap searchMap = new SearchMap();
         works.populateSearchMap(searchMap);
 
-        System.out.println(searchMap.toString());
+        searchMap.store();
     }
 }
