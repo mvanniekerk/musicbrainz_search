@@ -14,7 +14,7 @@ import java.util.Set;
 
 @NoArgsConstructor
 public class SearchMap {
-    private final Map<String, SearchResult> index = new HashMap<>();
+    private Map<String, SearchResult> index = new HashMap<>();
 
     public void add(String token, String gid) {
         SearchResult results;
@@ -34,6 +34,10 @@ public class SearchMap {
         }
 
         return null;
+    }
+
+    void empty() {
+        index = new HashMap<>();
     }
 
     @Override
@@ -76,7 +80,7 @@ public class SearchMap {
     }
 
     public static void main(String[] args) throws SQLException {
-        WorkStore works = new WorkStore(3566000, 3567000);
+        WorkStore works = new WorkStore(3500000, 3600000);
 
         works.aggregateFromDB();
 
