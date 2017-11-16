@@ -1,5 +1,6 @@
 package DataStore;
 
+import Search.ResultType;
 import Search.SearchMap;
 import dataType.Work;
 
@@ -144,15 +145,15 @@ public class WorkStore extends DataStore implements Iterable<Work> {
             String gid = work.getGid();
 
             for (String artist : artists) {
-                searchMap.add(artist, gid);
+                searchMap.add(artist, gid, ResultType.WORK_ARTIST);
             }
 
             for (String composer : composers) {
-                searchMap.add(composer, gid);
+                searchMap.add(composer, gid, ResultType.WORK_COMPOSER);
             }
 
             for (String name : names) {
-                searchMap.add(name, gid);
+                searchMap.add(name, gid, ResultType.WORK_NAME);
             }
         }
 

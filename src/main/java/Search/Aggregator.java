@@ -2,8 +2,6 @@ package Search;
 
 import DataStore.WorkStore;
 import Database.MusicBrainzDB;
-import lombok.AllArgsConstructor;
-import lombok.Setter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,10 +10,12 @@ import java.sql.SQLException;
 
 public class Aggregator {
     private final int stepSize;
+    private final int start;
     private final SearchMap searchMap;
 
-    public Aggregator(int stepSize) {
+    public Aggregator(int stepSize, int start) {
         this.stepSize = stepSize;
+        this.start = start;
         searchMap = new SearchMap();
     }
 
@@ -41,7 +41,7 @@ public class Aggregator {
     public void aggregateAll() throws SQLException {
         int totalRows = getTotalRows();
 
-        for (int i = 0; i < totalRows; i += stepSize) {
+        for (int i = start; i < totalRows; i += stepSize) {
             aggregateWithTime(i, i + stepSize);
         }
     }
@@ -70,7 +70,9 @@ public class Aggregator {
     }
 
     public static void main(String[] args) throws SQLException {
-        Aggregator aggregator = new Aggregator(50000);
+        Aggregator aggregator = new Aggregator(50000, 6450000);
         aggregator.aggregateAll();
+
+        //TODO: The uniqueness property of the schema is setup wrong
     }
 }

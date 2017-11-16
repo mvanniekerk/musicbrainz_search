@@ -1,48 +1,65 @@
 package Search;
 
-import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+import Database.MusicBrainzDB;
+import lombok.Getter;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
-@NoArgsConstructor
-public class SearchResult implements Iterable<String> {
-    final Set<String> gid_list = new HashSet<>();
+public class SearchResult {
+    private final Set<String> work_name = new HashSet<>();
+    private final Set<String> work_artist = new HashSet<>();
+    private final Set<String> work_composer = new HashSet<>();
 
-    public void add(String gid) {
-        gid_list.add(gid);
+    @Getter
+    private final String term;
+
+    SearchResult(String term) {
+        this.term = term;
     }
 
-    public Set<String> get() {
-        return new HashSet<>(gid_list);
-    }
-
-    public Set<String> intersect(SearchResult searchResult) {
-        Set<String> intersection = new HashSet<>(this.gid_list);
-        intersection.retainAll(searchResult.gid_list);
-        return intersection;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("{");
-        for (String result : gid_list) {
-            sb.append(result);
-            sb.append(", ");
+    public void add(String gid, ResultType type) {
+        switch (type) {
+            case WORK_ARTIST:
+                work_artist.add(gid); break;
+            case WORK_NAME:
+                work_name.add(gid); break;
+            case WORK_COMPOSER:
+                work_composer.add(gid); break;
         }
-        if (sb.length() > 1) {
-            sb.setLength(sb.length() - 2);
+    }
+
+    Connection getConnection() {
+        return MusicBrainzDB.getConnection();
+    }
+
+    private PreparedStatement getQuery() throws SQLException {
+        Connection conn = getConnection();
+        return conn.prepareStatement(
+            "INSERT INTO search(search_string, gid, type) " +
+                "VALUES (?, ?::uuid, ?) " +
+                "ON CONFLICT (search_string, gid) DO NOTHING "
+        );
+    }
+
+    private void executeQuery(Set<String> set, ResultType resultType) throws SQLException {
+        for (String gid : set) {
+            PreparedStatement ps = getQuery();
+            ps.setString(1, getTerm());
+            ps.setObject(2, gid);
+            ps.setInt(3, resultType.getIndex());
+            ps.executeUpdate();
         }
-        sb.append("}");
-        return sb.toString();
+    }
+
+    void store() throws SQLException {
+        executeQuery(work_artist, ResultType.WORK_ARTIST);
+        executeQuery(work_composer, ResultType.WORK_COMPOSER);
+        executeQuery(work_name, ResultType.WORK_NAME);
     }
 
 
-    @NotNull
-    @Override
-    public Iterator<String> iterator() {
-        return gid_list.iterator();
-    }
 }
