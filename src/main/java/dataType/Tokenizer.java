@@ -20,6 +20,9 @@ public class Tokenizer {
 
     static String[] tokenize(String string) {
         // match any character that is not lowercase ascii, a number or '
+        if (string.isEmpty()) {
+            return new String[0];
+        }
         return lemmatize(string).split("[^a-z|'|0-9]+");
     }
 

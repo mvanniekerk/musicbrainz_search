@@ -64,4 +64,9 @@ public class tokenizerTest {
         String[] result = {"suite", "nr", "1", "g", "dur", "bwv", "1007", "sarabande"};
         assertThat(Tokenizer.tokenize(input)).isEqualTo(result);
     }
+
+    @Test
+    void emptyTest() {
+        assertThat(Tokenizer.tokenize("")).isEqualTo(new String[0]);
+    }
 }
