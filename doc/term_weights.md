@@ -10,7 +10,7 @@ So:
 
 3 tables:
 * terms: **id**, term, term_freq
-* documents: **gid**, doc_len 
+* documents: **id**, gid, doc_len 
 * doc_term: **term_id**, **doc_id**, **type**, freq
 
 formula for relevancy:
@@ -22,4 +22,11 @@ for term in search_string:
     tf_idf = tf * idf
     result += tf_idf
 return result
+```
+
+Empty tables:
+```sql
+TRUNCATE documents_terms, documents, terms;
+ALTER SEQUENCE documents_id_seq RESTART WITH 1;
+ALTER SEQUENCE terms_id_seq RESTART WITH 1;
 ```

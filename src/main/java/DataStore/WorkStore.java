@@ -8,8 +8,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -138,9 +140,9 @@ public class WorkStore extends DataStore implements Iterable<Work> {
 
     public void populateSearchMap(SearchMap searchMap) {
         for (Work work : works.values()) {
-            Set<String> artists = work.getArtistTokens();
-            Set<String> composers = work.getComposerTokens();
-            Set<String> names = work.getNameTokens();
+            Collection<String> artists = work.getArtistTokens();
+            Collection<String> composers = work.getComposerTokens();
+            Collection<String> names = work.getNameTokens();
 
             String gid = work.getGid();
 
@@ -165,7 +167,7 @@ public class WorkStore extends DataStore implements Iterable<Work> {
     }
 
     public static void main(String[] args) throws Exception {
-        WorkStore works = new WorkStore(3566000, 3567000);
+        WorkStore works = new WorkStore(3566296, 3566297);
 
         works.aggregateFromDB();
 

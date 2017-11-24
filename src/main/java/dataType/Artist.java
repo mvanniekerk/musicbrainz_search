@@ -6,6 +6,7 @@ import jsonSerializer.JsonSerializer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,8 +26,8 @@ public class Artist extends DataType {
         names.add(name);
     }
 
-    public Set<String> getNameTokens() {
-        return getTokensFromSet(names);
+    public Collection<String> getNameTokens() {
+        return getTokensFromList(names);
     }
 
     @Override

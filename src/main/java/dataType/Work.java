@@ -1,21 +1,21 @@
 package dataType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import edu.emory.mathcs.backport.java.util.Arrays;
 import jsonSerializer.JacksonSerializer;
 import jsonSerializer.JsonSerializer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @EqualsAndHashCode(of = {"gid"}, callSuper = false)
 public class Work extends DataType {
 
-    private final Set<String> artists = new HashSet<>();
-    private final Set<String> composers = new HashSet<>();
-    private final Set<String> names = new HashSet<>();
+    private final List<String> artists = new ArrayList<>();
+    private final List<String> composers = new ArrayList<>();
+    private final List<String> names = new ArrayList<>();
 
     @Getter
     @JsonIgnore
@@ -37,16 +37,16 @@ public class Work extends DataType {
         artists.add(artist);
     }
 
-    public Set<String> getComposerTokens() {
-        return getTokensFromSet(composers);
+    public Collection<String> getComposerTokens() {
+        return getTokensFromList(composers);
     }
 
-    public Set<String> getNameTokens() {
-        return getTokensFromSet(names);
+    public Collection<String> getNameTokens() {
+        return getTokensFromList(names);
     }
 
-    public Set<String> getArtistTokens() {
-        return getTokensFromSet(artists);
+    public Collection<String> getArtistTokens() {
+        return getTokensFromList(artists);
     }
 
     @Override

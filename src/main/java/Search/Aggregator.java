@@ -51,6 +51,7 @@ public class Aggregator {
         works.aggregateFromDB();
 
         works.populateSearchMap(searchMap);
+        System.out.println(searchMap);
 
         searchMap.store();
         searchMap.empty();
@@ -71,7 +72,7 @@ public class Aggregator {
 
     public static void main(String[] args) throws SQLException {
         Aggregator aggregator = new Aggregator(50000, 6450000);
-        aggregator.aggregateAll();
+        aggregator.aggregate(12832611, 12832612);
 
         //TODO: The uniqueness property of the schema is setup wrong
     }
