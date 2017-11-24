@@ -51,6 +51,8 @@ public class SearchMap {
             String gid = resultSet.getString("gid");
             int type = resultSet.getInt("type");
 
+            assert type == 0 || type == 1 || type == 2;
+
             add(term, gid, ResultType.valueOf(type));
         }
     }
@@ -83,6 +85,8 @@ public class SearchMap {
 
     public static void main(String[] args) throws SQLException {
         SearchMap searchMap = new SearchMap();
-        System.out.println(searchMap.find("mozart"));
+        SearchResult searchResult = searchMap.find("mozart");
+        System.out.println(searchResult);
+        System.out.println(searchResult.getResultSize());
     }
 }

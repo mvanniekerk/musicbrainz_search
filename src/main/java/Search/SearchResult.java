@@ -61,13 +61,17 @@ public class SearchResult {
         executeQuery(work_name, ResultType.WORK_NAME);
     }
 
+    int getResultSize() {
+        return work_artist.size() + work_composer.size() + work_name.size();
+    }
+
     @Override
     public String toString() {
         return "SearchResult{" +
-                "work_name=" + work_name +
+                "term=" + term +
                 ", work_artist=" + work_artist +
                 ", work_composer=" + work_composer +
-                ", term='" + term + '\'' +
+                ", work_name='" + work_name + '\'' +
                 '}';
     }
 }
