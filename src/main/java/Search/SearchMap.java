@@ -1,17 +1,21 @@
 package Search;
 
 import Database.MusicBrainzDB;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 @NoArgsConstructor
 public class SearchMap {
+    @Getter
     private Map<String, SearchResult> index = new HashMap<>();
 
     public void add(String token, String gid, ResultType resultType) {

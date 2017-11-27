@@ -2,6 +2,7 @@ package DataStore;
 
 import Search.ResultType;
 import Search.SearchMap;
+import Search.SearchResult;
 import dataType.Work;
 
 import java.sql.Connection;
@@ -167,16 +168,18 @@ public class WorkStore extends DataStore implements Iterable<Work> {
     }
 
     public static void main(String[] args) throws Exception {
-        WorkStore works = new WorkStore(3566296, 3566297);
+        WorkStore works = new WorkStore(12500000, 12550000);
 
         works.aggregateFromDB();
 
-        for (Work work : works) {
-            byte[] json = work.jsonSearchRepr();
-            String jsonString = new String(json, "utf-8");
+        SearchMap searchMap = new SearchMap();
 
-            System.out.print(work.getGid() + ", ");
-            System.out.println(jsonString);
+        works.populateSearchMap(searchMap);
+
+        for (SearchResult searchResult : searchMap.getIndex().values()) {
+            if (searchResult.getTerm().length() > 45) {
+                System.out.println(searchResult.toString());
+            }
         }
     }
 }

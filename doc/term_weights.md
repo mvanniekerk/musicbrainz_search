@@ -30,3 +30,7 @@ TRUNCATE documents_terms, documents, terms;
 ALTER SEQUENCE documents_id_seq RESTART WITH 1;
 ALTER SEQUENCE terms_id_seq RESTART WITH 1;
 ```
+
+
+For the table, I gave every term 50 characters. This was not enough for one work name (which is also probably an error in the catalog): Preludeprologueanarchitectsdreamthepainterslinksunsetaerialtalsomewhereinbetweennocturnaerial by Kate Bush. 
+For this special case, I decided to just cut to the maximal length of the string, 50 characters.
