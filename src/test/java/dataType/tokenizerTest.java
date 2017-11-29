@@ -69,10 +69,4 @@ public class tokenizerTest {
     void emptyTest() {
         assertThat(Tokenizer.tokenize("")).isEqualTo(new String[0]);
     }
-
-    @Test
-    void maxLengthTest() {
-        String[] result = Tokenizer.tokenize("Preludeprologueanarchitectsdreamthepainterslinksunsetaerialtalsomewhereinbetweennocturnaerial");
-        assertThat(result[0].length()).isLessThanOrEqualTo(50);
-    }
 }

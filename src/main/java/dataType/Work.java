@@ -5,6 +5,7 @@ import jsonSerializer.JacksonSerializer;
 import jsonSerializer.JsonSerializer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,6 +21,11 @@ public class Work extends DataType {
     @Getter
     @JsonIgnore
     private String gid;
+
+    @Getter
+    @Setter
+    @JsonIgnore
+    private int tokenLength;
 
     public Work(String gid) {
         this.gid = gid;
@@ -54,5 +60,16 @@ public class Work extends DataType {
         JsonSerializer serializer = JacksonSerializer.getInstance();
 
         return serializer.writeAsBytes(this);
+    }
+
+    @Override
+    public String toString() {
+        return "Work{" +
+                "artists=" + artists +
+                ", composers=" + composers +
+                ", names=" + names +
+                ", gid='" + gid + '\'' +
+                ", tokenLength=" + tokenLength +
+                '}';
     }
 }

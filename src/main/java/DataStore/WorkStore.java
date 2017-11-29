@@ -2,7 +2,7 @@ package DataStore;
 
 import Search.ResultType;
 import Search.SearchMap;
-import Search.SearchResult;
+import Search.TypedSearchResult;
 import dataType.Work;
 
 import java.sql.Connection;
@@ -12,9 +12,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class WorkStore extends DataStore implements Iterable<Work> {
 
@@ -176,9 +174,9 @@ public class WorkStore extends DataStore implements Iterable<Work> {
 
         works.populateSearchMap(searchMap);
 
-        for (SearchResult searchResult : searchMap.getIndex().values()) {
-            if (searchResult.getTerm().length() > 45) {
-                System.out.println(searchResult.toString());
+        for (TypedSearchResult typedSearchResult : searchMap.getIndex().values()) {
+            if (typedSearchResult.getTerm().length() > 45) {
+                System.out.println(typedSearchResult.toString());
             }
         }
     }

@@ -3,33 +3,31 @@ package Search;
 import Database.MusicBrainzDB;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 @NoArgsConstructor
 public class SearchMap {
     @Getter
-    private Map<String, SearchResult> index = new HashMap<>();
+    private Map<String, TypedSearchResult> index = new HashMap<>();
 
     public void add(String token, String gid, ResultType resultType) {
-        SearchResult results;
+        TypedSearchResult results;
         if (index.containsKey(token)) {
             results = index.get(token);
         } else {
-            results = new SearchResult(token);
+            results = new TypedSearchResult(token);
             index.put(token, results);
         }
         results.add(gid, resultType);
     }
 
-    public SearchResult find(String term) throws SQLException {
+    public TypedSearchResult find(String term) throws SQLException {
         assert !term.contains(" ");
         if (!index.containsKey(term)) {
             retrieveTerm(term);
@@ -42,10 +40,12 @@ public class SearchMap {
         Connection conn = MusicBrainzDB.getConnection();
 
         PreparedStatement ps = conn.prepareStatement(
-            "SELECT gid, type " +
-                "FROM search " +
-                "WHERE search_string = ?"
-
+            "SELECT terms.freq, documents.gid, \n" +
+                "  documents.length, documents_terms.freq, documents_terms.type\n" +
+                "FROM terms\n" +
+                "INNER JOIN documents_terms ON terms.id=documents_terms.term_id\n" +
+                "INNER JOIN documents ON documents_terms.document_id=documents.id\n" +
+                "WHERE terms.term=?"
         );
 
         ps.setString(1, term);
@@ -68,7 +68,7 @@ public class SearchMap {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        for (Map.Entry<String, SearchResult> entry : index.entrySet()) {
+        for (Map.Entry<String, TypedSearchResult> entry : index.entrySet()) {
             result.append(entry.getKey());
             result.append(": ");
             result.append(entry.getValue().toString());
@@ -81,16 +81,16 @@ public class SearchMap {
      * Store in the database.
      */
     public void store() throws SQLException {
-        for (SearchResult entry : index.values()) {
-            SearchResult searchResult = entry;
-            searchResult.store();
+        for (TypedSearchResult entry : index.values()) {
+            TypedSearchResult typedSearchResult = entry;
+            typedSearchResult.store();
         }
     }
 
     public static void main(String[] args) throws SQLException {
         SearchMap searchMap = new SearchMap();
-        SearchResult searchResult = searchMap.find("mozart");
-        System.out.println(searchResult);
-        System.out.println(searchResult.getResultSize());
+        TypedSearchResult typedSearchResult = searchMap.find("mozart");
+        System.out.println(typedSearchResult);
+        System.out.println(typedSearchResult.getResultSize());
     }
 }

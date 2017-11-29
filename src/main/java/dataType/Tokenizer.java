@@ -23,17 +23,7 @@ public class Tokenizer {
         if (string.isEmpty()) {
             return new String[0];
         }
-        String[] tokens = lemmatize(string).split("[^a-z|'|0-9]+");
-        trim(tokens);
-        return tokens;
-    }
-
-    private static void trim(String[] tokens) {
-        for (int i = 0; i < tokens.length; i++) {
-            if (tokens[i].length() > 50) {
-                tokens[i] = tokens[i].substring(0, 50);
-            }
-        }
+        return lemmatize(string).split("[^a-z|'|0-9]+");
     }
 
     static String lemmatize(String string) {

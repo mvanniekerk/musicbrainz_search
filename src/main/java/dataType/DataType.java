@@ -8,7 +8,7 @@ import java.util.List;
 public abstract class DataType {
     abstract byte[] jsonSearchRepr();
 
-    abstract String getGid();
+    public abstract String getGid();
 
     Collection<String> getTokensFromList(Collection<String> collection) {
         List<String> result = new ArrayList<>();
