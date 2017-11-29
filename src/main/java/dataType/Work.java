@@ -6,12 +6,14 @@ import jsonSerializer.JsonSerializer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 @EqualsAndHashCode(of = {"gid"}, callSuper = false)
+@ToString
 public class Work extends DataType {
 
     private final List<String> artists = new ArrayList<>();
@@ -60,16 +62,5 @@ public class Work extends DataType {
         JsonSerializer serializer = JacksonSerializer.getInstance();
 
         return serializer.writeAsBytes(this);
-    }
-
-    @Override
-    public String toString() {
-        return "Work{" +
-                "artists=" + artists +
-                ", composers=" + composers +
-                ", names=" + names +
-                ", gid='" + gid + '\'' +
-                ", tokenLength=" + tokenLength +
-                '}';
     }
 }

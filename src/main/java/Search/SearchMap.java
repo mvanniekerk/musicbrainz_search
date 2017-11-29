@@ -14,10 +14,10 @@ import java.util.Map;
 @NoArgsConstructor
 public class SearchMap {
     @Getter
-    private Map<String, TypedSearchResult> index = new HashMap<>();
+    private Map<String, SearchResult> index = new HashMap<>();
 
     public void add(String token, String gid, ResultType resultType) {
-        TypedSearchResult results;
+        SearchResult results;
         if (index.containsKey(token)) {
             results = index.get(token);
         } else {
@@ -27,7 +27,7 @@ public class SearchMap {
         results.add(gid, resultType);
     }
 
-    public TypedSearchResult find(String term) throws SQLException {
+    public SearchResult find(String term) throws SQLException {
         assert !term.contains(" ");
         if (!index.containsKey(term)) {
             retrieveTerm(term);
@@ -68,7 +68,7 @@ public class SearchMap {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
-        for (Map.Entry<String, TypedSearchResult> entry : index.entrySet()) {
+        for (Map.Entry<String, SearchResult> entry : index.entrySet()) {
             result.append(entry.getKey());
             result.append(": ");
             result.append(entry.getValue().toString());
@@ -81,16 +81,15 @@ public class SearchMap {
      * Store in the database.
      */
     public void store() throws SQLException {
-        for (TypedSearchResult entry : index.values()) {
-            TypedSearchResult typedSearchResult = entry;
-            typedSearchResult.store();
+        for (SearchResult entry : index.values()) {
+            entry.store();
         }
     }
 
     public static void main(String[] args) throws SQLException {
         SearchMap searchMap = new SearchMap();
-        TypedSearchResult typedSearchResult = searchMap.find("mozart");
-        System.out.println(typedSearchResult);
-        System.out.println(typedSearchResult.getResultSize());
+        SearchResult searchResult = searchMap.find("mozart");
+        System.out.println(searchResult);
+        System.out.println(searchResult.getResultSize());
     }
 }

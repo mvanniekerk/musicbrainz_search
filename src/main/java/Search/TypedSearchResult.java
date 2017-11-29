@@ -4,6 +4,7 @@ import Database.MusicBrainzDB;
 import dataType.DataType;
 import dataType.Work;
 import lombok.Getter;
+import lombok.ToString;
 import org.postgresql.util.PSQLException;
 
 import java.sql.Connection;
@@ -13,6 +14,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@ToString
 public class TypedSearchResult implements SearchResult {
     private final List<DataType> work_name = new ArrayList<>();
     private final List<DataType> work_artist = new ArrayList<>();
@@ -103,23 +105,13 @@ public class TypedSearchResult implements SearchResult {
         }
     }
 
-    void store() throws SQLException {
+    public void store() throws SQLException {
         executeQuery(work_artist, ResultType.WORK_ARTIST);
         executeQuery(work_composer, ResultType.WORK_COMPOSER);
         executeQuery(work_name, ResultType.WORK_NAME);
     }
 
-    int getResultSize() {
+    public int getResultSize() {
         return work_artist.size() + work_composer.size() + work_name.size();
-    }
-
-    @Override
-    public String toString() {
-        return "TypedSearchResult{" +
-                "term=" + term +
-                ", work_artist=" + work_artist +
-                ", work_composer=" + work_composer +
-                ", work_name='" + work_name + '\'' +
-                '}';
     }
 }

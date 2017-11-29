@@ -164,20 +164,4 @@ public class WorkStore extends DataStore implements Iterable<Work> {
     public Iterator<Work> iterator() {
         return works.values().iterator();
     }
-
-    public static void main(String[] args) throws Exception {
-        WorkStore works = new WorkStore(12500000, 12550000);
-
-        works.aggregateFromDB();
-
-        SearchMap searchMap = new SearchMap();
-
-        works.populateSearchMap(searchMap);
-
-        for (TypedSearchResult typedSearchResult : searchMap.getIndex().values()) {
-            if (typedSearchResult.getTerm().length() > 45) {
-                System.out.println(typedSearchResult.toString());
-            }
-        }
-    }
 }
