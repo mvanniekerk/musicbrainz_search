@@ -8,8 +8,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 
 @ToString
 @NoArgsConstructor
@@ -28,6 +32,19 @@ public class Result {
         works.put(gid, work);
 
         return work;
+    }
+
+    void calcTfIdf() {
+        for (Work work : works.values()) {
+            work.calculateTfIdf();
+        }
+    }
+
+    List<Work> tfIdfOrderedWorkList() {
+        calcTfIdf();
+        List<Work> orderedWorks = new ArrayList<>(works.values());
+        orderedWorks.sort(Work::compareTo);
+        return orderedWorks;
     }
 
     void retrieveTerm(String termName) throws SQLException {
@@ -77,6 +94,7 @@ public class Result {
     public static void main(String[] args) throws SQLException {
         Result result = new Result();
         result.retrieveTerm("mozart");
-        System.out.println(result);
+        result.retrieveTerm("quintet");
+        System.out.println(result.tfIdfOrderedWorkList());
     }
 }
