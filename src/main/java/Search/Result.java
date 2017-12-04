@@ -1,6 +1,7 @@
 package Search;
 
 import Database.MusicBrainzDB;
+import dataType.Tokenizer;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -9,11 +10,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 
 @ToString
 @NoArgsConstructor
@@ -45,6 +44,12 @@ public class Result {
         List<Work> orderedWorks = new ArrayList<>(works.values());
         orderedWorks.sort(Work::compareTo);
         return orderedWorks;
+    }
+
+    void retrieveQuery(String query) throws SQLException {
+        for (String term : Tokenizer.tokenize(query)) {
+            retrieveTerm(term);
+        }
     }
 
     void retrieveTerm(String termName) throws SQLException {
@@ -95,9 +100,7 @@ public class Result {
 
     public static void main(String[] args) throws SQLException {
         Result result = new Result();
-        result.retrieveTerm("mozart");
-        result.retrieveTerm("clarinet");
-        result.retrieveTerm("quintet");
+        result.retrieveQuery("Mozart Clarinet Quintet");
         result.calcTfIdf();
         List<Work> ordered = result.tfIdfOrderedWorkList();
         for (int i = 0; i < 10; i++) {

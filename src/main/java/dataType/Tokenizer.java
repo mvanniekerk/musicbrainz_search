@@ -18,7 +18,7 @@ public class Tokenizer {
         strangeCharMap = Collections.unmodifiableMap(map);
     }
 
-    static String[] tokenize(String string) {
+    public static String[] tokenize(String string) {
         // match any character that is not lowercase ascii, a number or '
         if (string.isEmpty()) {
             return new String[0];
