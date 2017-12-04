@@ -1,6 +1,6 @@
-package dataType;
+package Aggregation.dataType;
 
-import dataType.Tokenizer;
+import Tokenizer.Tokenizer;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

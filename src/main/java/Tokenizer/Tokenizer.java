@@ -1,6 +1,5 @@
-package dataType;
+package Tokenizer;
 
-import dataType.DataType;
 import edu.emory.mathcs.backport.java.util.Collections;
 import lombok.AllArgsConstructor;
 

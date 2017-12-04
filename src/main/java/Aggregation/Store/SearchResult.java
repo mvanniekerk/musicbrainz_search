@@ -1,6 +1,6 @@
-package Store;
+package Aggregation.Store;
 
-import dataType.Work;
+import Aggregation.dataType.Work;
 
 import java.sql.SQLException;
 

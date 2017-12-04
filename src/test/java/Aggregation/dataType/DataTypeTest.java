@@ -1,4 +1,4 @@
-package dataType;
+package Aggregation.dataType;
 
 import org.junit.jupiter.api.Test;
 

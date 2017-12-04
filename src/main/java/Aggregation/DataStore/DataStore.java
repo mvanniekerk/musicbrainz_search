@@ -1,4 +1,4 @@
-package DataStore;
+package Aggregation.DataStore;
 
 import Database.MusicBrainzDB;
 

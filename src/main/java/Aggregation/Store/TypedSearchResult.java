@@ -1,8 +1,8 @@
-package Store;
+package Aggregation.Store;
 
 import Database.MusicBrainzDB;
-import dataType.DataType;
-import dataType.Work;
+import Aggregation.dataType.DataType;
+import Aggregation.dataType.Work;
 import lombok.Getter;
 import lombok.ToString;
 import org.postgresql.util.PSQLException;

@@ -1,4 +1,4 @@
-package Store;
+package Aggregation.Store;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

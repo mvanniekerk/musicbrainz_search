@@ -1,6 +1,7 @@
-package Store;
+package Aggregation;
 
-import DataStore.WorkStore;
+import Aggregation.DataStore.WorkStore;
+import Aggregation.Store.SearchMap;
 import Database.MusicBrainzDB;
 
 import java.sql.Connection;

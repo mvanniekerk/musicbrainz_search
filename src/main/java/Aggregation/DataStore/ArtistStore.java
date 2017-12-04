@@ -1,6 +1,6 @@
-package DataStore;
+package Aggregation.DataStore;
 
-import dataType.Artist;
+import Aggregation.dataType.Artist;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

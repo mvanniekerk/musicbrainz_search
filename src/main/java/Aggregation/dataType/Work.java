@@ -1,11 +1,10 @@
-package dataType;
+package Aggregation.dataType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jsonSerializer.JacksonSerializer;
 import jsonSerializer.JsonSerializer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import java.util.ArrayList;

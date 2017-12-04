@@ -1,7 +1,7 @@
 package Search;
 
 import Database.MusicBrainzDB;
-import dataType.Tokenizer;
+import Tokenizer.Tokenizer;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 

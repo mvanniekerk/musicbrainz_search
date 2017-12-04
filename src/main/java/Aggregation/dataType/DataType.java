@@ -1,4 +1,6 @@
-package dataType;
+package Aggregation.dataType;
+
+import Tokenizer.Tokenizer;
 
 import java.util.ArrayList;
 import java.util.Arrays;

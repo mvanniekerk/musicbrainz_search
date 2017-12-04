@@ -1,8 +1,8 @@
-package DataStore;
+package Aggregation.DataStore;
 
-import Store.ResultType;
-import Store.SearchMap;
-import dataType.Work;
+import Aggregation.Store.ResultType;
+import Aggregation.Store.SearchMap;
+import Aggregation.dataType.Work;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

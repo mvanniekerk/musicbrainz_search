@@ -1,4 +1,4 @@
-package Store;
+package Aggregation.Store;
 
 import Database.MusicBrainzDB;
 import lombok.Getter;
@@ -61,7 +61,7 @@ public class SearchMap {
         }
     }
 
-    void empty() {
+    public void empty() {
         index = new HashMap<>();
     }
 

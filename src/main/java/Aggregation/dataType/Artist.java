@@ -1,4 +1,4 @@
-package dataType;
+package Aggregation.dataType;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jsonSerializer.JacksonSerializer;
