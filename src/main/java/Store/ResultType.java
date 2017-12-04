@@ -1,4 +1,4 @@
-package Search;
+package Store;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

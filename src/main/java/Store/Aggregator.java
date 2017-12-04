@@ -1,4 +1,4 @@
-package Search;
+package Store;
 
 import DataStore.WorkStore;
 import Database.MusicBrainzDB;

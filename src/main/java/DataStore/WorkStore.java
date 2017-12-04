@@ -1,8 +1,7 @@
 package DataStore;
 
-import Search.ResultType;
-import Search.SearchMap;
-import Search.TypedSearchResult;
+import Store.ResultType;
+import Store.SearchMap;
 import dataType.Work;
 
 import java.sql.Connection;

@@ -1,11 +1,18 @@
-package Search;
+package Store;
 
 import dataType.Work;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class UnTypedSearchResult implements SearchResult {
+    private final Map<String, Work> searchResults = new HashMap<>();
+
     @Override
     public void add(String gid, ResultType type) {
-
+        assert !searchResults.containsKey(gid);
+        Work work = new Work(gid);
+        searchResults.put(gid, work);
     }
 
     @Override

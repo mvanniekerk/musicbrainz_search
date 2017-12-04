@@ -24,11 +24,6 @@ public class Work extends DataType {
     @JsonIgnore
     private String gid;
 
-    @Getter
-    @Setter
-    @JsonIgnore
-    private int tokenLength;
-
     public Work(String gid) {
         this.gid = gid;
     }

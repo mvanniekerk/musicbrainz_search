@@ -1,4 +1,4 @@
-package Search;
+package Store;
 
 import dataType.Work;
 

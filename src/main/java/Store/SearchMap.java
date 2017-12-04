@@ -1,4 +1,4 @@
-package Search;
+package Store;
 
 import Database.MusicBrainzDB;
 import lombok.Getter;
