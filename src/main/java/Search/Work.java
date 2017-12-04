@@ -43,11 +43,11 @@ public class Work implements Comparable<Work> {
         double result = 0;
         assert length > 0 : "Length should be a natural number";
         for (Map.Entry<Term, Integer> termCount : terms.entrySet()) {
-            double tf = (double) termCount.getValue() / length;
+            double tf = (double) termCount.getValue() / Math.log10(10 + length);
             assert termCount.getValue() > 0 : "Term count should be a natural number";
             int count = termCount.getKey().getFrequency();
             assert count > 0 : "Term count (in work) should be a natural number";
-            double idf = Math.log10((double) TOTAL_N_DOCS / (double) count);
+            double idf = Math.log10((double) TOTAL_N_DOCS / count);
             double tf_idf = tf * idf;
             result += tf_idf;
         }

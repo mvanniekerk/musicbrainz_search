@@ -100,7 +100,7 @@ public class Result {
 
     public static void main(String[] args) throws SQLException {
         Result result = new Result();
-        result.retrieveQuery("Mozart Clarinet Quintet");
+        result.retrieveQuery("Haydn Cello Concerto du pre");
         result.calcTfIdf();
         List<Work> ordered = result.tfIdfOrderedWorkList();
         for (int i = 0; i < 10; i++) {
