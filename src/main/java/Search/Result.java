@@ -59,7 +59,9 @@ public class Result {
         ps.setString(1, termName);
         ResultSet resultSet = ps.executeQuery();
 
-        resultSet.next();
+        if (!resultSet.next()) {
+            return;
+        }
         int termFreq = resultSet.getInt(1);
 
         Term term = new Term(termFreq, termName);
@@ -94,7 +96,12 @@ public class Result {
     public static void main(String[] args) throws SQLException {
         Result result = new Result();
         result.retrieveTerm("mozart");
+        result.retrieveTerm("clarinet");
         result.retrieveTerm("quintet");
-        System.out.println(result.tfIdfOrderedWorkList());
+        result.calcTfIdf();
+        List<Work> ordered = result.tfIdfOrderedWorkList();
+        for (int i = 0; i < 10; i++) {
+            System.out.println(ordered.get(i));
+        }
     }
 }

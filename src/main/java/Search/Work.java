@@ -3,7 +3,6 @@ package Search;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +25,7 @@ public class Work implements Comparable<Work> {
     private final Map<Term, Integer> terms = new HashMap<>();
 
     void addTermCount(Term term, Integer count) {
+        assert count != 0;
         if (terms.containsKey(term)) {
             int oldCount = terms.get(term);
             terms.replace(term, oldCount + count);
@@ -56,6 +56,10 @@ public class Work implements Comparable<Work> {
 
     @Override
     public int compareTo(Work other) {
+        int numTerms = Integer.compare(other.terms.size(), this.terms.size());
+        if (numTerms != 0) {
+            return numTerms;
+        }
         return Double.compare(other.tfIdf, this.tfIdf);
     }
 }
