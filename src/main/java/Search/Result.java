@@ -2,6 +2,8 @@ package Search;
 
 import Database.MusicBrainzDB;
 import Tokenizer.Tokenizer;
+import jsonSerializer.JacksonSerializer;
+import jsonSerializer.JsonSerializer;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -18,6 +20,8 @@ import java.util.Map;
 @NoArgsConstructor
 public class Result {
     private final Map<String, Work> works = new HashMap<>();
+
+    private final List<Work> orderedWorkList = new ArrayList<>();
 
     private Connection getConnection() {
         return MusicBrainzDB.getConnection();
@@ -39,11 +43,10 @@ public class Result {
         }
     }
 
-    List<Work> tfIdfOrderedWorkList() {
+    void tfIdfOrderedWorkList() {
         calcTfIdf();
-        List<Work> orderedWorks = new ArrayList<>(works.values());
-        orderedWorks.sort(Work::compareTo);
-        return orderedWorks;
+        orderedWorkList.addAll(works.values());
+        orderedWorkList.sort(Work::compareTo);
     }
 
     void retrieveQuery(String query) throws SQLException {
@@ -98,13 +101,19 @@ public class Result {
         }
     }
 
+    public String orderedWorkListAsJson(int start, int end) throws SQLException {
+        JsonSerializer serializer = JacksonSerializer.getInstance();
+
+        return serializer.writeAsString(orderedWorkList.subList(start, end));
+    }
+
     public static void main(String[] args) throws SQLException {
         Result result = new Result();
         result.retrieveQuery("Haydn Cello Concerto du pre");
         result.calcTfIdf();
-        List<Work> ordered = result.tfIdfOrderedWorkList();
+        result.tfIdfOrderedWorkList();
         for (int i = 0; i < 10; i++) {
-            System.out.println(ordered.get(i));
+            System.out.println(result.orderedWorkList.get(i));
         }
     }
 }

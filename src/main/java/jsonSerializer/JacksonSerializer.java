@@ -34,4 +34,12 @@ public class JacksonSerializer implements JsonSerializer {
             throw new RuntimeException(e);
         }
     }
+
+    public String writeAsString(Object value) {
+        try {
+            return objectMapper.writeValueAsString(value);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
