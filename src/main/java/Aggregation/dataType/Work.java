@@ -39,14 +39,17 @@ public class Work extends DataType {
         artists.add(artist);
     }
 
+    @JsonIgnore
     public Collection<String> getComposerTokens() {
         return getTokensFromList(composers);
     }
 
+    @JsonIgnore
     public Collection<String> getNameTokens() {
         return getTokensFromList(names);
     }
 
+    @JsonIgnore
     public Collection<String> getArtistTokens() {
         return getTokensFromList(artists);
     }

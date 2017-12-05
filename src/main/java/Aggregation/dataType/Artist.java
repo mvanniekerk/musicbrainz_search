@@ -26,6 +26,7 @@ public class Artist extends DataType {
         names.add(name);
     }
 
+    @JsonIgnore
     public Collection<String> getNameTokens() {
         return getTokensFromList(names);
     }

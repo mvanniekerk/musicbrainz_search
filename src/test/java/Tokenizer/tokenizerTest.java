@@ -1,4 +1,4 @@
-package Aggregation.dataType;
+package Tokenizer;
 
 import Tokenizer.Tokenizer;
 import org.junit.jupiter.api.Test;
