@@ -96,24 +96,15 @@ public class Result {
             int length = resultSet.getInt("length");
             int freq = resultSet.getInt("freq");
 
+            assert gid != null;
             Work work = getWork(gid, length);
             work.addTermCount(term, freq);
         }
     }
 
-    public String orderedWorkListAsJson(int start, int end) throws SQLException {
+    public String orderedWorkListAsJson(int start, int end) {
         JsonSerializer serializer = JacksonSerializer.getInstance();
 
         return serializer.writeAsString(orderedWorkList.subList(start, end));
-    }
-
-    public static void main(String[] args) throws SQLException {
-        Result result = new Result();
-        result.retrieveQuery("Haydn Cello Concerto du pre");
-        result.calcTfIdf();
-        result.tfIdfOrderedWorkList();
-        for (int i = 0; i < 10; i++) {
-            System.out.println(result.orderedWorkList.get(i));
-        }
     }
 }

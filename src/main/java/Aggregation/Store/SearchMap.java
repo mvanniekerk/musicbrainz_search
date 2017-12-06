@@ -53,6 +53,7 @@ public class SearchMap {
 
         while (resultSet.next()) {
             String gid = resultSet.getString("gid");
+            assert gid != null;
             int type = resultSet.getInt("type");
 
             assert type == 0 || type == 1 || type == 2;

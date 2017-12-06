@@ -78,6 +78,7 @@ public class WorkStore extends DataStore implements Iterable<Work> {
     private void populateNames(ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
             String gid = resultSet.getString("gid");
+            assert gid != null;
             Work work = find(gid);
             String name = resultSet.getString("name");
             if (name != null) {
@@ -89,6 +90,7 @@ public class WorkStore extends DataStore implements Iterable<Work> {
     private void populateArtists(ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
             String gid = resultSet.getString("gid");
+            assert gid != null;
             Work work = find(gid);
             String artist = resultSet.getString("name");
             if (artist != null) {
@@ -100,6 +102,7 @@ public class WorkStore extends DataStore implements Iterable<Work> {
     private void populateComposers(ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
             String gid = resultSet.getString("gid");
+            assert gid != null;
             Work work = find(gid);
             String composer = resultSet.getString("name");
             if (composer != null) {

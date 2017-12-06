@@ -44,6 +44,7 @@ public class ArtistStore extends DataStore implements Iterable<Artist> {
     private void populateHashMap(ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
             String gid = resultSet.getString("gid");
+            assert gid != null;
             Artist artist = find(gid);
             String name = resultSet.getString("name");
             if (name != null) {
