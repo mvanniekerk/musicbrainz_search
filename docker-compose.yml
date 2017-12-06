@@ -1,0 +1,25 @@
+version: '2'
+
+volumes:
+  pgdata:
+    external:
+      name: musicbrainzdocker_pgdata
+
+services:
+  db:
+    build: postgres-dockerfile
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    env_file:
+      - ./postgres-dockerfile/postgres.env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  search:
+    build: .
+    ports:
+      - "80:4567"
+    restart: unless-stopped
+    depends_on:
+      - db
