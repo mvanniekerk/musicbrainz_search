@@ -24,7 +24,7 @@ public class MusicBrainzDB {
             throw new RuntimeException("Driver could not be loaded.");
         }
 
-        String url = "jdbc:postgresql:";
+        String url = "jdbc:postgresql://db:5432/";
         Properties properties = new Properties();
         properties.setProperty("user", "musicbrainz");
         properties.setProperty("password", "musicbrainz");

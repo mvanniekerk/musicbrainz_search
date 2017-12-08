@@ -8,8 +8,8 @@ volumes:
 services:
   db:
     build: postgres-dockerfile
-    ports:
-      - "5432:5432"
+    expose:
+      - "5432"
     restart: unless-stopped
     env_file:
       - ./postgres-dockerfile/postgres.env
