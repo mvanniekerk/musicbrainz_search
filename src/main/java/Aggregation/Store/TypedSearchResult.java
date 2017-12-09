@@ -46,7 +46,7 @@ public class TypedSearchResult implements SearchResult {
     }
 
     Connection getConnection() {
-        return MusicBrainzDB.getConnection();
+        return MusicBrainzDB.getInstance();
     }
 
     private PreparedStatement termQuery() throws SQLException {

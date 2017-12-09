@@ -21,7 +21,7 @@ public class Aggregator {
     }
 
     Connection getConnection() {
-        return MusicBrainzDB.getConnection();
+        return MusicBrainzDB.getInstance();
     }
 
     int getTotalRows() throws SQLException {

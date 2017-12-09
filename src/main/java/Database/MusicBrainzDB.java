@@ -9,38 +9,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
-public class MusicBrainzDB {
+public class MusicBrainzDB extends DBConnection {
+    private static final String URL = "jdbc:postgresql:musicbrainz";
 
     @Nullable
     private static MusicBrainzDB musicBrainzDB;
 
-    @Getter
-    private Connection connection;
-
     private MusicBrainzDB() {
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Driver could not be loaded.");
-        }
-
-        String url = "jdbc:postgresql:";
-        Properties properties = new Properties();
-        properties.setProperty("user", "musicbrainz");
-        properties.setProperty("password", "musicbrainz");
-
-        try {
-            connection = DriverManager.getConnection(url, properties);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        super(URL);
     }
 
-    public static Connection getConnection() {
+    public static Connection getInstance() {
         if (musicBrainzDB == null) {
             musicBrainzDB = new MusicBrainzDB();
         }
-        return musicBrainzDB.connection;
+        return musicBrainzDB.getConnection();
     }
 
     /**
@@ -48,7 +31,7 @@ public class MusicBrainzDB {
      * @param args no args.
      */
     public static void main(String[] args) throws SQLException {
-        Connection conn = MusicBrainzDB.getConnection();
+        Connection conn = MusicBrainzDB.getInstance();
         ResultSet rs = conn.createStatement().executeQuery("SELECT name FROM work WHERE work.id = 357993");
 
         while (rs.next()) {

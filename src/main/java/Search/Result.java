@@ -24,7 +24,7 @@ public class Result {
     private final List<Work> orderedWorkList = new ArrayList<>();
 
     private Connection getConnection() {
-        return MusicBrainzDB.getConnection();
+        return MusicBrainzDB.getInstance();
     }
 
     Work getWork(String gid, int length) {

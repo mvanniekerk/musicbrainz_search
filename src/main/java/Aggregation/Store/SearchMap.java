@@ -37,7 +37,7 @@ public class SearchMap {
     }
 
     private void retrieveTerm(String term) throws SQLException {
-        Connection conn = MusicBrainzDB.getConnection();
+        Connection conn = MusicBrainzDB.getInstance();
 
         PreparedStatement ps = conn.prepareStatement(
             "SELECT terms.freq, documents.gid, \n" +

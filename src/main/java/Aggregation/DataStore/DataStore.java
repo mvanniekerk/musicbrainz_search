@@ -17,7 +17,7 @@ public abstract class DataStore {
     }
 
     Connection getConnection() {
-        return MusicBrainzDB.getConnection();
+        return MusicBrainzDB.getInstance();
     }
 
     ResultSet executePreparedStatement(PreparedStatement pstmt) throws SQLException {
