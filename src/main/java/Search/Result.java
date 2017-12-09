@@ -107,4 +107,12 @@ public class Result {
 
         return serializer.writeAsString(orderedWorkList.subList(start, end));
     }
+
+    public static void main(String[] args) throws SQLException {
+        Result result = new Result();
+        result.retrieveQuery("brubeck take five");
+        result.calcTfIdf();
+        result.tfIdfOrderedWorkList();
+        System.out.println(result.orderedWorkListAsJson(0, 20));
+    }
 }

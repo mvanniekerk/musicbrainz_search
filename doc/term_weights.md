@@ -34,3 +34,32 @@ ALTER SEQUENCE terms_id_seq RESTART WITH 1;
 
 For the table, I gave every term 50 characters. This was not enough for one work name (which is also probably an error in the catalog): Preludeprologueanarchitectsdreamthepainterslinksunsetaerialtalsomewhereinbetweennocturnaerial by Kate Bush. 
 For this special case, I decided to just cut to the maximal length of the string, 50 characters.
+
+### database schema creation
+```sql
+CREATE DATABASE search;
+```
+
+```sql
+CREATE TABLE terms
+(
+  id SERIAL PRIMARY KEY,
+  term VARCHAR(50) NOT NULL,
+  freq INTEGER NOT NULL
+);
+
+CREATE TABLE documents
+(
+  id SERIAL PRIMARY KEY,
+  gid uuid NOT NULL,
+  length INTEGER NOT NULL
+);
+
+CREATE TABLE terms_documents
+(
+  term_id INTEGER REFERENCES terms(id),
+  document_id INTEGER REFERENCES documents(id),
+  freq INTEGER NOT NULL,
+  type SMALLINT
+);
+```

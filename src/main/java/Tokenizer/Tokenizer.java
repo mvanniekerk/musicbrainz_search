@@ -4,6 +4,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
 import lombok.AllArgsConstructor;
 
 import java.text.Normalizer;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,11 +19,23 @@ public class Tokenizer {
     }
 
     public static String[] tokenize(String string) {
-        // match any character that is not lowercase ascii, a number or '
         if (string.isEmpty()) {
             return new String[0];
         }
-        return lemmatize(string).split("[^a-z|'|0-9]+");
+
+        String lemmatized = lemmatize(string);
+        String[] result = lemmatized.split("[^a-z|'|0-9]+");
+        return stripBadResult(result);
+    }
+
+    private static String[] stripBadResult(String[] result) {
+        if (result.length == 0) {
+            return result;
+        } else if (result[0].equals("")) {
+            return Arrays.copyOfRange(result, 1, result.length);
+        } else {
+            return result;
+        }
     }
 
     static String lemmatize(String string) {
@@ -33,11 +46,15 @@ public class Tokenizer {
         StringBuilder sb = new StringBuilder(string.length());
         string = Normalizer.normalize(string, Normalizer.Form.NFKD);
         for (char c : string.toCharArray()) {
-            if (c <= '\u007F') sb.append(c);
-            else if (strangeCharMap.containsKey(c)) {
+            // remove all unicode characters and modifiers.
+            if (c <= '\u007F') {
+                sb.append(c);
+            // transform some unicode characters to ascii
+            } else if (strangeCharMap.containsKey(c)) {
                 sb.append(strangeCharMap.get(c));
+            } else if (Character.isLetter(c)) {
+                sb.append(c);
             }
-            else if (Character.isLetter(c)) sb.append(c);
         }
         return sb.toString();
     }

@@ -69,4 +69,27 @@ public class tokenizerTest {
     void emptyTest() {
         assertThat(Tokenizer.tokenize("")).isEqualTo(new String[0]);
     }
+
+    @Test
+    void leadingWhiteSpace() {
+        String[] result = {"suite"};
+        assertThat(Tokenizer.tokenize(" Suite")).isEqualTo(result);
+    }
+
+    @Test
+    void leadingWhiteChar() {
+        String[] result = {"suite"};
+        assertThat(Tokenizer.tokenize(", Suite")).isEqualTo(result);
+    }
+
+    @Test
+    void allIgnorable() {
+        assertThat(Tokenizer.tokenize(", ")).isEqualTo(new String[0]);
+    }
+
+    @Test
+    void endingWhiteSpace() {
+        String[] result = {"suite"};
+        assertThat(Tokenizer.tokenize("   ,     Suite    ,   ")).isEqualTo(result);
+    }
 }
