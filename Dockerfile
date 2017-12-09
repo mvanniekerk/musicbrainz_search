@@ -5,6 +5,7 @@ RUN apt-get update
 RUN apt-get install -y maven
 
 WORKDIR /code
+CMD dockerize -wait tcp://db:5432 -timeout 60s
 
 # Prepare by downloading dependencies
 ADD pom.xml /code/pom.xml
