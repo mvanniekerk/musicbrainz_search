@@ -1,9 +1,14 @@
 package Search;
 
+import Database.SearchDB;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +22,8 @@ public class Work implements Comparable<Work> {
     @Getter
     private final int length;
 
+    private int id;
+
     @Getter
     private double tfIdf = 0;
 
@@ -24,7 +31,18 @@ public class Work implements Comparable<Work> {
     @Getter
     private final Map<Term, Integer> terms = new HashMap<>();
 
-    void addTermCount(Term term, Integer count) {
+
+    public Work(String gid, int length) {
+        this.gid = gid;
+        this.length = length;
+    }
+
+
+    Connection getConnection() {
+        return SearchDB.getInstance();
+    }
+
+    public void addTermCount(Term term, Integer count) {
         assert count != 0;
         if (terms.containsKey(term)) {
             int oldCount = terms.get(term);
@@ -32,11 +50,6 @@ public class Work implements Comparable<Work> {
         } else {
             terms.put(term, count);
         }
-    }
-
-    Work(String gid, int length) {
-        this.gid = gid;
-        this.length = length;
     }
 
     void calculateTfIdf() {
@@ -61,5 +74,34 @@ public class Work implements Comparable<Work> {
             return numTerms;
         }
         return Double.compare(other.tfIdf, this.tfIdf);
+    }
+
+
+    private PreparedStatement documentQuery() throws SQLException {
+        Connection conn = getConnection();
+        return conn.prepareStatement(
+                "INSERT INTO documents (gid, length)\n" +
+                        "VALUES (?::uuid, ?)\n" +
+                        "ON CONFLICT (gid) DO UPDATE SET length = documents.length + ?\n" +
+                        "RETURNING id"
+        );
+    }
+
+    public void store() throws SQLException {
+        int size = terms.size();
+        PreparedStatement docQuery = documentQuery();
+        docQuery.setString(1, gid);
+        docQuery.setInt(2, size);
+        docQuery.setInt(3, size);
+
+        ResultSet docResult = docQuery.executeQuery();
+        docResult.next();
+        id = docResult.getInt(1);
+    }
+
+    public void storeTerms() throws SQLException {
+        for (Map.Entry<Term, Integer> entry : terms.entrySet()) {
+            entry.getKey().store(id,  entry.getValue());
+        }
     }
 }

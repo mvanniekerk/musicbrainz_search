@@ -18,7 +18,7 @@ public class DataTypeTest {
 
     @Test
     void emptyWorkTest() {
-        byte[] result = new Work("").jsonSearchRepr();
+        byte[] result = new MBWork("").jsonSearchRepr();
 
         assertThat(decode(result)).isEqualTo("{\"artists\":[],\"composers\":[],\"names\":[]}");
     }

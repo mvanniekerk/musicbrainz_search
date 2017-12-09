@@ -2,7 +2,8 @@ package Aggregation.DataStore;
 
 import Aggregation.Store.ResultType;
 import Aggregation.Store.SearchMap;
-import Aggregation.dataType.Work;
+import Aggregation.dataType.MBWork;
+import Search.Work;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,9 +14,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class WorkStore extends DataStore implements Iterable<Work> {
+public class WorkStore extends DataStore implements Iterable<MBWork> {
 
-    private final Map<String, Work> works;
+    private final Map<String, MBWork> works;
 
     public WorkStore(int lowerID, int higherID) {
         super(lowerID, higherID);
@@ -79,7 +80,7 @@ public class WorkStore extends DataStore implements Iterable<Work> {
         while (resultSet.next()) {
             String gid = resultSet.getString("gid");
             assert gid != null;
-            Work work = find(gid);
+            MBWork work = find(gid);
             String name = resultSet.getString("name");
             if (name != null) {
                 work.addName(name);
@@ -91,7 +92,7 @@ public class WorkStore extends DataStore implements Iterable<Work> {
         while (resultSet.next()) {
             String gid = resultSet.getString("gid");
             assert gid != null;
-            Work work = find(gid);
+            MBWork work = find(gid);
             String artist = resultSet.getString("name");
             if (artist != null) {
                 work.addArtist(artist);
@@ -103,7 +104,7 @@ public class WorkStore extends DataStore implements Iterable<Work> {
         while (resultSet.next()) {
             String gid = resultSet.getString("gid");
             assert gid != null;
-            Work work = find(gid);
+            MBWork work = find(gid);
             String composer = resultSet.getString("name");
             if (composer != null) {
                 work.addComposer(composer);
@@ -128,11 +129,11 @@ public class WorkStore extends DataStore implements Iterable<Work> {
         populateComposers(composers);
     }
 
-    private Work find(String gid) {
-        Work result = works.get(gid);
+    private MBWork find(String gid) {
+        MBWork result = works.get(gid);
 
         if (result == null) {
-            result = new Work(gid);
+            result = new MBWork(gid);
             works.put(gid, result);
         }
 
@@ -140,30 +141,35 @@ public class WorkStore extends DataStore implements Iterable<Work> {
     }
 
     public void populateSearchMap(SearchMap searchMap) {
-        for (Work work : works.values()) {
+        for (MBWork work : works.values()) {
             Collection<String> artists = work.getArtistTokens();
             Collection<String> composers = work.getComposerTokens();
             Collection<String> names = work.getNameTokens();
 
-            String gid = work.getGid();
-
             for (String artist : artists) {
-                searchMap.add(artist, gid, ResultType.WORK_ARTIST);
+                searchMap.add(artist, work, ResultType.WORK_ARTIST);
             }
 
             for (String composer : composers) {
-                searchMap.add(composer, gid, ResultType.WORK_COMPOSER);
+                searchMap.add(composer, work, ResultType.WORK_COMPOSER);
             }
 
             for (String name : names) {
-                searchMap.add(name, gid, ResultType.WORK_NAME);
+                searchMap.add(name, work, ResultType.WORK_NAME);
             }
         }
+    }
 
+    public void store() throws SQLException {
+        for (MBWork mbWork : works.values()) {
+            Work work = mbWork.toSearchWork();
+            work.store();
+            work.storeTerms();
+        }
     }
 
     @Override
-    public Iterator<Work> iterator() {
+    public Iterator<MBWork> iterator() {
         return works.values().iterator();
     }
 }

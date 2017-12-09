@@ -1,8 +1,8 @@
 package Aggregation.Store;
 
-import Database.MusicBrainzDB;
 import Aggregation.dataType.DataType;
-import Aggregation.dataType.Work;
+import Aggregation.dataType.MBWork;
+import Database.SearchDB;
 import lombok.Getter;
 import lombok.ToString;
 import org.postgresql.util.PSQLException;
@@ -22,15 +22,14 @@ public class TypedSearchResult implements SearchResult {
 
     @Getter
     private final String term;
-    @Getter
-    private int frequency;
+
+    private int termID;
 
     TypedSearchResult(String term) {
         this.term = term;
     }
 
-    public void add(String gid, ResultType type) {
-        Work work = new Work(gid);
+    public void add(MBWork work, ResultType type) {
         switch (type) {
             case WORK_ARTIST:
                 work_artist.add(work); break;
@@ -41,22 +40,33 @@ public class TypedSearchResult implements SearchResult {
         }
     }
 
-    public void add(Work work, ResultType type) {
-        add(work.getGid(), type);
-    }
-
     Connection getConnection() {
-        return MusicBrainzDB.getInstance();
+        return SearchDB.getInstance();
     }
 
     private PreparedStatement termQuery() throws SQLException {
         Connection conn = getConnection();
         return conn.prepareStatement(
         "INSERT INTO terms (term, freq)\n" +
-            "VALUES (?, 1)\n" +
-            "ON CONFLICT (term) DO UPDATE SET freq = terms.freq + 1\n" +
+            "VALUES (?, ?)\n" +
+            "ON CONFLICT (term) DO UPDATE SET freq = terms.freq + ?\n" +
             "RETURNING id"
         );
+    }
+
+    private void storeTerm() throws SQLException {
+        PreparedStatement termQuery = termQuery();
+        termQuery.setString(1, getTerm());
+        int size = size();
+        termQuery.setInt(2, size);
+        termQuery.setInt(3, size);
+        try {
+            ResultSet termResult = termQuery.executeQuery();
+            termResult.next();
+            termID = termResult.getInt(1);
+        } catch (PSQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private PreparedStatement documentQuery() throws SQLException {
@@ -80,17 +90,7 @@ public class TypedSearchResult implements SearchResult {
 
     private void executeQuery(List<DataType> documents, ResultType resultType) throws SQLException {
         for (DataType dataType : documents) {
-            PreparedStatement termQuery = termQuery();
-            termQuery.setString(1, getTerm());
-            int termID;
-            try {
-                ResultSet termResult = termQuery.executeQuery();
-                termResult.next();
-                termID = termResult.getInt(1);
-            } catch (PSQLException e) {
-                e.printStackTrace();
-                return;
-            }
+
             PreparedStatement documentQuery = documentQuery();
             documentQuery.setObject(1, dataType.getGid());
             ResultSet docResult = documentQuery.executeQuery();
@@ -111,7 +111,7 @@ public class TypedSearchResult implements SearchResult {
         executeQuery(work_name, ResultType.WORK_NAME);
     }
 
-    public int getResultSize() {
+    int size() {
         return work_artist.size() + work_composer.size() + work_name.size();
     }
 }

@@ -1,6 +1,6 @@
 package Search;
 
-import Database.MusicBrainzDB;
+import Database.SearchDB;
 import Tokenizer.Tokenizer;
 import jsonSerializer.JacksonSerializer;
 import jsonSerializer.JsonSerializer;
@@ -24,7 +24,7 @@ public class Result {
     private final List<Work> orderedWorkList = new ArrayList<>();
 
     private Connection getConnection() {
-        return MusicBrainzDB.getInstance();
+        return SearchDB.getInstance();
     }
 
     Work getWork(String gid, int length) {

@@ -50,11 +50,7 @@ public class Aggregator {
     void aggregate(int from, int to) throws SQLException {
         WorkStore works = new WorkStore(from, to);
         works.aggregateFromDB();
-
-        works.populateSearchMap(searchMap);
-
-        searchMap.store();
-        searchMap.empty();
+        works.store();
     }
 
     void aggregateWithTime(int from, int to) throws SQLException {
@@ -72,6 +68,6 @@ public class Aggregator {
 
     public static void main(String[] args) throws SQLException {
         Aggregator aggregator = new Aggregator(50000, 12500000);
-        aggregator.aggregateAll();
+        aggregator.aggregateWithTime(12832611, 12832612);
     }
 }

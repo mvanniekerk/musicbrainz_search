@@ -44,22 +44,23 @@ CREATE DATABASE search;
 CREATE TABLE terms
 (
   id SERIAL PRIMARY KEY,
-  term VARCHAR(50) NOT NULL,
+  term CHAR(50) UNIQUE NOT NULL,
   freq INTEGER NOT NULL
 );
 
 CREATE TABLE documents
 (
   id SERIAL PRIMARY KEY,
-  gid uuid NOT NULL,
+  gid uuid UNIQUE NOT NULL,
   length INTEGER NOT NULL
 );
 
-CREATE TABLE terms_documents
+CREATE TABLE documents_terms
 (
   term_id INTEGER REFERENCES terms(id),
   document_id INTEGER REFERENCES documents(id),
   freq INTEGER NOT NULL,
-  type SMALLINT
+  type SMALLINT,
+  PRIMARY KEY (term_id, document_id, type)
 );
 ```

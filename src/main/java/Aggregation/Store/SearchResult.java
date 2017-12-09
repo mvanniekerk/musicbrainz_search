@@ -1,12 +1,10 @@
 package Aggregation.Store;
 
-import Aggregation.dataType.Work;
+import Aggregation.dataType.MBWork;
 
 import java.sql.SQLException;
 
 public interface SearchResult {
-    void add(String gid, ResultType type);
-    void add(Work work, ResultType resultType);
+    void add(MBWork work, ResultType resultType);
     void store() throws SQLException;
-    int getResultSize();
 }
