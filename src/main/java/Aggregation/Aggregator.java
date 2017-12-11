@@ -68,6 +68,6 @@ public class Aggregator {
 
     public static void main(String[] args) throws SQLException {
         Aggregator aggregator = new Aggregator(50000, 12500000);
-        aggregator.aggregateWithTime(12832611, 12832612);
+        aggregator.aggregateAll();
     }
 }

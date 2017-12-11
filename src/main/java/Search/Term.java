@@ -44,6 +44,9 @@ public class Term {
     }
 
     public void store(int work_id, int frequency) throws SQLException {
+        if (term.length() > 50) {
+            return;
+        }
         PreparedStatement query = termQuery();
         query.setString(1, term);
         query.setInt(2, frequency);

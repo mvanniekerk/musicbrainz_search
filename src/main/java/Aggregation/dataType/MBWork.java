@@ -60,7 +60,6 @@ public class MBWork extends DataType {
         List<String> terms = new ArrayList<>(getComposerTokens());
         terms.addAll(getNameTokens());
         terms.addAll(getArtistTokens());
-        System.out.println(terms);
         Work work = new Work(gid, terms.size());
         for (String term : terms) {
             work.addTermCount(new Term(1, term), 1);

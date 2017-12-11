@@ -88,7 +88,7 @@ public class Work implements Comparable<Work> {
     }
 
     public void store() throws SQLException {
-        int size = terms.size();
+        int size = length;
         PreparedStatement docQuery = documentQuery();
         docQuery.setString(1, gid);
         docQuery.setInt(2, size);
