@@ -100,8 +100,11 @@ public class Work implements Comparable<Work> {
     }
 
     public void storeTerms() throws SQLException {
+        getConnection().setAutoCommit(false);
         for (Map.Entry<Term, Integer> entry : terms.entrySet()) {
             entry.getKey().store(id,  entry.getValue());
         }
+        getConnection().commit();
+        getConnection().setAutoCommit(true);
     }
 }

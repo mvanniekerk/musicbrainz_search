@@ -11,10 +11,10 @@ import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class IntegrationTest {
+class SearchInsertionTest {
     private SearchTestDB searchTestDB;
     private WorkTest work;
-    public static final int length = 200;
+    private static final int length = 1000;
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -66,7 +66,6 @@ class IntegrationTest {
     }
 
     private void insert() throws SQLException {
-        // insert
         long startTime = System.currentTimeMillis();
         work.store();
         work.storeTerms();
@@ -77,20 +76,6 @@ class IntegrationTest {
 
         System.out.println("done insert. took " + duration + " ms");
     }
-
-    private void update() throws SQLException {
-
-        long startTime = System.currentTimeMillis();
-        work.store();
-        work.storeTerms();
-
-        long endTime = System.currentTimeMillis();
-
-        long duration = endTime - startTime;
-
-        System.out.println("done update. took " + duration + " ms");
-    }
-
 
     private class WorkTest extends Work {
 
