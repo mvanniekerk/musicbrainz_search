@@ -27,6 +27,4 @@ class DBConnection {
             throw new RuntimeException(e);
         }
     }
-
-
 }

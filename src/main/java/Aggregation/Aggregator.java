@@ -1,7 +1,6 @@
 package Aggregation;
 
 import Aggregation.DataStore.WorkStore;
-import Aggregation.Store.SearchMap;
 import Database.MusicBrainzDB;
 
 import java.sql.Connection;
@@ -12,12 +11,10 @@ import java.sql.SQLException;
 public class Aggregator {
     private final int stepSize;
     private final int start;
-    private final SearchMap searchMap;
 
     public Aggregator(int stepSize, int start) {
         this.stepSize = stepSize;
         this.start = start;
-        searchMap = new SearchMap();
     }
 
     Connection getConnection() {
