@@ -1,7 +1,5 @@
 package Aggregation.DataStore;
 
-import Aggregation.Store.ResultType;
-import Aggregation.Store.SearchMap;
 import Aggregation.dataType.MBWork;
 import Search.Work;
 
@@ -138,26 +136,6 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
         }
 
         return result;
-    }
-
-    public void populateSearchMap(SearchMap searchMap) {
-        for (MBWork work : works.values()) {
-            Collection<String> artists = work.getArtistTokens();
-            Collection<String> composers = work.getComposerTokens();
-            Collection<String> names = work.getNameTokens();
-
-            for (String artist : artists) {
-                searchMap.add(artist, work, ResultType.WORK_ARTIST);
-            }
-
-            for (String composer : composers) {
-                searchMap.add(composer, work, ResultType.WORK_COMPOSER);
-            }
-
-            for (String name : names) {
-                searchMap.add(name, work, ResultType.WORK_NAME);
-            }
-        }
     }
 
     public void store() throws SQLException {
