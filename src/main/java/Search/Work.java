@@ -27,6 +27,8 @@ public class Work implements Comparable<Work> {
     private int id;
     @Nullable
     private String name;
+    @Nullable
+    private String composer;
 
     @Getter
     private double tfIdf = 0;
@@ -66,6 +68,31 @@ public class Work implements Comparable<Work> {
         }
     }
 
+    public void retrieveWorkArtist() throws SQLException {
+        PreparedStatement ps = getMBConnection().prepareStatement(
+                "SELECT link_type.name, artist.name\n" +
+                        "FROM work\n" +
+                        "  JOIN l_artist_work ON entity1=work.id\n" +
+                        "  JOIN artist ON entity0=artist.id\n" +
+                        "  JOIN link ON l_artist_work.link=link.id\n" +
+                        "  JOIN link_type ON link.link_type=link_type.id\n" +
+                        "WHERE work.gid = ?::uuid"
+        );
+        ps.setString(1, gid);
+        ResultSet rs = ps.executeQuery();
+        StringBuilder result = new StringBuilder();
+
+        while (rs.next()) {
+            if (result.length() > 0) {
+                result.append(", ");
+            }
+            result.append(rs.getString(1))
+                    .append(": ")
+                    .append(rs.getString(2));
+        }
+        composer = result.toString();
+    }
+
     public void addTermCount(Term term, Integer count) {
         assert count != 0;
         if (terms.containsKey(term)) {
@@ -80,7 +107,7 @@ public class Work implements Comparable<Work> {
         double result = 0;
         assert length > 0 : "Length should be a natural number";
         for (Map.Entry<Term, Integer> termCount : terms.entrySet()) {
-            double tf = (double) termCount.getValue() / Math.log10(10 + length);
+            double tf = (double) termCount.getValue() / Math.log10(10 + length); // length is the work length
             assert termCount.getValue() > 0 : "Term count should be a natural number";
             int count = termCount.getKey().getFrequency();
             assert count > 0 : "Term count (in work) should be a natural number";
