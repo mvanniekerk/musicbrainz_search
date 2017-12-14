@@ -1,9 +1,11 @@
 package Search;
 
+import Database.MusicBrainzDB;
 import Database.SearchDB;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,6 +25,8 @@ public class Work implements Comparable<Work> {
     private final int length;
 
     private int id;
+    @Nullable
+    private String name;
 
     @Getter
     private double tfIdf = 0;
@@ -38,8 +42,28 @@ public class Work implements Comparable<Work> {
     }
 
 
-    Connection getConnection() {
+    Connection getSearchConnection() {
         return SearchDB.getInstance();
+    }
+
+    Connection getMBConnection() {
+        return MusicBrainzDB.getInstance();
+    }
+
+    public void retrieveWorkName() throws SQLException {
+        PreparedStatement ps = getMBConnection().prepareStatement(
+                "SELECT name, comment FROM work\n" +
+                        "WHERE gid=?::uuid"
+        );
+        ps.setString(1, gid);
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+
+        name = rs.getString(1);
+        String comment = rs.getString(2);
+        if (!(comment == null || comment.equals(""))) {
+            name += ", " + comment;
+        }
     }
 
     public void addTermCount(Term term, Integer count) {
@@ -78,7 +102,7 @@ public class Work implements Comparable<Work> {
 
 
     private PreparedStatement documentQuery() throws SQLException {
-        Connection conn = getConnection();
+        Connection conn = getSearchConnection();
         return conn.prepareStatement(
                 "INSERT INTO documents (gid, length)\n" +
                         "VALUES (?::uuid, ?)\n" +
@@ -100,11 +124,11 @@ public class Work implements Comparable<Work> {
     }
 
     public void storeTerms() throws SQLException {
-        getConnection().setAutoCommit(false);
+        getSearchConnection().setAutoCommit(false);
         for (Map.Entry<Term, Integer> entry : terms.entrySet()) {
             entry.getKey().store(id,  entry.getValue());
         }
-        getConnection().commit();
-        getConnection().setAutoCommit(true);
+        getSearchConnection().commit();
+        getSearchConnection().setAutoCommit(true);
     }
 }

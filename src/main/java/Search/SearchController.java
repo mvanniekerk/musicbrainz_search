@@ -8,13 +8,17 @@ public class SearchController {
             res.header("Content-Encoding", "gzip");
             res.type("application/json");
 
+            int start = 0;
+            int end = 20;
+
             //int start = Integer.valueOf(req.params(":n"));
 
             Result result = new Result();
             result.retrieveQuery(req.params(":query"));
             result.calcTfIdf();
             result.tfIdfOrderedWorkList();
-            return result.orderedWorkListAsJson(0, 20);
+            result.getNames(start, end);
+            return result.orderedWorkListAsJson(start, end);
         });
     }
 }

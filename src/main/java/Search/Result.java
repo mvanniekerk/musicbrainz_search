@@ -102,6 +102,12 @@ public class Result {
         }
     }
 
+    public void getNames(int start, int end) throws SQLException {
+        for (Work work : orderedWorkList.subList(start, end)) {
+            work.retrieveWorkName();
+        }
+    }
+
     public String orderedWorkListAsJson(int start, int end) {
         JsonSerializer serializer = JacksonSerializer.getInstance();
 

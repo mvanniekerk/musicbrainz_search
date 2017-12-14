@@ -84,7 +84,7 @@ class SearchInsertionTest {
         }
 
         @Override
-        Connection getConnection() {
+        Connection getSearchConnection() {
             return searchTestDB.getConnection();
         }
     }
