@@ -2,6 +2,7 @@ package Search;
 
 import Database.MusicBrainzDB;
 import Database.SearchDB;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -23,8 +24,10 @@ public class Work implements Comparable<Work> {
     private final String gid;
     @Getter
     private final int length;
-
+    @JsonIgnore
     private int id;
+
+
     @Nullable
     private String name;
     @Nullable

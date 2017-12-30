@@ -20,6 +20,16 @@ type alias Model =
 
 type alias Work =
     { gid : String
+    , length : Int
+    , name : String
+    , composer : String
+    , tfIdf : Float
+    , terms : List (String, Int)
+    }
+
+type alias Term =
+    { something : String
+    , freq : Int
     }
 
 init : (Model, Cmd Msg)
@@ -41,12 +51,6 @@ update msg model =
         New (Ok newWorks) ->
             ( { model | works = newWorks }, Cmd.none)
 
-        New (Err Http.NetworkError) ->
-            ( { model | query = "networkError" }, Cmd.none)
-
-        New (Err (Http.BadStatus resp)) ->
-            ( { model | query = resp.url}, Cmd.none )
-
         New (Err _) ->
             (model, Cmd.none)
 
@@ -63,7 +67,18 @@ getWorks query =
 
 decodeResult : Decode.Decoder (List Work)
 decodeResult =
-    Decode.list (Decode.map Work (Decode.field "gid" Decode.string))
+    Decode.list decodeWork
+
+
+decodeWork : Decode.Decoder Work
+decodeWork =
+    Decode.map6 Work
+        (Decode.field "gid" Decode.string)
+        (Decode.field "length" Decode.int)
+        (Decode.field "name" Decode.string)
+        (Decode.field "composer" Decode.string)
+        (Decode.field "tfIdf" Decode.float)
+        (Decode.field "terms" (Decode.keyValuePairs Decode.int))
 
 -- VIEW
 
