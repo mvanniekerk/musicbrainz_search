@@ -1,9 +1,17 @@
 package Search;
 
 import static spark.Spark.get;
+import static spark.Spark.staticFileLocation;
+import static spark.Spark.staticFiles;
 
 public class SearchController {
     public static void main(String[] args) {
+        //staticFileLocation("/public");
+        // a little hack that auto reloads the static files when they are changed. In production just use
+        // staticFileLocation
+        staticFiles.externalLocation(System.getProperty("user.dir") + "/src/main/resources/public");
+
+
         get("/api/:query/:page", (req, res) -> {
             res.header("Content-Encoding", "gzip");
             res.type("application/json");

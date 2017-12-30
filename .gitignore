@@ -3,3 +3,4 @@
 *.iml
 target
 elm-stuff
+src/main/resources/public/index.html
