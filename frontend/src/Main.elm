@@ -1,5 +1,5 @@
 import Html exposing (..)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onInput)
 import Http
 import Json.Decode as Decode
 
@@ -15,6 +15,7 @@ main = program
 
 type alias Model =
     { query : String
+    , message : String
     , works : List Work
     }
 
@@ -34,13 +35,14 @@ type alias Term =
 
 init : (Model, Cmd Msg)
 init =
-    (Model "hello" [], Cmd.none)
+    (Model "" "" [], Cmd.none)
 
 -- UPDATE
 
 type Msg
     = Search
     | New (Result Http.Error (List Work))
+    | Query String
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -48,8 +50,22 @@ update msg model =
         Search ->
             (model, getWorks model.query)
 
+        Query str ->
+            ( { model | query = str }, Cmd.none)
+
         New (Ok newWorks) ->
             ( { model | works = newWorks }, Cmd.none)
+
+        New (Err (Http.BadStatus resp)) ->
+            let
+                code = resp.status.code
+                msg = case code of
+                    500 ->
+                        "Search server gave status code 500. This probably means that the database is not running."
+                    _  ->
+                        "Something went wrong, status code " ++ (toString code)
+            in
+                ( { model | message =  msg }, Cmd.none )
 
         New (Err _) ->
             (model, Cmd.none)
@@ -86,6 +102,7 @@ view : Model -> Html Msg
 view model =
     div []
         [ button [ onClick Search ] [ text "Search" ]
-        , text model.query
+        , div [] [text model.message]
+        , input [ onInput Query ] []
         , div [] (List.map (\w -> w.gid |> text) model.works)
         ]
