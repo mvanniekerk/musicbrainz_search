@@ -1,7 +1,9 @@
 import Html exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Html.Attributes exposing (href, attribute)
 import Http
 import Json.Decode as Decode
+import Tuple exposing (first)
 
 main : Program Never Model Msg
 main = program
@@ -101,8 +103,17 @@ decodeWork =
 view : Model -> Html Msg
 view model =
     div []
-        [ button [ onClick Search ] [ text "Search" ]
-        , div [] [text model.message]
+        [ div [] [text model.message]
         , input [ onInput Query ] []
-        , div [] (List.map (\w -> w.gid |> text) model.works)
+        , button [ onClick Search ] [ text "Search" ]
+        , div [] (List.map workView model.works)
+        ]
+
+
+workView : Work -> Html Msg
+workView work =
+    div [ attribute "class" "work" ]
+        [ a [ href ("https://musicbrainz.org/work/" ++ work.gid) ] [ text work.name ]
+        , p [] [ text work.composer ]
+        , p [] (List.map (\t -> text ((first t) ++ ", ")) work.terms)
         ]
