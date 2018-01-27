@@ -32,9 +32,9 @@ public class Artist extends DataType {
     }
 
     @Override
-    public byte[] jsonSearchRepr() {
+    public String jsonSearchRepr() {
         JsonSerializer serializer = JacksonSerializer.getInstance();
 
-        return serializer.writeAsBytes(this);
+        return serializer.writeAsString(this);
     }
 }

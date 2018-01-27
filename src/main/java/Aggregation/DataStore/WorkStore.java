@@ -3,6 +3,8 @@ package Aggregation.DataStore;
 import Aggregation.dataType.MBWork;
 import Search.Work;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -149,5 +151,26 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
     @Override
     public Iterator<MBWork> iterator() {
         return works.values().iterator();
+    }
+
+
+    public static void main(String[] args) throws Exception {
+        WorkStore works = new WorkStore(0, 10000);
+        works.aggregateFromDB();
+
+        StringBuilder out = new StringBuilder();
+        int i = 1;
+        for (MBWork work : works) {
+            out.append("{\"index\":{\"_id\":\"")
+                    .append(i)
+                    .append("\"}}\n")
+                    .append(new String(work.jsonSearchRepr()))
+                    .append("\n");
+            i++;
+        }
+        String outString = out.toString();
+        BufferedWriter writer = new BufferedWriter(new FileWriter("out.json", true));
+        writer.write(outString);
+        writer.close();
     }
 }
