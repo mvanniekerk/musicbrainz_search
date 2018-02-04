@@ -11,16 +11,16 @@ public class DataTypeTest {
 
     @Test
     void emptyArtistTest() {
-        byte[] result = new Artist("").jsonSearchRepr();
+        String result = new Artist("").jsonSearchRepr();
 
-        assertThat(decode(result)).isEqualTo("{\"names\":[]}");
+        assertThat(result).isEqualTo("{\"names\":[]}");
     }
 
     @Test
     void emptyWorkTest() {
-        byte[] result = new MBWork("").jsonSearchRepr();
+        String result = new MBWork("").jsonSearchRepr();
 
-        assertThat(decode(result)).isEqualTo("{\"artists\":[],\"composers\":[],\"names\":[]}");
+        assertThat(result).isEqualTo("{\"artists\":[],\"composers\":[],\"names\":[]}");
     }
 
     @Test
@@ -28,15 +28,6 @@ public class DataTypeTest {
         Artist artist = new Artist("");
         artist.addName("you");
 
-        assertThat(decode(artist.jsonSearchRepr())).isEqualTo("{\"names\":[\"you\"]}");
-    }
-
-    private String decode(byte[] inp) {
-        try {
-            return new String(inp, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            fail(e.getMessage());
-            return ""; // why is this even necessary?
-        }
+        assertThat(artist.jsonSearchRepr()).isEqualTo("{\"names\":[\"you\"]}");
     }
 }

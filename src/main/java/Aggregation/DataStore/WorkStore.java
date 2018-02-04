@@ -1,10 +1,12 @@
 package Aggregation.DataStore;
 
 import Aggregation.dataType.MBWork;
+import Database.ElasticConnection;
 import Search.Work;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -138,6 +140,17 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
         }
 
         return result;
+    }
+
+    public void elasticStore() {
+        ElasticConnection conn = ElasticConnection.getInstance();
+
+        for (MBWork work : works.values()) {
+            String json = work.jsonSearchRepr();
+            String gid = work.getGid();
+
+            conn.storeDocument(json, gid);
+        }
     }
 
     public void store() throws SQLException {

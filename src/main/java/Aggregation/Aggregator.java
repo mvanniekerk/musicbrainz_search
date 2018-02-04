@@ -47,7 +47,7 @@ public class Aggregator {
     void aggregate(int from, int to) throws SQLException {
         WorkStore works = new WorkStore(from, to);
         works.aggregateFromDB();
-        works.store();
+        works.elasticStore();
     }
 
     void aggregateWithTime(int from, int to) throws SQLException {
@@ -64,7 +64,7 @@ public class Aggregator {
     }
 
     public static void main(String[] args) throws SQLException {
-        Aggregator aggregator = new Aggregator(50000, 12500000);
+        Aggregator aggregator = new Aggregator(50000, 0);
         aggregator.aggregateAll();
     }
 }

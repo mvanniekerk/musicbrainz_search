@@ -83,10 +83,9 @@ public class ArtistStore extends DataStore implements Iterable<Artist> {
         artistStore.aggregateFromDB();
 
         for (Artist artist : artistStore) {
-            byte[] json = artist.jsonSearchRepr();
-            String jsonString = new String(json, "utf-8");
+            String json = artist.jsonSearchRepr();
 
-            System.out.println(jsonString);
+            System.out.println(json);
         }
     }
 }
