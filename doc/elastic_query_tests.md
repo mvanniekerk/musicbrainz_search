@@ -35,7 +35,7 @@ Using the lucene query string query
 						"query": "quintet",
 						"fields" : ["artists" , "composers" , "names"]
 					}
-				},
+				}
 			]
 		}
 	}
