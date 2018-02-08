@@ -49,4 +49,4 @@ Both queries give almost prefect results.
 - [x] Convert the musicbrainz SQL to searchable elasticsearch documents
 - [ ] Add the right primary title, primary composer to the elastic documents
 - [ ] Convert the elm frontend to make use of the new DSL
-- [ ] Write a new backend class to interface with the elastic server
+- [x] Write a new backend class to interface with the elastic server

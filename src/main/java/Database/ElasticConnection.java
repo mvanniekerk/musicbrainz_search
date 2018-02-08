@@ -2,6 +2,7 @@ package Database;
 
 import Aggregation.DataStore.WorkStore;
 import Aggregation.dataType.MBWork;
+import Tokenizer.Tokenizer;
 import org.apache.http.HttpHost;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.elasticsearch.action.ActionListener;
@@ -9,14 +10,21 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.QueryShardContext;
+import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 
 
 public class ElasticConnection {
@@ -33,6 +41,15 @@ public class ElasticConnection {
                         new HttpHost("192.168.99.100", 9200, "http")
                 )
         );
+    }
+
+    public void close() {
+        try {
+            client.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static ElasticConnection getInstance() {
@@ -55,20 +72,31 @@ public class ElasticConnection {
 
     }
 
-    public static void main(String[] args) throws Exception {
-        ElasticConnection conn = ElasticConnection.getInstance();
-        RestHighLevelClient client = conn.client;
+    public String search(String query) throws IOException {
 
-        WorkStore works = new WorkStore(10000, 20000);
-        works.aggregateFromDB();
+        String queryString = String.join(" AND ", Tokenizer.tokenize(query));
 
-        for (MBWork work : works) {
-            String json = work.jsonSearchRepr();
-            String gid = work.getGid();
+        SearchRequest request = new SearchRequest(INDEX);
+        request.types(TYPE);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.query(
+                QueryBuilders.queryStringQuery(queryString)
+                        .field("artists")
+                        .field("composers")
+                        .field("names")
+        );
+        request.source(searchSourceBuilder);
 
-            conn.storeDocument(json, gid);
+        try {
+            return client.search(request).toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        System.out.println("ready");
-        //client.close();
+    }
+
+    public static void main(String[] args) throws Exception {
+        String response = ElasticConnection.getInstance().search("haydn");
+        System.out.println(response);
+        ElasticConnection.getInstance().close();
     }
 }

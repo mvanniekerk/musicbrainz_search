@@ -2,7 +2,9 @@ import Html exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Html.Attributes exposing (href, attribute)
 import Http
+import Debug
 import Json.Decode as Decode
+import Json.Encode as En
 import Tuple exposing (first)
 
 main : Program Never Model Msg
@@ -50,7 +52,7 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
         Search ->
-            (model, getWorks model.query)
+            ( model, getWorks model.query)
 
         Query str ->
             ( { model | query = str }, Cmd.none)
@@ -75,13 +77,44 @@ update msg model =
 getWorks : String -> Cmd Msg
 getWorks query =
     let
+        words : List String
+        words = String.split " " query
+
         url =
-            "/api/" ++ query ++ "/1"
+            "http://192.168.99.100:9200/musicbrainz/_search"
+
+        body = Http.jsonBody <| encodeQuery words
 
         request =
-            Http.get url decodeResult
+            Http.post url body decodeResult
     in
         Http.send New request
+
+
+
+encodeQuery : List String -> En.Value
+encodeQuery words =
+    let
+        query : String
+        query = String.join " AND " words
+
+        fields : En.Value
+        fields =
+            En.list
+                [(En.string "artists"),
+                (En.string "composers"),
+                (En.string "names")
+                ]
+
+    in
+        En.object [("query",
+            En.object [("query_string",
+                En.object [
+                    ("query", En.string query),
+                    ("fields", fields)
+                ]
+            )]
+        )]
 
 decodeResult : Decode.Decoder (List Work)
 decodeResult =
