@@ -86,6 +86,7 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
             String name = resultSet.getString("name");
             if (name != null) {
                 work.addName(name);
+                work.setName(name);
             }
         }
     }
@@ -129,6 +130,10 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
 
         ResultSet composers = executePreparedStatement(getComposer());
         populateComposers(composers);
+
+        for(MBWork work : works.values()) {
+            work.retrieveWorkArtist();
+        }
     }
 
     private MBWork find(String gid) {
@@ -166,24 +171,4 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
         return works.values().iterator();
     }
 
-
-    public static void main(String[] args) throws Exception {
-        WorkStore works = new WorkStore(0, 10000);
-        works.aggregateFromDB();
-
-        StringBuilder out = new StringBuilder();
-        int i = 1;
-        for (MBWork work : works) {
-            out.append("{\"index\":{\"_id\":\"")
-                    .append(i)
-                    .append("\"}}\n")
-                    .append(new String(work.jsonSearchRepr()))
-                    .append("\n");
-            i++;
-        }
-        String outString = out.toString();
-        BufferedWriter writer = new BufferedWriter(new FileWriter("out.json", true));
-        writer.write(outString);
-        writer.close();
-    }
 }

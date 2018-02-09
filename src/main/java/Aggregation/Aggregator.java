@@ -64,7 +64,7 @@ public class Aggregator {
     }
 
     public static void main(String[] args) throws SQLException {
-        Aggregator aggregator = new Aggregator(50000, 0);
+        Aggregator aggregator = new Aggregator(100000, 0);
         aggregator.aggregateAll();
     }
 }

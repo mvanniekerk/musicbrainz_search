@@ -1,5 +1,6 @@
 package Aggregation.dataType;
 
+import Database.MusicBrainzDB;
 import Search.Term;
 import Search.Work;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -7,8 +8,13 @@ import jsonSerializer.JacksonSerializer;
 import jsonSerializer.JsonSerializer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -20,6 +26,13 @@ public class MBWork extends DataType {
     private final List<String> artists = new ArrayList<>();
     private final List<String> composers = new ArrayList<>();
     private final List<String> names = new ArrayList<>();
+
+    @Nullable
+    @Setter
+    private String name;
+    @Nullable
+    @Setter
+    private String artist;
 
     @Getter
     @JsonIgnore
@@ -39,6 +52,31 @@ public class MBWork extends DataType {
 
     public void addArtist(String artist) {
         artists.add(artist);
+    }
+
+    public void retrieveWorkArtist() throws SQLException {
+        PreparedStatement ps = MusicBrainzDB.getInstance().prepareStatement(
+                "SELECT link_type.name, artist.name\n" +
+                        "FROM work\n" +
+                        "  JOIN l_artist_work ON entity1=work.id\n" +
+                        "  JOIN artist ON entity0=artist.id\n" +
+                        "  JOIN link ON l_artist_work.link=link.id\n" +
+                        "  JOIN link_type ON link.link_type=link_type.id\n" +
+                        "WHERE work.gid = ?::uuid"
+        );
+        ps.setString(1, gid);
+        ResultSet rs = ps.executeQuery();
+        StringBuilder result = new StringBuilder();
+
+        while (rs.next()) {
+            if (result.length() > 0) {
+                result.append(", ");
+            }
+            result.append(rs.getString(1))
+                    .append(": ")
+                    .append(rs.getString(2));
+        }
+        artist = result.toString();
     }
 
     @JsonIgnore
