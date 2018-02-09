@@ -3,6 +3,7 @@ import Html.Events as Events exposing (onClick, onInput)
 import Html.Attributes as Attr exposing (href, attribute)
 import Http
 import Json.Decode as Decode
+import Json.Encode as En
 
 main : Program Never Model Msg
 main = program
@@ -17,6 +18,7 @@ main = program
 type alias Model =
     { query : String
     , message : String
+    , from : Int
     , result : Maybe SearchResult
     }
 
@@ -34,7 +36,7 @@ type alias Work =
 
 init : (Model, Cmd Msg)
 init =
-    (Model "" "" Nothing, Cmd.none)
+    (Model "" "" 0 Nothing, Cmd.none)
 
 -- UPDATE
 
@@ -47,7 +49,7 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
         Search ->
-            ( model, getWorks model.query)
+            ( model, getWorks model.query model.from )
 
         Query str ->
             ( { model | query = str }, Cmd.none)
@@ -72,17 +74,17 @@ update msg model =
         New (Err _) ->
             (model, Cmd.none)
 
-getWorks : String -> Cmd Msg
-getWorks query =
+getWorks : String -> Int -> Cmd Msg
+getWorks query from =
     let
-        words : List String
-        words = String.split " " query
-
-        url =
-            "/api/" ++ query
+        body : Http.Body
+        body = Http.jsonBody <| En.object
+            [ ("query", En.string query)
+            , ("from", En.int from)
+            ]
 
         request =
-            Http.get url decodeResult
+            Http.post "/api" body decodeResult
     in
         Http.send New request
 

@@ -1,8 +1,12 @@
 package Search;
 
 import Database.ElasticConnection;
+import com.fasterxml.jackson.databind.JsonNode;
+import jsonSerializer.JacksonSerializer;
+import jsonSerializer.JsonSerializer;
 
 import static spark.Spark.get;
+import static spark.Spark.post;
 import static spark.Spark.staticFiles;
 
 public class SearchController {
@@ -13,11 +17,14 @@ public class SearchController {
         staticFiles.externalLocation(System.getProperty("user.dir") + "/src/main/resources/public");
 
 
-        get("/api/:query", (req, res) -> {
+        post("/api", (req, res) -> {
             res.header("Content-Encoding", "gzip");
             res.type("application/json");
 
-            String query = req.params(":query");
+            String json = req.body();
+            JsonNode result = JacksonSerializer.getInstance().readTree(json);
+            String query = result.get("query").textValue();
+            int from = result.get("from").intValue();
 
             return ElasticConnection.getInstance().search(query);
         });

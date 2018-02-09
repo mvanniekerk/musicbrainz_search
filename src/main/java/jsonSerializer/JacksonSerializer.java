@@ -3,9 +3,12 @@ package jsonSerializer;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.io.IOException;
 
 public class JacksonSerializer implements JsonSerializer {
 
@@ -41,5 +44,14 @@ public class JacksonSerializer implements JsonSerializer {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public JsonNode readTree(String jsonString) {
+        try {
+            return objectMapper.readTree(jsonString);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
