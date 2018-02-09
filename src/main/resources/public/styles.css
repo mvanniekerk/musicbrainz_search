@@ -1,3 +1,8 @@
+body {
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Ubuntu", "Helvetica Neue", sans-serif;
+}
+
 a {
     font-size: 21px;
 }
@@ -9,4 +14,62 @@ p {
 .work {
     margin-top: 15px;
     margin-bottom: 15px;
+}
+
+#search-bar {
+    border: none;
+    border-radius: 3px;
+    box-shadow: 0 1px 4px 0 rgba(12, 12, 13, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.15);
+    color: inherit;
+    padding: 0 0 0 8px;
+    width: 500px;
+    font-size: 15px;
+}
+
+.search-label {
+    background: url("search-glass.svg") no-repeat 12px center/16px;
+    fill: rgba(12, 12, 13, 0.4);
+    height: 100%;
+    width: 35px;
+}
+
+.search-wrapper {
+    cursor: default;
+    display: flex;
+    position: relative;
+    margin: 1px 1px 10px;
+    width: 100%;
+    height: 35px;
+}
+
+.search-button {
+    background: url("forward.svg") no-repeat center center;
+    border-radius: 0 3px 3px 0;
+    border: 0;
+    width: 36px;
+    fill: rgba(12, 12, 13, 0.4);
+    background-size: 16px 16px;
+    height: 100%;
+}
+
+.search-button:hover {
+    background-color: rgba(12, 12, 13, 0.1);
+    cursor: pointer;
+}
+
+.status-message {
+    color: #777;
+    font-size: 14px;
+}
+
+.search-result {
+    margin-left: 35px;
+}
+
+.work-link {
+    text-decoration: none;
+}
+
+.work-link:hover {
+    text-decoration: underline;
 }

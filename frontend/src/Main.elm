@@ -1,6 +1,6 @@
 import Html exposing (..)
 import Html.Events exposing (onClick, onInput)
-import Html.Attributes exposing (href, attribute)
+import Html.Attributes as Attr exposing (href, attribute)
 import Http
 import Json.Decode as Decode
 
@@ -111,16 +111,25 @@ view model =
         result = model.result
     in
         div []
-            [ div [] [text model.message]
-            , input [ onInput Query ] []
-            , button [ onClick Search ] [ text "Search" ]
+            [ div
+                [attribute "class" "search-wrapper"]
+                [ div [] [text model.message]
+                , label [attribute "class" "search-label" ] []
+                , input [ onInput Query
+                    , attribute "id" "search-bar"
+                    , Attr.type_ "search"
+                    , Attr.placeholder "Search"] []
+                , button [ onClick Search, attribute "class" "search-button" ] []
+                ]
             , Maybe.withDefault (div [] []) <| Maybe.map searchResultView result
-            ]
+        ]
+
 
 searchResultView : SearchResult -> Html Msg
 searchResultView sr =
-    div [ attribute "class" "searchResult" ]
-        [ p [] [ text <| toString sr.total ++ " results, took " ++ toString sr.took ++ " ms" ]
+    div [ attribute "class" "search-result" ]
+        [ p [ attribute "class" "status-message" ]
+            [ text <| toString sr.total ++ " results, took " ++ toString sr.took ++ " ms" ]
         , div [] <| List.map workView sr.works
         ]
 
@@ -134,6 +143,10 @@ workView work =
         composer = Maybe.withDefault "no composer" <| List.head work.composer
     in
         div [ attribute "class" "work" ]
-            [ a [ href ("https://musicbrainz.org/work/" ++ work.gid) ] [ text name ]
+            [ a
+                [ href ("https://musicbrainz.org/work/" ++ work.gid)
+                , Attr.class "work-link"
+                ]
+                [ text name ]
             , p [] [ text composer ]
             ]
