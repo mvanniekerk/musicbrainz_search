@@ -1,5 +1,5 @@
 import Html exposing (..)
-import Html.Events exposing (onClick, onInput)
+import Html.Events as Events exposing (onClick, onInput)
 import Html.Attributes as Attr exposing (href, attribute)
 import Http
 import Json.Decode as Decode
@@ -115,14 +115,31 @@ view model =
                 [attribute "class" "search-wrapper"]
                 [ div [] [text model.message]
                 , label [attribute "class" "search-label" ] []
-                , input [ onInput Query
+                , input
+                    [ onInput Query
+                    , onEnter Search
                     , attribute "id" "search-bar"
                     , Attr.type_ "search"
-                    , Attr.placeholder "Search"] []
+                    , Attr.placeholder "Search"
+                    ] []
                 , button [ onClick Search, attribute "class" "search-button" ] []
                 ]
             , Maybe.withDefault (div [] []) <| Maybe.map searchResultView result
         ]
+
+{-
+https://github.com/evancz/elm-todomvc/blob/master/Todo.elm#L237
+-}
+onEnter : Msg -> Attribute Msg
+onEnter msg =
+    let
+        isEnter code =
+            if code == 13 then
+                Decode.succeed msg
+            else
+                Decode.fail "not Enter"
+    in
+        Events.on "keydown" (Decode.andThen isEnter Events.keyCode)
 
 
 searchResultView : SearchResult -> Html Msg

@@ -81,9 +81,9 @@ public class ElasticConnection {
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.query(
                 QueryBuilders.queryStringQuery(queryString)
-                        .field("artists")
-                        .field("composers")
-                        .field("names")
+                        .field("artists.folded")
+                        .field("composers.folded")
+                        .field("names.folded")
         );
         request.source(searchSourceBuilder);
 
