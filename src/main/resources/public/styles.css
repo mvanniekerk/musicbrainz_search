@@ -96,6 +96,11 @@ p {
     font-weight: bold;
 }
 
+.listing li:hover {
+    background-color: #ccc;
+    cursor: pointer;
+}
+
 .listing ul {
     list-style: none;
     display: inline;

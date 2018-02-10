@@ -43,15 +43,30 @@ Using the lucene query string query
 ```
 Using only ElasticSearch DSL
 
-Both queries give almost prefect results.
+```json
+{
+    "_source" : false,
+    "size" : 20,
+    "query" : { 
+        "query_string" : { 
+            "query" : "mozart AND clarinet AND quintet",
+            "fields" : ["artists", "composers", "names"]
+        }
+    },
+    "highlight" : { 
+        "number_of_fragments" : 0, 
+        "fields" : { 
+            "artists" : {}, 
+            "composers" : {}, 
+            "names" : {} 
+        } 
+    }
+}
+```
 
-#### TODO: 
-- [x] Convert the musicbrainz SQL to searchable elasticsearch documents
-- [x] Add the right primary title, primary composer to the elastic documents
-- [x] Convert the elm frontend to make use of the new DSL
-- [x] Write a new backend class to interface with the elastic server
-
-
+This is another way to get the result set, it is quite bit (8 times) slower, 
+but the result is very pretty. Problem is that this method will not return 
+all fields, only fields with matches.
 
 ```json
 {    
@@ -113,4 +128,4 @@ Note that a keyword field cannot have an analyzer (or at least a custom analyzer
 Since the search of tokens that were spelled as unicodes kept giving empty results (Dvorak), I decided to change the 
 index settings.
 
-Use the document  above to instantiate the database. 
+Use the snippet above to instantiate the database. 
