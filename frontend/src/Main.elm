@@ -203,9 +203,6 @@ workView work =
     let
         name : String
         name = Maybe.withDefault "no name" <| List.head work.name
-
-        artist : String
-        artist = Maybe.withDefault "no artist" <| List.head work.artist
     in
         div [ attribute "class" "work" ]
             [ a
@@ -214,22 +211,28 @@ workView work =
                 ]
                 [ text name ]
             , composerView work.composer
-            , p [] [ text artist ]
+            , artistView work.artist
             ]
 
 composerView : Composers -> Html Msg
-composerView =
-    listView 1 "Composer"
+composerView = listView 1 "Composer"
+
+artistView : Artists -> Html Msg
+artistView = listView 5 "Artists"
 
 listView : Int -> String -> List String -> Html Msg
 listView showN name list =
     let
         grouped = sortByOccurrence list
+        count = List.length grouped
     in
         div [ Attr.class "listing" ]
-            [ p [ text <| name ++ ": " ]
+            [ p [] [ text <| name ++ ": " ]
             , ul [] <| List.map (\a -> li [] [text a]) (List.take showN <| grouped)
-            , a [ Attr.href "#"] [ text "More" ]
+            , if count > showN then
+                a [ onClick ShowMore ] [ text "More" ]
+              else
+                a [] []
             ]
 
 
