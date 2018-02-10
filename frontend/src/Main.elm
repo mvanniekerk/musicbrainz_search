@@ -38,6 +38,7 @@ type alias Work =
     { gid : String
     , name : List String
     , composer : List String
+    , artist : List String
     }
 
 init : (Model, Cmd Msg)
@@ -127,10 +128,11 @@ decodeResult =
 
 decodeWork : Decode.Decoder Work
 decodeWork =
-    Decode.map3 Work
+    Decode.map4 Work
         (Decode.field "_id" Decode.string)
         (Decode.at ["_source", "names"] <| Decode.list Decode.string)
         (Decode.at ["_source", "composers"] <| Decode.list Decode.string)
+        (Decode.at ["_source", "artists"] <| Decode.list Decode.string)
 
 -- VIEW
 
@@ -151,6 +153,7 @@ view model =
                     , attribute "id" "search-bar"
                     , Attr.type_ "search"
                     , Attr.placeholder "Search"
+                    , Attr.autofocus True
                     ] []
                 , button [ onClick Search, attribute "class" "search-button" ] []
                 ]
@@ -178,8 +181,18 @@ searchResultView sr =
         [ p [ attribute "class" "status-message" ]
             [ text <| toString sr.total ++ " results, took " ++ toString sr.took ++ " ms" ]
         , div [] <| List.map workView sr.works
-        , button [ onClick <| LoadPage <| sr.page + 1] [ text "Load More Results"]
+        , moreResultsButton sr
         ]
+
+
+moreResultsButton : SearchResult -> Html Msg
+moreResultsButton sr =
+    if sr.total > sr.page * 10 then
+         button [ onClick <| LoadPage <| sr.page + 1] [ text "Load More Results"]
+    else if sr.total > 0 then
+        p [ attribute "class" "status-message" ] [text "There are no more results"]
+    else
+        p [] []
 
 workView : Work -> Html Msg
 workView work =
@@ -189,6 +202,9 @@ workView work =
 
         composer : String
         composer = Maybe.withDefault "no composer" <| List.head work.composer
+
+        artist : String
+        artist = Maybe.withDefault "no artist" <| List.head work.artist
     in
         div [ attribute "class" "work" ]
             [ a
@@ -197,4 +213,5 @@ workView work =
                 ]
                 [ text name ]
             , p [] [ text composer ]
+            , p [] [ text artist ]
             ]

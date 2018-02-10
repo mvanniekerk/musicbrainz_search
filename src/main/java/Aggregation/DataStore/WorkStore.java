@@ -59,10 +59,11 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
         Connection conn = getConnection();
 
         return conn.prepareStatement(
-        "SELECT artist_credit.name, work.gid from recording " +
-            "LEFT JOIN l_recording_work ON entity0=recording.id " +
-            "LEFT JOIN work ON entity1=work.id " +
-            "LEFT JOIN artist_credit ON artist_credit.id=artist_credit " +
+        "SELECT artist_credit_name.name, work.gid FROM recording\n" +
+            "JOIN l_recording_work ON entity0=recording.id\n" +
+            "JOIN work ON entity1=work.id\n" +
+            "JOIN artist_credit ON artist_credit.id=artist_credit\n" +
+            "JOIN artist_credit_name ON artist_credit_name.artist_credit=artist_credit.id\n" +
             "WHERE (work.id >= ?) AND (work.id < ?)"
         );
     }
