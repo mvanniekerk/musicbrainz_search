@@ -18,11 +18,17 @@ main = program
 type alias Model =
     { query : String
     , message : String
-    , from : Int
     , result : Maybe SearchResult
     }
 
 type alias SearchResult =
+    { page : Int
+    , took : Int
+    , total : Int
+    , works : List Work
+    }
+
+type alias Response =
     { took : Int
     , total : Int
     , works : List Work
@@ -36,26 +42,34 @@ type alias Work =
 
 init : (Model, Cmd Msg)
 init =
-    (Model "" "" 0 Nothing, Cmd.none)
+    (Model "" "" Nothing, Cmd.none)
 
 -- UPDATE
 
 type Msg
     = Search
-    | New (Result Http.Error SearchResult)
+    | New (Result Http.Error Response)
     | Query String
+    | LoadPage Int
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
         Search ->
-            ( model, getWorks model.query model.from )
+            ( { model | result = Nothing }, getWorks model.query 1 )
+
+        LoadPage newPage ->
+            case model.result of
+                Nothing ->
+                    ( { model | message = "Illegal state, request new page without results" }, Cmd.none)
+                Just result ->
+                    ( { model | result = Just { result | page = newPage } }, getWorks model.query newPage )
 
         Query str ->
             ( { model | query = str }, Cmd.none)
 
-        New (Ok searchResult) ->
-            ( { model | result = Just searchResult }, Cmd.none)
+        New (Ok response) ->
+            ( { model | result = Just <| addResult model.result response }, Cmd.none)
 
         New (Err (Http.BadStatus resp)) ->
             let
@@ -74,13 +88,27 @@ update msg model =
         New (Err _) ->
             (model, Cmd.none)
 
+addResult : Maybe SearchResult -> Response -> SearchResult
+addResult previousResult response =
+    case previousResult of
+        Nothing -> SearchResult 1 response.took response.total response.works
+        Just result ->
+            let
+                newWorks : List Work
+                newWorks = result.works ++ response.works
+            in
+                { result | works = newWorks }
+
+
+
+
 getWorks : String -> Int -> Cmd Msg
-getWorks query from =
+getWorks query page =
     let
         body : Http.Body
         body = Http.jsonBody <| En.object
             [ ("query", En.string query)
-            , ("from", En.int from)
+            , ("page", En.int page)
             ]
 
         request =
@@ -89,9 +117,9 @@ getWorks query from =
         Http.send New request
 
 
-decodeResult : Decode.Decoder SearchResult
+decodeResult : Decode.Decoder Response
 decodeResult =
-    Decode.map3 SearchResult
+    Decode.map3 Response
         (Decode.field "took" Decode.int)
         (Decode.at ["hits", "total"] Decode.int)
         (Decode.at ["hits", "hits"] <| Decode.list decodeWork)
@@ -150,6 +178,7 @@ searchResultView sr =
         [ p [ attribute "class" "status-message" ]
             [ text <| toString sr.total ++ " results, took " ++ toString sr.took ++ " ms" ]
         , div [] <| List.map workView sr.works
+        , button [ onClick <| LoadPage <| sr.page + 1] [ text "Load More Results"]
         ]
 
 workView : Work -> Html Msg

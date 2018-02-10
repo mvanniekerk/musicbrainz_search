@@ -10,6 +10,9 @@ import static spark.Spark.post;
 import static spark.Spark.staticFiles;
 
 public class SearchController {
+
+    private static final int RESULT_SIZE = 20;
+
     public static void main(String[] args) {
         //staticFileLocation("/public");
         // a little hack that auto reloads the static files when they are changed. In production just use
@@ -24,9 +27,10 @@ public class SearchController {
             String json = req.body();
             JsonNode result = JacksonSerializer.getInstance().readTree(json);
             String query = result.get("query").textValue();
-            int from = result.get("from").intValue();
+            int page = result.get("page").intValue();
+            int from = (page - 1) * RESULT_SIZE;
 
-            return ElasticConnection.getInstance().search(query);
+            return ElasticConnection.getInstance().search(query, from);
         });
     }
 

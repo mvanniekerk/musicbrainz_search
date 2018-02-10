@@ -72,13 +72,15 @@ public class ElasticConnection {
 
     }
 
-    public String search(String query) throws IOException {
+    public String search(String query, int from) throws IOException {
 
         String queryString = String.join(" AND ", Tokenizer.tokenize(query));
 
         SearchRequest request = new SearchRequest(INDEX);
         request.types(TYPE);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.from(from);
+        searchSourceBuilder.size(20);
         searchSourceBuilder.query(
                 QueryBuilders.queryStringQuery(queryString)
                         .field("artists.folded")
@@ -92,11 +94,5 @@ public class ElasticConnection {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-        String response = ElasticConnection.getInstance().search("haydn");
-        System.out.println(response);
-        ElasticConnection.getInstance().close();
     }
 }
