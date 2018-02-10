@@ -4,6 +4,7 @@ import Html.Attributes as Attr exposing (href, attribute)
 import Http
 import Json.Decode as Decode
 import Json.Encode as En
+import Tuple
 
 main : Program Never Model Msg
 main = program
@@ -34,11 +35,14 @@ type alias Response =
     , works : List Work
     }
 
+type alias Composers = List String
+type alias Artists = List String
+
 type alias Work =
     { gid : String
     , name : List String
-    , composer : List String
-    , artist : List String
+    , composer : Composers
+    , artist : Artists
     }
 
 init : (Model, Cmd Msg)
@@ -200,9 +204,6 @@ workView work =
         name : String
         name = Maybe.withDefault "no name" <| List.head work.name
 
-        composer : String
-        composer = Maybe.withDefault "no composer" <| List.head work.composer
-
         artist : String
         artist = Maybe.withDefault "no artist" <| List.head work.artist
     in
@@ -212,6 +213,82 @@ workView work =
                 , Attr.class "work-link"
                 ]
                 [ text name ]
-            , p [] [ text composer ]
+            , composerView work.composer
             , p [] [ text artist ]
             ]
+
+composerView : Composers -> Html Msg
+composerView =
+    listView 1 "Composer"
+
+listView : Int -> String -> List String -> Html Msg
+listView showN name list =
+    let
+        grouped = sortByOccurrence list
+    in
+        div [ Attr.class "listing" ]
+            [ p [ text <| name ++ ": " ]
+            , ul [] <| List.map (\a -> li [] [text a]) (List.take showN <| grouped)
+            , a [ Attr.href "#"] [ text "More" ]
+            ]
+
+
+-- utility functions
+
+
+{-| Group values, keeping track off the number of occurrences
+
+    groupByValue ["hey", "bye", "hey", "bye", "no way"] == [("bye",2),("hey",2),("no way",1)]
+
+    Values are first sorted, to make the function run in O(N log N) time.
+-}
+groupByValue : List comparable -> List (comparable, Int)
+groupByValue list =
+    let
+        sorted = List.sort list
+
+        groupBy inp acc =
+            let
+                mhead = List.head acc
+                tail = Maybe.withDefault [] <| List.tail acc
+            in
+                case mhead of
+                    Nothing -> [(inp, 1)]
+                    Just head ->
+                        if Tuple.first head == inp then
+                            Tuple.mapSecond (\x -> x+1) head :: tail
+                        else
+                            (inp, 1) :: acc
+    in
+        List.foldr groupBy [] sorted
+
+
+{-| Sort values by occurrence.
+
+    sortByOccurrence ["hey", "bye", "hey", "bye", "no way"] = ["bye", "hey", "no way"]
+
+    Values that occur the same amount of times are sorted normally
+-}
+sortByOccurrence : List comparable -> List comparable
+sortByOccurrence list =
+    let
+        sortBySecond : List (comparable, Int) -> List (comparable, Int)
+        sortBySecond = List.sortWith (\a b -> descending (Tuple.second a) (Tuple.second b))
+        takeFirst = List.map Tuple.first
+    in
+        list
+        |> groupByValue
+        |> sortBySecond
+        |> takeFirst
+
+
+{-| Sort descending instead of ascending.
+
+    sortWith descending [1, 2, 3] == [3, 2, 1]
+-}
+descending : comparable -> comparable -> Order
+descending a b =
+    case compare a b of
+        LT -> GT
+        EQ -> EQ
+        GT -> LT
