@@ -39,11 +39,16 @@ type alias Composers = List String
 type alias Artists = List String
 
 type alias Work =
-    { gid : String
+    { showMoreComposers : Bool
+    , showMoreArtists : Bool
+    , gid : String
     , name : List String
     , composer : Composers
     , artist : Artists
     }
+
+work : String -> List String -> Composers -> Artists -> Work
+work = Work False False
 
 init : (Model, Cmd Msg)
 init =
@@ -56,6 +61,8 @@ type Msg
     | New (Result Http.Error Response)
     | Query String
     | LoadPage Int
+    | ShowComposers String Bool
+    | ShowArtists String Bool
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -72,6 +79,12 @@ update msg model =
 
         Query str ->
             ( { model | query = str }, Cmd.none)
+
+        ShowComposers gid newVal ->
+            (changeWorkField model gid <| setMoreComposers newVal, Cmd.none)
+
+        ShowArtists gid newVal ->
+            (changeWorkField model gid <| setMoreArtists newVal, Cmd.none)
 
         New (Ok response) ->
             ( { model | result = Just <| addResult model.result response }, Cmd.none)
@@ -92,6 +105,36 @@ update msg model =
 
         New (Err _) ->
             (model, Cmd.none)
+
+
+setMoreComposers : Bool -> Work -> Work
+setMoreComposers to work = { work | showMoreComposers = to }
+
+setMoreArtists : Bool -> Work -> Work
+setMoreArtists to work = { work | showMoreArtists = to }
+
+changeWorkField : Model -> String -> (Work -> Work) -> Model
+changeWorkField model gid setter =
+    let
+        nWork : Work -> Work
+        nWork w =
+            if w.gid == gid then
+                setter w
+            else
+                w
+
+        nSR : SearchResult -> SearchResult
+        nSR sr =
+            let
+                newWorks = List.map nWork sr.works
+            in
+                { sr | works = newWorks }
+
+        results : Maybe SearchResult
+        results = Maybe.map nSR model.result
+    in
+        { model | result = results }
+
 
 addResult : Maybe SearchResult -> Response -> SearchResult
 addResult previousResult response =
@@ -132,7 +175,7 @@ decodeResult =
 
 decodeWork : Decode.Decoder Work
 decodeWork =
-    Decode.map4 Work
+    Decode.map4 work
         (Decode.field "_id" Decode.string)
         (Decode.at ["_source", "names"] <| Decode.list Decode.string)
         (Decode.at ["_source", "composers"] <| Decode.list Decode.string)
@@ -203,6 +246,9 @@ workView work =
     let
         name : String
         name = Maybe.withDefault "no name" <| List.head work.name
+
+        artistShow = if work.showMoreArtists then 100 else 5
+        composerShow = if work.showMoreComposers then 100 else 1
     in
         div [ attribute "class" "work" ]
             [ a
@@ -210,29 +256,39 @@ workView work =
                 , Attr.class "work-link"
                 ]
                 [ text name ]
-            , composerView work.composer
-            , artistView work.artist
+            , composerView work.composer work.gid work.showMoreComposers
+            , artistView work.artist work.gid work.showMoreArtists
             ]
 
-composerView : Composers -> Html Msg
-composerView = listView 1 "Composer"
+composerView : List String -> String -> Bool -> Html Msg
+composerView = listView "Composer" ShowComposers 1
 
-artistView : Artists -> Html Msg
-artistView = listView 5 "Artists"
+artistView : List String -> String -> Bool -> Html Msg
+artistView = listView "Artists" ShowArtists 5
 
-listView : Int -> String -> List String -> Html Msg
-listView showN name list =
+listView :
+    String -> (String -> Bool -> Msg) -> Int ->
+    List String -> String -> Bool -> Html Msg
+listView name msg showN list gid showMore =
     let
         grouped = sortByOccurrence list
         count = List.length grouped
+
+        take =
+            if showMore then
+                grouped
+            else
+                (List.take showN <| grouped)
     in
         div [ Attr.class "listing" ]
             [ p [] [ text <| name ++ ": " ]
-            , ul [] <| List.map (\a -> li [] [text a]) (List.take showN <| grouped)
-            , if count > showN then
-                a [ onClick ShowMore ] [ text "More" ]
-              else
+            , ul [] <| List.map (\a -> li [] [text a]) take
+            , if count <= showN then
                 a [] []
+              else if showMore then
+                a [ onClick <| msg gid False ] [ text "Less" ]
+              else
+                a [ onClick <| msg gid True ] [ text "More" ]
             ]
 
 

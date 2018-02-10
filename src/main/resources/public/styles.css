@@ -7,10 +7,16 @@ body {
 #main {
     margin-left: 40px;
     margin-top: 20px;
+    max-width: 700px;
 }
 
 a {
+    display: inline-block;
     font-size: 21px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
 }
 
 p {
@@ -18,8 +24,8 @@ p {
 }
 
 .work {
-    margin-top: 15px;
-    margin-bottom: 15px;
+    margin-top: 25px;
+    margin-bottom: 25px;
 }
 
 #search-bar {
@@ -97,13 +103,19 @@ p {
 }
 
 .listing li {
-    display: inline;
-    padding-right: 8px;
+    display: inline-block;
+    padding: 1px 3px 1px 3px;
+    margin: 1px 2px 1px 2px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
 }
 
 .listing a {
     font-size: 14px;
     font-weight: bold;
+    color: #666;
+    display: inline;
 }
 
 .listing a:hover {
