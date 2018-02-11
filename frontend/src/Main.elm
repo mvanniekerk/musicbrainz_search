@@ -2,9 +2,10 @@ import Html exposing (..)
 import Html.Events as Events exposing (onClick, onInput)
 import Html.Attributes as Attr exposing (href, attribute)
 import Http
-import Json.Decode as Decode
+import Json.Decode as De
 import Json.Encode as En
-import Tuple
+
+import Utils exposing (sortByOccurrence)
 
 main : Program Never Model Msg
 main = program
@@ -165,21 +166,21 @@ getWorks query page =
         Http.send New request
 
 
-decodeResult : Decode.Decoder Response
+decodeResult : De.Decoder Response
 decodeResult =
-    Decode.map3 Response
-        (Decode.field "took" Decode.int)
-        (Decode.at ["hits", "total"] Decode.int)
-        (Decode.at ["hits", "hits"] <| Decode.list decodeWork)
+    De.map3 Response
+        (De.field "took" De.int)
+        (De.at ["hits", "total"] De.int)
+        (De.at ["hits", "hits"] <| De.list decodeWork)
 
 
-decodeWork : Decode.Decoder Work
+decodeWork : De.Decoder Work
 decodeWork =
-    Decode.map4 work
-        (Decode.field "_id" Decode.string)
-        (Decode.at ["_source", "names"] <| Decode.list Decode.string)
-        (Decode.at ["_source", "composers"] <| Decode.list Decode.string)
-        (Decode.at ["_source", "artists"] <| Decode.list Decode.string)
+    De.map4 work
+        (De.field "_id" De.string)
+        (De.at ["_source", "names"] <| De.list De.string)
+        (De.at ["_source", "composers"] <| De.list De.string)
+        (De.at ["_source", "artists"] <| De.list De.string)
 
 -- VIEW
 
@@ -215,11 +216,11 @@ onEnter msg =
     let
         isEnter code =
             if code == 13 then
-                Decode.succeed msg
+                De.succeed msg
             else
-                Decode.fail "not Enter"
+                De.fail "not Enter"
     in
-        Events.on "keydown" (Decode.andThen isEnter Events.keyCode)
+        Events.on "keydown" (De.andThen isEnter Events.keyCode)
 
 
 searchResultView : SearchResult -> Html Msg
@@ -295,59 +296,3 @@ listView name msg showN list gid showMore =
 -- utility functions
 
 
-{-| Group values, keeping track off the number of occurrences
-
-    groupByValue ["hey", "bye", "hey", "bye", "no way"] == [("bye",2),("hey",2),("no way",1)]
-
-    Values are first sorted, to make the function run in O(N log N) time.
--}
-groupByValue : List comparable -> List (comparable, Int)
-groupByValue list =
-    let
-        sorted = List.sort list
-
-        groupBy inp acc =
-            let
-                mhead = List.head acc
-                tail = Maybe.withDefault [] <| List.tail acc
-            in
-                case mhead of
-                    Nothing -> [(inp, 1)]
-                    Just head ->
-                        if Tuple.first head == inp then
-                            Tuple.mapSecond (\x -> x+1) head :: tail
-                        else
-                            (inp, 1) :: acc
-    in
-        List.foldr groupBy [] sorted
-
-
-{-| Sort values by occurrence.
-
-    sortByOccurrence ["hey", "bye", "hey", "bye", "no way"] = ["bye", "hey", "no way"]
-
-    Values that occur the same amount of times are sorted normally
--}
-sortByOccurrence : List comparable -> List comparable
-sortByOccurrence list =
-    let
-        sortBySecond : List (comparable, Int) -> List (comparable, Int)
-        sortBySecond = List.sortWith (\a b -> descending (Tuple.second a) (Tuple.second b))
-        takeFirst = List.map Tuple.first
-    in
-        list
-        |> groupByValue
-        |> sortBySecond
-        |> takeFirst
-
-
-{-| Sort descending instead of ascending.
-
-    sortWith descending [1, 2, 3] == [3, 2, 1]
--}
-descending : comparable -> comparable -> Order
-descending a b =
-    case compare a b of
-        LT -> GT
-        EQ -> EQ
-        GT -> LT
