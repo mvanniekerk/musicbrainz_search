@@ -25,6 +25,7 @@ type alias Model =
 
 type alias SearchResult =
     { page : Int
+    , query : String
     , took : Int
     , total : Int
     , works : List Work
@@ -59,16 +60,21 @@ init =
 
 type Msg
     = Search
-    | New (Result Http.Error Response)
+    | RequestMsg RequestMsg
     | Query String
-    | LoadPage Int
     | ResultMsg ResultMsg
+
+type RequestMsg
+    = New (Result Http.Error Response)
 
 type ResultMsg
     = ShowComposers Gid Bool
     | ShowArtists Gid Bool
+    | LoadPage Int
+    | ResultRequest RequestMsg
 
 type alias Gid = String
+
 
 updateResult : ResultMsg -> SearchResult -> (SearchResult, Cmd ResultMsg)
 updateResult msg model =
@@ -77,20 +83,27 @@ updateResult msg model =
             (changeWorkField model gid <| setMoreComposers newVal, Cmd.none)
 
         ShowArtists gid newVal ->
-             (changeWorkField model gid <| setMoreArtists newVal, Cmd.none)
+            (changeWorkField model gid <| setMoreArtists newVal, Cmd.none)
+
+        LoadPage newPage ->
+            ( { model | page = newPage }, Cmd.map ResultRequest <| getWorks model.query newPage )
+
+        ResultRequest (New (Ok response)) ->
+            let
+                newWorks : List Work
+                newWorks = model.works ++ response.works
+            in
+                ( { model | works = newWorks }, Cmd.none )
+
+        ResultRequest (New (Err _)) ->
+            ( model, Cmd.none )
+
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
         Search ->
-            ( { model | result = Nothing }, getWorks model.query 1 )
-
-        LoadPage newPage ->
-            case model.result of
-                Nothing ->
-                    ( { model | message = "Illegal state, request new page without results" }, Cmd.none)
-                Just result ->
-                    ( { model | result = Just { result | page = newPage } }, getWorks model.query newPage )
+            ( { model | result = Nothing }, Cmd.map RequestMsg <| getWorks model.query 1 )
 
         Query str ->
             ( { model | query = str }, Cmd.none)
@@ -110,10 +123,10 @@ update msg model =
                     in
                         ({ model | result = Just newResult }, newMsg )
 
-        New (Ok response) ->
-            ( { model | result = Just <| addResult model.result response }, Cmd.none)
+        RequestMsg (New (Ok response)) ->
+            ( { model | result = Just <| result model.query response }, Cmd.none)
 
-        New (Err (Http.BadStatus resp)) ->
+        RequestMsg (New (Err (Http.BadStatus resp))) ->
             let
                 code = resp.status.code
                 msg = case code of
@@ -124,10 +137,10 @@ update msg model =
             in
                 ( { model | message =  msg }, Cmd.none )
 
-        New (Err (Http.BadPayload msg _)) ->
+        RequestMsg (New (Err (Http.BadPayload msg _))) ->
             ( { model | message = msg }, Cmd.none )
 
-        New (Err _) ->
+        RequestMsg (New (Err _)) ->
             (model, Cmd.none)
 
 
@@ -152,21 +165,11 @@ changeWorkField result gid setter =
         { result | works = newWorks }
 
 
-addResult : Maybe SearchResult -> Response -> SearchResult
-addResult previousResult response =
-    case previousResult of
-        Nothing -> SearchResult 1 response.took response.total response.works
-        Just result ->
-            let
-                newWorks : List Work
-                newWorks = result.works ++ response.works
-            in
-                { result | works = newWorks }
+result : String -> Response -> SearchResult
+result query response = SearchResult 1 query response.took response.total response.works
 
 
-
-
-getWorks : String -> Int -> Cmd Msg
+getWorks : String -> Int -> Cmd RequestMsg
 getWorks query page =
     let
         body : Http.Body
@@ -220,7 +223,8 @@ view model =
                     ] []
                 , button [ onClick Search, attribute "class" "search-button" ] []
                 ]
-            , Maybe.withDefault (div [] []) <| Maybe.map searchResultView result
+            , Maybe.withDefault (div [] [])
+            <| Maybe.map (\a -> a |> searchResultView |> Html.map ResultMsg) result
         ]
 
 {-
@@ -238,7 +242,7 @@ onEnter msg =
         Events.on "keydown" (De.andThen isEnter Events.keyCode)
 
 
-searchResultView : SearchResult -> Html Msg
+searchResultView : SearchResult -> Html ResultMsg
 searchResultView sr =
     div [ attribute "class" "search-result" ]
         [ p [ attribute "class" "status-message" ]
@@ -248,7 +252,7 @@ searchResultView sr =
         ]
 
 
-moreResultsButton : SearchResult -> Html Msg
+moreResultsButton : SearchResult -> Html ResultMsg
 moreResultsButton sr =
     if sr.total > sr.page * 10 then
          button [ onClick <| LoadPage <| sr.page + 1] [ text "Load More Results"]
@@ -257,7 +261,7 @@ moreResultsButton sr =
     else
         p [] []
 
-workView : Work -> Html Msg
+workView : Work -> Html ResultMsg
 workView work =
     let
         name : String
@@ -276,15 +280,15 @@ workView work =
             , artistView work.artist work.gid work.showMoreArtists
             ]
 
-composerView : List String -> String -> Bool -> Html Msg
+composerView : List String -> String -> Bool -> Html ResultMsg
 composerView = listView "Composer" ShowComposers 1
 
-artistView : List String -> String -> Bool -> Html Msg
+artistView : List String -> String -> Bool -> Html ResultMsg
 artistView = listView "Artists" ShowArtists 5
 
 listView :
     String -> (String -> Bool -> ResultMsg) -> Int ->
-    List String -> String -> Bool -> Html Msg
+    List String -> String -> Bool -> Html ResultMsg
 listView name msg showN list gid showMore =
     let
         grouped = sortByOccurrence list
@@ -302,9 +306,9 @@ listView name msg showN list gid showMore =
             , if count <= showN then
                 a [] []
               else if showMore then
-                a [ onClick <| ResultMsg <| msg gid False ] [ text "Less" ]
+                a [ onClick <| msg gid False ] [ text "Less" ]
               else
-                a [ onClick <| ResultMsg <| msg gid True ] [ text "More" ]
+                a [ onClick <| msg gid True ] [ text "More" ]
             ]
 
 
