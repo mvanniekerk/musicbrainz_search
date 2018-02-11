@@ -62,8 +62,22 @@ type Msg
     | New (Result Http.Error Response)
     | Query String
     | LoadPage Int
-    | ShowComposers String Bool
-    | ShowArtists String Bool
+    | ResultMsg ResultMsg
+
+type ResultMsg
+    = ShowComposers Gid Bool
+    | ShowArtists Gid Bool
+
+type alias Gid = String
+
+updateResult : ResultMsg -> SearchResult -> (SearchResult, Cmd ResultMsg)
+updateResult msg model =
+    case msg of
+        ShowComposers gid newVal ->
+            (changeWorkField model gid <| setMoreComposers newVal, Cmd.none)
+
+        ShowArtists gid newVal ->
+             (changeWorkField model gid <| setMoreArtists newVal, Cmd.none)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -81,11 +95,20 @@ update msg model =
         Query str ->
             ( { model | query = str }, Cmd.none)
 
-        ShowComposers gid newVal ->
-            (changeWorkField model gid <| setMoreComposers newVal, Cmd.none)
+        ResultMsg msg ->
+            case model.result of
+                Nothing -> ({ model | message = "Illegal message, can not change results when there are none" }, Cmd.none)
+                Just result ->
+                    let
+                        srm : (SearchResult, Cmd ResultMsg)
+                        srm = updateResult msg result
 
-        ShowArtists gid newVal ->
-            (changeWorkField model gid <| setMoreArtists newVal, Cmd.none)
+                        newResult = Tuple.first srm
+
+                        newMsg : Cmd Msg
+                        newMsg = Tuple.second srm |> Cmd.map ResultMsg
+                    in
+                        ({ model | result = Just newResult }, newMsg )
 
         New (Ok response) ->
             ( { model | result = Just <| addResult model.result response }, Cmd.none)
@@ -114,8 +137,8 @@ setMoreComposers to work = { work | showMoreComposers = to }
 setMoreArtists : Bool -> Work -> Work
 setMoreArtists to work = { work | showMoreArtists = to }
 
-changeWorkField : Model -> String -> (Work -> Work) -> Model
-changeWorkField model gid setter =
+changeWorkField : SearchResult -> String -> (Work -> Work) -> SearchResult
+changeWorkField result gid setter =
     let
         nWork : Work -> Work
         nWork w =
@@ -124,17 +147,9 @@ changeWorkField model gid setter =
             else
                 w
 
-        nSR : SearchResult -> SearchResult
-        nSR sr =
-            let
-                newWorks = List.map nWork sr.works
-            in
-                { sr | works = newWorks }
-
-        results : Maybe SearchResult
-        results = Maybe.map nSR model.result
+        newWorks = List.map nWork result.works
     in
-        { model | result = results }
+        { result | works = newWorks }
 
 
 addResult : Maybe SearchResult -> Response -> SearchResult
@@ -268,7 +283,7 @@ artistView : List String -> String -> Bool -> Html Msg
 artistView = listView "Artists" ShowArtists 5
 
 listView :
-    String -> (String -> Bool -> Msg) -> Int ->
+    String -> (String -> Bool -> ResultMsg) -> Int ->
     List String -> String -> Bool -> Html Msg
 listView name msg showN list gid showMore =
     let
@@ -287,9 +302,9 @@ listView name msg showN list gid showMore =
             , if count <= showN then
                 a [] []
               else if showMore then
-                a [ onClick <| msg gid False ] [ text "Less" ]
+                a [ onClick <| ResultMsg <| msg gid False ] [ text "Less" ]
               else
-                a [ onClick <| msg gid True ] [ text "More" ]
+                a [ onClick <| ResultMsg <| msg gid True ] [ text "More" ]
             ]
 
 
