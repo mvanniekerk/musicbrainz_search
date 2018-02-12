@@ -4,7 +4,16 @@ module Utils exposing (..)
 
     # List sorting
     @docs groupByValue, sortByOccurrence, descending
+
+    # Html attributes
+    @docs onEnter
 -}
+
+import Json.Decode as De
+import Html.Events as Events
+import Html exposing (Attribute)
+
+
 
 
 {-| Group values, keeping track off the number of occurrences
@@ -62,3 +71,20 @@ descending a b =
         LT -> GT
         EQ -> EQ
         GT -> LT
+
+
+
+
+{-| This attribute only fires when the enter key is pressed.
+    https://github.com/evancz/elm-todomvc/blob/master/Todo.elm#L237
+-}
+onEnter : a -> Attribute a
+onEnter msg =
+    let
+        isEnter code =
+            if code == 13 then
+                De.succeed msg
+            else
+                De.fail "not Enter"
+    in
+        Events.on "keydown" (De.andThen isEnter Events.keyCode)

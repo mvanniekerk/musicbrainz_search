@@ -6,7 +6,7 @@ import Html.Events exposing (onClick)
 
 import Work exposing (..)
 import Utils exposing (sortByOccurrence)
-import SearchRequest exposing (..)
+import SearchRequest exposing (RequestMsg(..), getWorks, Response)
 
 -- MODEL
 

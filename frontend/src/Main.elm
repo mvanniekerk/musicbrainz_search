@@ -1,12 +1,12 @@
-import Html exposing (..)
+import Html exposing (div, label, input, text, button, program, Html)
 import Html.Events as Events exposing (onClick, onInput)
 import Html.Attributes as Attr exposing (href, attribute)
 import Http
-import Json.Decode as De
 
-
-import SearchResult exposing (..)
-import SearchRequest exposing (..)
+import SearchResult exposing (SearchResult, ResultMsg, updateResult, searchResultView)
+import SearchRequest exposing (RequestMsg(..), getWorks, Response)
+import Utils exposing (onEnter)
+import FieldSearch exposing (..)
 
 main : Program Never Model Msg
 main = program
@@ -22,6 +22,7 @@ type alias Model =
     { query : String
     , message : String
     , result : Maybe SearchResult
+    , fieldSearch : FieldSearch
     }
 
 
@@ -29,7 +30,7 @@ type alias Model =
 
 init : (Model, Cmd Msg)
 init =
-    (Model "" "" Nothing, Cmd.none)
+    (Model "" "" Nothing fieldSearch, Cmd.none)
 
 -- UPDATE
 
@@ -38,6 +39,7 @@ type Msg
     | RequestMsg RequestMsg
     | Query String
     | ResultMsg ResultMsg
+    | FieldMsg FieldMsg
 
 
 
@@ -66,6 +68,13 @@ update msg model =
                         newMsg = Tuple.second srm |> Cmd.map ResultMsg
                     in
                         ({ model | result = Just newResult }, newMsg )
+
+        FieldMsg msg ->
+            let
+                field : (FieldSearch, Cmd FieldMsg)
+                field = fieldUpdate msg model.fieldSearch
+            in
+                ({ model | fieldSearch = Tuple.first field }, Tuple.second field |> Cmd.map FieldMsg )
 
         RequestMsg (New (Ok response)) ->
             ( { model | result = Just <| result model.query response }, Cmd.none)
@@ -114,28 +123,7 @@ view model =
                     ] []
                 , button [ onClick Search, attribute "class" "search-button" ] []
                 ]
+            , fieldView model.fieldSearch |> Html.map FieldMsg
             , Maybe.withDefault (div [] [])
             <| Maybe.map (\a -> a |> searchResultView |> Html.map ResultMsg) result
         ]
-
-{-
-https://github.com/evancz/elm-todomvc/blob/master/Todo.elm#L237
--}
-onEnter : Msg -> Attribute Msg
-onEnter msg =
-    let
-        isEnter code =
-            if code == 13 then
-                De.succeed msg
-            else
-                De.fail "not Enter"
-    in
-        Events.on "keydown" (De.andThen isEnter Events.keyCode)
-
-
-
-
-
--- utility functions
-
-

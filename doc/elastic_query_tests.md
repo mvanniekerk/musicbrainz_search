@@ -125,7 +125,8 @@ all fields, only fields with matches.
 ```
 Note that a keyword field cannot have an analyzer (or at least a custom analyzer).
 
-Since the search of tokens that were spelled as unicodes kept giving empty results (Dvorak), I decided to change the 
+Since the search of tokens that were spelled as unicode kept giving empty results (Dvorak), I decided to change the 
 index settings.
 
 Use the snippet above to instantiate the database. 
+ 
