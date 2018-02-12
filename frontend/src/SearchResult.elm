@@ -13,6 +13,8 @@ import SearchRequest exposing (RequestMsg(..), getWorks, Response)
 type alias SearchResult =
     { page : Int
     , query : String
+    , artistQuery : String
+    , composerQuery : String
     , took : Int
     , total : Int
     , works : List Work
@@ -40,7 +42,7 @@ updateResult msg model =
             (changeWorkField model gid <| setMoreArtists newVal, Cmd.none)
 
         LoadPage newPage ->
-            ( { model | page = newPage }, Cmd.map ResultRequest <| getWorks model.query newPage )
+            ( { model | page = newPage }, Cmd.map ResultRequest <| getWorks model.query model.artistQuery model.composerQuery newPage )
 
         ResultRequest (New (Ok response)) ->
             let

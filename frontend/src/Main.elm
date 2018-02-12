@@ -49,7 +49,9 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
     case msg of
         Search ->
-            ( { model | result = Nothing }, Cmd.map RequestMsg <| getWorks model.query 1 )
+            ( { model | result = Nothing }
+            , Cmd.map RequestMsg <| getWorks model.query model.fieldSearch.artistQuery model.fieldSearch.composerQuery 1
+            )
 
         Query str ->
             ( { model | query = str }, Cmd.none)
@@ -77,13 +79,15 @@ update msg model =
                 newMsg : Cmd Msg
                 newMsg =
                     case msg of
-                        SearchFromField -> Cmd.map RequestMsg <| getWorks model.query 1
+                        SearchFromField ->
+                            Cmd.map RequestMsg
+                                <| getWorks model.query model.fieldSearch.artistQuery model.fieldSearch.composerQuery 1
                         _ -> Tuple.second field |> Cmd.map FieldMsg
             in
                 ({ model | fieldSearch = Tuple.first field }, newMsg )
 
         RequestMsg (New (Ok response)) ->
-            ( { model | result = Just <| result model.query response }, Cmd.none)
+            ( { model | result = Just <| result model.query model.fieldSearch.artistQuery model.fieldSearch.composerQuery response }, Cmd.none)
 
         RequestMsg (New (Err (Http.BadStatus resp))) ->
             let
@@ -103,8 +107,9 @@ update msg model =
             (model, Cmd.none)
 
 
-result : String -> Response -> SearchResult
-result query response = SearchResult 1 query response.took response.total response.works
+result : String -> String -> String -> Response -> SearchResult
+result query artistQuery composerQuery response =
+    SearchResult 1 query artistQuery composerQuery response.took response.total response.works
 
 -- VIEW
 

@@ -19,12 +19,14 @@ type alias Response =
 
 
 
-getWorks : String -> Int -> Cmd RequestMsg
-getWorks query page =
+getWorks : String -> String -> String -> Int -> Cmd RequestMsg
+getWorks query artist composer page =
     let
         body : Http.Body
         body = Http.jsonBody <| En.object
             [ ("query", En.string query)
+            , ("artistQuery", En.string artist)
+            , ("composerQuery", En.string composer)
             , ("page", En.int page)
             ]
 
