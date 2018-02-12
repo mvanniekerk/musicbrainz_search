@@ -45,10 +45,15 @@ fieldView model =
             case model.open of
                 True -> openView model
                 False -> div [] []
+
+        fieldHeader =
+            div [ Attr.class "field-header" ]
+                [ h4 [ Attr.class "field-title" ] [ text "Field Search" ]
+                , button [ Attr.class "field-button",  onClick Toggle ] []
+                ]
     in
         div [ Attr.class "field-view" ]
-            [ h4 [ Attr.class "field-title" ] [ text "Field Search" ]
-            , button [ Attr.class "field-button",  onClick Toggle ] [ text "field button" ]
+            [ fieldHeader
             , fields
             ]
 

@@ -72,6 +72,7 @@ p {
 .status-message {
     color: #777;
     font-size: 14px;
+    margin: 0;
 }
 
 .search-result {
@@ -125,5 +126,37 @@ p {
 
 .listing a:hover {
     text-decoration: underline;
+    cursor: pointer;
+}
+
+.field-view {
+    width: 500px;
+    margin-left: 35px;
+    margin-bottom: 20px;
+}
+
+.field-header {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #d1d1d1;
+}
+
+.field-title {
+    margin: 0;
+}
+
+.field-button {
+    margin-left: auto;
+    background: url("expand-button.png") no-repeat center center;
+    border-radius: 0 3px 3px 0;
+    border: 0;
+    width: 36px;
+    height: 36px;
+    fill: rgba(12, 12, 13, 0.4);
+    background-size: 16px 16px;
+}
+
+.field-button:hover {
+    background-color: rgba(12, 12, 13, 0.05);
     cursor: pointer;
 }
