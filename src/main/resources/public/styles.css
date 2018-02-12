@@ -143,6 +143,7 @@ p {
 
 .field-title {
     margin: 0;
+    color: #777;
 }
 
 .field-button {
@@ -159,4 +160,24 @@ p {
 .field-button:hover {
     background-color: rgba(12, 12, 13, 0.05);
     cursor: pointer;
+}
+
+.field-header:hover {
+    cursor: pointer;
+}
+
+.search-field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.search-field input {
+    border: none;
+    border-radius: 3px;
+    box-shadow: 0 1px 4px 0 rgba(12, 12, 13, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.15);
+    color: inherit;
+    padding: 0 0 0 8px;
+    width: 400px;
+    font-size: 15px;
 }

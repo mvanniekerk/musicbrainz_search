@@ -2,7 +2,9 @@ module FieldSearch exposing (..)
 
 import Html exposing (..)
 import Html.Attributes as Attr
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, onInput)
+
+import SearchRequest exposing (RequestMsg, getWorks)
 
 
 -- MODEL
@@ -22,6 +24,7 @@ type FieldMsg
     = Toggle
     | ArtistQuery String
     | ComposerQuery String
+    | SearchRequest RequestMsg
 
 fieldUpdate : FieldMsg -> FieldSearch -> (FieldSearch, Cmd FieldMsg)
 fieldUpdate msg model =
@@ -47,9 +50,9 @@ fieldView model =
                 False -> div [] []
 
         fieldHeader =
-            div [ Attr.class "field-header" ]
+            div [ Attr.class "field-header", onClick Toggle ]
                 [ h4 [ Attr.class "field-title" ] [ text "Field Search" ]
-                , button [ Attr.class "field-button",  onClick Toggle ] []
+                , button [ Attr.class "field-button" ] []
                 ]
     in
         div [ Attr.class "field-view" ]
@@ -59,4 +62,15 @@ fieldView model =
 
 openView : FieldSearch -> Html FieldMsg
 openView model =
-    p [] [ text "open" ]
+    div [ Attr.class "fields" ]
+    [ div
+        [ Attr.class "search-field" ]
+        [ p [] [ text "Composer:" ]
+        , input [ onInput ComposerQuery ] []
+        ]
+    , div
+        [ Attr.class "search-field" ]
+        [ p [] [ text "Artist:" ]
+        , input [ onInput ArtistQuery ] []
+        ]
+    ]
