@@ -4,7 +4,7 @@ import Html exposing (..)
 import Html.Attributes as Attr
 import Html.Events exposing (onClick, onInput)
 
-import SearchRequest exposing (RequestMsg, getWorks)
+import Utils exposing (onEnter)
 
 
 -- MODEL
@@ -24,7 +24,7 @@ type FieldMsg
     = Toggle
     | ArtistQuery String
     | ComposerQuery String
-    | SearchRequest RequestMsg
+    | SearchFromField
 
 fieldUpdate : FieldMsg -> FieldSearch -> (FieldSearch, Cmd FieldMsg)
 fieldUpdate msg model =
@@ -37,6 +37,8 @@ fieldUpdate msg model =
 
         ComposerQuery query ->
             ({ model | composerQuery = query }, Cmd.none )
+
+        SearchFromField -> (model, Cmd.none)
 
 
 -- VIEW
@@ -66,11 +68,11 @@ openView model =
     [ div
         [ Attr.class "search-field" ]
         [ p [] [ text "Composer:" ]
-        , input [ onInput ComposerQuery ] []
+        , input [ onInput ComposerQuery, onEnter SearchFromField ] []
         ]
     , div
         [ Attr.class "search-field" ]
         [ p [] [ text "Artist:" ]
-        , input [ onInput ArtistQuery ] []
+        , input [ onInput ArtistQuery, onEnter SearchFromField ] []
         ]
     ]

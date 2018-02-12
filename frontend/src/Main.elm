@@ -73,8 +73,14 @@ update msg model =
             let
                 field : (FieldSearch, Cmd FieldMsg)
                 field = fieldUpdate msg model.fieldSearch
+
+                newMsg : Cmd Msg
+                newMsg =
+                    case msg of
+                        SearchFromField -> Cmd.map RequestMsg <| getWorks model.query 1
+                        _ -> Tuple.second field |> Cmd.map FieldMsg
             in
-                ({ model | fieldSearch = Tuple.first field }, Tuple.second field |> Cmd.map FieldMsg )
+                ({ model | fieldSearch = Tuple.first field }, newMsg )
 
         RequestMsg (New (Ok response)) ->
             ( { model | result = Just <| result model.query response }, Cmd.none)
