@@ -76,7 +76,7 @@ public class ElasticConnection {
 
     }
 
-    public String search(String query, String composerQuery, String artistQuery, int from) throws IOException {
+    public String search(String query, String composerQuery, String artistQuery, int from) {
 
         String queryString = String.join(" AND ", Tokenizer.tokenize(query));
 

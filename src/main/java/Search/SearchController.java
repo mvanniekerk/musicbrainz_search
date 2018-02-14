@@ -28,9 +28,11 @@ public class SearchController {
             JsonNode result = JacksonSerializer.getInstance().readTree(json);
             String query = result.get("query").textValue();
             int page = result.get("page").intValue();
+            String composerQuery = result.get("composerQuery").textValue();
+            String artistQuery = result.get("artistQuery").textValue();
             int from = (page - 1) * RESULT_SIZE;
 
-            return ElasticConnection.getInstance().search(query, from);
+            return ElasticConnection.getInstance().search(query, composerQuery, artistQuery, from);
         });
     }
 
