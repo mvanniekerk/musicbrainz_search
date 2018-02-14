@@ -14,17 +14,21 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryShardContext;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
+import org.elasticsearch.index.search.MatchQuery;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 
 public class ElasticConnection {
@@ -72,7 +76,7 @@ public class ElasticConnection {
 
     }
 
-    public String search(String query, int from) throws IOException {
+    public String search(String query, String composerQuery, String artistQuery, int from) throws IOException {
 
         String queryString = String.join(" AND ", Tokenizer.tokenize(query));
 
@@ -81,12 +85,24 @@ public class ElasticConnection {
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.from(from);
         searchSourceBuilder.size(20);
-        searchSourceBuilder.query(
+
+        QueryBuilder boolQuery = QueryBuilders.boolQuery().must(
                 QueryBuilders.queryStringQuery(queryString)
                         .field("artists.folded")
                         .field("composers.folded")
                         .field("names.folded")
+        ).must(
+                QueryBuilders.matchQuery("composers.folded", composerQuery)
+                        .operator(Operator.OR)
+                        .zeroTermsQuery(MatchQuery.ZeroTermsQuery.ALL)
+        ).must(
+                QueryBuilders.matchQuery("artists.folded", artistQuery)
+                        .operator(Operator.OR)
+                        .zeroTermsQuery(MatchQuery.ZeroTermsQuery.ALL)
         );
+
+        searchSourceBuilder.query(boolQuery);
+
         request.source(searchSourceBuilder);
 
         try {
