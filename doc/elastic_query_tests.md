@@ -69,6 +69,43 @@ but the result is very pretty. Problem is that this method will not return
 all fields, only fields with matches.
 
 ```json
+{
+    "query" : { 
+		"bool" : {
+			"must" : [
+				{ 
+					"query_string" : { 
+						"query" : "clarinet AND quintet",
+						"fields" : ["artists.folded", "composers.folded", "names.folded"]
+					} 
+				},
+				{ 
+					"match" : { 
+						"composers.folded" : {
+							"query" : "mozart",
+							"operator" : "or",
+							"zero_terms_query" : "all"
+						}
+					} 
+				},
+				{ 
+					"match" : { 
+						"artists.folded" : {
+							"query" : "hagen",
+							"operator" : "or",
+							"zero_terms_query" : "all"
+						}
+					} 
+				}
+			]
+		}
+    }
+}
+```
+
+This query will also filter on the artists and composers field specifically.
+
+```json
 {    
 	"settings": {
       "index": {
