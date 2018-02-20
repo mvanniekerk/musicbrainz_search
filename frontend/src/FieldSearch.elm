@@ -68,11 +68,19 @@ openView model =
     [ div
         [ Attr.class "search-field" ]
         [ p [] [ text "Composer:" ]
-        , input [ onInput ComposerQuery, onEnter SearchFromField ] []
+        , input
+            [ onInput ComposerQuery
+            , onEnter SearchFromField
+            , Attr.value model.composerQuery
+            ] []
         ]
     , div
         [ Attr.class "search-field" ]
         [ p [] [ text "Artist:" ]
-        , input [ onInput ArtistQuery, onEnter SearchFromField ] []
+        , input
+            [ onInput ArtistQuery
+            , onEnter SearchFromField
+            , Attr.value model.artistQuery
+            ] []
         ]
     ]

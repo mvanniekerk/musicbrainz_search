@@ -5,9 +5,12 @@ Each work has a big range of keywords associated with it, ranging from the name 
 
 ### TODO
 * [ ] use different urls to represent different states
-* [ ] search only by Composer or Artist
+* [ ] improve search accuracy based on test cases
+* [ ] update readme documentation (this file)
 
 
+
+*Note that the information below here is mostly outdated!*
 
 ### Installation
 
