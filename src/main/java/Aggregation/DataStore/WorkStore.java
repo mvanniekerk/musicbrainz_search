@@ -29,7 +29,7 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
         Connection conn = getConnection();
 
         return conn.prepareStatement(
-        "SELECT name, gid FROM work " +
+        "SELECT name, gid, comment FROM work " +
             "WHERE (work.id >= ?) AND (work.id < ?)"
         );
     }
@@ -72,7 +72,7 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
         Connection conn = getConnection();
 
         return conn.prepareStatement(
-        "SELECT artist.name, work.gid FROM artist " +
+        "SELECT artist.sort_name as name, work.gid FROM artist " +
             "LEFT JOIN l_artist_work ON entity0=artist.id " +
             "LEFT JOIN work ON entity1=work.id " +
             "WHERE (work.id >= ?) AND (work.id < ?)"
@@ -87,6 +87,17 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
             String name = resultSet.getString("name");
             if (name != null) {
                 work.addName(name);
+            }
+        }
+    }
+
+    private void checkForDuplicates(ResultSet resultSet) throws SQLException {
+        while (resultSet.next()) {
+            String comment = resultSet.getString("comment");
+            String gid = resultSet.getString("gid");
+            MBWork work = find(gid);
+            if (comment != null && comment.equals("catch-all for arrangements")) {
+                work.setIgnore(true);
             }
         }
     }
@@ -119,6 +130,9 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
         ResultSet workNames = executePreparedStatement(getWorkNames());
         populateNames(workNames);
 
+        ResultSet workDuplicateCheck = executePreparedStatement(getWorkNames());
+        checkForDuplicates(workDuplicateCheck);
+
         ResultSet workAliases = executePreparedStatement(getWorkAliasNames());
         populateNames(workAliases);
 
@@ -149,8 +163,9 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
         for (MBWork work : works.values()) {
             String json = work.jsonSearchRepr();
             String gid = work.getGid();
-
-            conn.storeDocument(json, gid);
+            if (!work.isIgnore()) {
+                conn.storeDocument(json, gid);
+            }
         }
     }
 
@@ -165,26 +180,5 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
     @Override
     public Iterator<MBWork> iterator() {
         return works.values().iterator();
-    }
-
-
-    public static void main(String[] args) throws Exception {
-        WorkStore works = new WorkStore(0, 10000);
-        works.aggregateFromDB();
-
-        StringBuilder out = new StringBuilder();
-        int i = 1;
-        for (MBWork work : works) {
-            out.append("{\"index\":{\"_id\":\"")
-                    .append(i)
-                    .append("\"}}\n")
-                    .append(new String(work.jsonSearchRepr()))
-                    .append("\n");
-            i++;
-        }
-        String outString = out.toString();
-        BufferedWriter writer = new BufferedWriter(new FileWriter("out.json", true));
-        writer.write(outString);
-        writer.close();
     }
 }

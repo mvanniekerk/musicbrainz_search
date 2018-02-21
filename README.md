@@ -3,12 +3,6 @@
 A simple search engine for the musicbrainz "work" database. 
 Each work has a big range of keywords associated with it, ranging from the name of the composer to the name of the work on every album in the database.
 
-### TODO
-* [ ] use different urls to represent different states
-* [ ] improve search accuracy based on test cases
-* [ ] update readme documentation (this file)
-
-
 
 *Note that the information below here is mostly outdated!*
 
