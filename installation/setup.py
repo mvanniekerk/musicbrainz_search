@@ -14,7 +14,7 @@ def init():
         err = jr["error"]
         print("Operation failed: " + err["type"])
     except KeyError:
-        print("Operation successful, response: " + jr)
+        print("Operation successful, response: " + str(jr))
 
 def remove():
     r = requests.delete(url)
@@ -23,7 +23,7 @@ def remove():
         err = jr["error"]
         print("Operation failed: " + err["type"])
     except KeyError:
-        print("Operation successful, response: " + jr)
+        print("Operation successful, response: " + str(jr))
 
 if __name__ == "__main__":
     remove()
