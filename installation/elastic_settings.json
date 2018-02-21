@@ -1,0 +1,52 @@
+{"settings": {
+    "index": {
+      "number_of_shards": "5",
+      "number_of_replicas": "1"
+    },
+    "analysis": {
+      "analyzer": {
+        "folding": {
+          "tokenizer": "standard",
+          "filter":  [ "lowercase", "asciifolding" ]
+        }
+      }
+    }
+  },
+
+  "mappings": {
+    "work": {
+      "properties": {
+        "artists": {
+          "type": "text",
+          "analyzer": "standard",
+          "fields": {
+            "folded": {
+              "type":       "text",
+              "analyzer":   "folding"
+            }
+          }
+        },
+        "composers": {
+          "type": "text",
+          "analyzer": "standard",
+          "fields": {
+            "folded": {
+              "type":       "text",
+              "analyzer":   "folding"
+            }
+          }
+        },
+        "names": {
+          "type": "text",
+          "analyzer": "standard",
+          "fields": {
+            "folded": {
+              "type":       "text",
+              "analyzer":   "folding"
+            }
+          }
+        }
+      }
+    }
+  }
+}
