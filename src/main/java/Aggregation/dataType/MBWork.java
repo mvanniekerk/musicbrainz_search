@@ -7,6 +7,7 @@ import jsonSerializer.JacksonSerializer;
 import jsonSerializer.JsonSerializer;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.ArrayList;
@@ -24,6 +25,11 @@ public class MBWork extends DataType {
     @Getter
     @JsonIgnore
     private String gid;
+
+    @Setter
+    @Getter
+    @JsonIgnore
+    private boolean ignore = false;
 
     public MBWork(String gid) {
         this.gid = gid;
