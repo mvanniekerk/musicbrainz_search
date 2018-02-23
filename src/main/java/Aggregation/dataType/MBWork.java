@@ -1,5 +1,6 @@
 package Aggregation.dataType;
 
+import Aggregation.DataStore.WorkStore;
 import Search.Term;
 import Search.Work;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -34,14 +35,18 @@ public class MBWork extends DataType {
     @JsonIgnore
     private Connection conn;
 
+    @JsonIgnore
+    private WorkStore workStore;
+
     @Setter
     @Getter
     @JsonIgnore
     private boolean ignore = false;
 
-    public MBWork(String gid, Connection conn) {
+    public MBWork(String gid, Connection conn, WorkStore workStore) {
         this.gid = gid;
         this.conn = conn;
+        this.workStore = workStore;
     }
 
     public void addComposer(String composer) {
@@ -84,11 +89,11 @@ public class MBWork extends DataType {
 
     public List<Integer> getPartsAsID() throws SQLException {
         PreparedStatement ps = conn.prepareStatement(
-            "SELECT l_work_work.entity1 FROM work " +
+        "SELECT l_work_work.entity1 FROM work " +
             "JOIN l_work_work ON work.id=l_work_work.entity0 " +
             "JOIN link ON l_work_work.link=link.id " +
             "WHERE work.gid=?::uuid " +
-            "AND link.link_type=281" // link type 281 is "parts"
+            "AND link.link_type=281"
         );
         ps.setString(1,gid);
         ResultSet rs = ps.executeQuery();

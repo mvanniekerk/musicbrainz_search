@@ -53,11 +53,11 @@ public class ArtistStore extends DataStore implements Iterable<Artist> {
         }
     }
 
-    void aggregateFromDB() throws SQLException {
-        ResultSet artist_aliases = executePreparedStatement(getArtistAliases());
+    void aggregateFromDB(int from, int to) throws SQLException {
+        ResultSet artist_aliases = executePreparedStatement(getArtistAliases(), from, to);
         populateHashMap(artist_aliases);
 
-        ResultSet artist_credits = executePreparedStatement(getArtistCredits());
+        ResultSet artist_credits = executePreparedStatement(getArtistCredits(), from, to);
         populateHashMap(artist_credits);
     }
 

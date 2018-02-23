@@ -128,23 +128,24 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
         }
     }
 
-    public void aggregateFromDB() throws SQLException {
-        ResultSet workNames = executePreparedStatement(getWorkNames());
+    public void aggregateFromDB(int from, int to) throws SQLException {
+        ResultSet workNames = executePreparedStatement(getWorkNames(), from, to);
         populateNames(workNames);
 
-        ResultSet workDuplicateCheck = executePreparedStatement(getWorkNames());
+        // TODO: This solution is not very clean, since we query the result set twice
+        ResultSet workDuplicateCheck = executePreparedStatement(getWorkNames(), from, to);
         checkForDuplicates(workDuplicateCheck);
 
-        ResultSet workAliases = executePreparedStatement(getWorkAliasNames());
+        ResultSet workAliases = executePreparedStatement(getWorkAliasNames(), from, to);
         populateNames(workAliases);
 
-        ResultSet recordingNames = executePreparedStatement(getRecordingName());
+        ResultSet recordingNames = executePreparedStatement(getRecordingName(), from, to);
         populateNames(recordingNames);
 
-        ResultSet artists = executePreparedStatement(getArtists());
+        ResultSet artists = executePreparedStatement(getArtists(), from, to);
         populateArtists(artists);
 
-        ResultSet composers = executePreparedStatement(getComposer());
+        ResultSet composers = executePreparedStatement(getComposer(), from, to);
         populateComposers(composers);
     }
 
@@ -152,7 +153,7 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
         MBWork result = works.get(gid);
 
         if (result == null) {
-            result = new MBWork(gid, getConnection());
+            result = new MBWork(gid, getConnection(), this);
             works.put(gid, result);
         }
 

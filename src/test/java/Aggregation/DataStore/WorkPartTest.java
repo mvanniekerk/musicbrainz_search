@@ -9,11 +9,11 @@ public class WorkPartTest {
 
     @Test
     void setup() throws Exception {
-        WorkStore workStore = new WorkStore(12693839, 12693839+1);
+        WorkStore workStore = new WorkStore(0,0);
         // gid: 597e017a-2c97-40c0-9eeb-430a0461e4ad
         // This is "Der Ring des Nibelungen, WWV 86"
 
-        workStore.aggregateFromDB();
+        workStore.aggregateFromDB(12693839);
 
         for (MBWork work : workStore) {
             assertThat(work.getPartsAsID()).isEmpty();
