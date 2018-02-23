@@ -67,6 +67,19 @@ public class WorkPartTest {
         }
     }
 
+    @Test
+    void preferEnglishNameArtists() throws Exception {
+        WorkStore works = new WorkStore(0,0);
+        works.aggregateFromDB(7820498); // Lutoslawski cello concerto
+
+        for (MBWork work : works) {
+            assertThat(work.getArtists()).doesNotContain("Пётр Ильич Чайковский");
+            assertThat(work.getArtists()).contains("Tchaikovsky, Pyotr Ilyich");
+            // This piece is dedicated to Rostropovich, but not written by him
+            // so he is filtered from the composers.
+        }
+    }
+
 
     int getPartsHelper(int id) throws Exception {
         WorkStore workStore = new WorkStore(0,0);
