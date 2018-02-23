@@ -3,6 +3,7 @@ package Aggregation.DataStore;
 import Aggregation.dataType.MBWork;
 import Database.ElasticConnection;
 import Search.Work;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -14,6 +15,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class WorkStore extends DataStore implements Iterable<MBWork> {
@@ -150,7 +152,7 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
         MBWork result = works.get(gid);
 
         if (result == null) {
-            result = new MBWork(gid);
+            result = new MBWork(gid, getConnection());
             works.put(gid, result);
         }
 
