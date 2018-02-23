@@ -14,9 +14,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class WorkStore extends DataStore implements Iterable<MBWork> {
 
@@ -147,6 +149,13 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
 
         ResultSet composers = executePreparedStatement(getComposer(), from, to);
         populateComposers(composers);
+    }
+
+    public void aggregateParts() throws SQLException {
+        Set<String> keys = new HashSet<>(works.keySet());
+        for (String key : keys) {
+            works.get(key).addParts();
+        }
     }
 
     private MBWork find(String gid) {

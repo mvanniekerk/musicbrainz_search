@@ -82,4 +82,18 @@ public class WorkPartTest {
         }
         return null;
     }
+
+    //@Test
+    void aggregateForTiming() throws Exception {
+        WorkStore works = new WorkStore(12500000, 12510000);
+
+        long startTime = System.currentTimeMillis();
+        works.aggregateFromDB();
+        works.aggregateParts();
+        long endTime = System.currentTimeMillis();
+        long duration = endTime - startTime;
+        System.out.println("done. took " + duration + " ms");
+        // before aggregating parts: 27817 ms
+        // after aggregating parts: 69680 ms
+    }
 }

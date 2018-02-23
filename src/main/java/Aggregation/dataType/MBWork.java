@@ -19,7 +19,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @EqualsAndHashCode(of = {"gid"}, callSuper = false)
 @ToString
@@ -112,9 +114,14 @@ public class MBWork extends DataType {
     }
 
     public void addParts() throws SQLException {
+        addParts(0);
+    }
+
+    private void addParts(int depth) throws SQLException {
+        if (depth > 3) return;
         for (IdAndGid idAndGid : getPartsAsID()) {
             MBWork part = workStore.retrieve(idAndGid.id, idAndGid.gid);
-            part.addParts(); // recursively find children
+            part.addParts(depth+1); // recursively find children
             add(part); // add all information of the child tree to the work
         }
     }
