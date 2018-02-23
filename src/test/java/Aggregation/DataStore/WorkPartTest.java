@@ -70,13 +70,23 @@ public class WorkPartTest {
     @Test
     void preferEnglishNameArtists() throws Exception {
         WorkStore works = new WorkStore(0,0);
-        works.aggregateFromDB(7820498); // Lutoslawski cello concerto
+        works.aggregateFromDB(7820498); // Rococo variations
 
         for (MBWork work : works) {
             assertThat(work.getArtists()).doesNotContain("Пётр Ильич Чайковский");
             assertThat(work.getArtists()).contains("Tchaikovsky, Pyotr Ilyich");
-            // This piece is dedicated to Rostropovich, but not written by him
-            // so he is filtered from the composers.
+            // Prefer the english name for artists
+        }
+    }
+
+    @Test
+    void composersIncludeAliases() throws Exception {
+        WorkStore works = new WorkStore(0,0);
+        works.aggregateFromDB(7820498); // Rococo variations
+
+        for (MBWork work : works) {
+            assertThat(work.getComposers()).contains("Pyotor");
+            // Include aliases when they exist
         }
     }
 
@@ -105,7 +115,7 @@ public class WorkPartTest {
         return null;
     }
 
-    //@Test
+    @Test
     void aggregateForTiming() throws Exception {
         WorkStore works = new WorkStore(12500000, 12510000);
 

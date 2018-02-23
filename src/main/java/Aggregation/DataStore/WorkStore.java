@@ -77,10 +77,12 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
         Connection conn = getConnection();
 
         return conn.prepareStatement(
-        "SELECT artist.sort_name as name, work.gid FROM artist " +
+        "SELECT DISTINCT artist.sort_name as name, artist_alias.name as alias, work.gid FROM artist " +
             "JOIN l_artist_work ON entity0=artist.id " +
             "JOIN work ON entity1=work.id " +
             "JOIN link ON l_artist_work.link=link.id " +
+            "LEFT JOIN artist_alias ON artist_alias.artist=artist.id " +
+            "AND (locale IS NULL or locale='en' or locale='nl') " +
             "WHERE link.link_type != 846 " + // 846 is dedicated to
             "AND (work.id >= ?) AND (work.id < ?)"
         );
@@ -122,12 +124,20 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
     }
 
     private void populateComposers(ResultSet resultSet) throws SQLException {
+        String currName = "";
         while (resultSet.next()) {
             String gid = resultSet.getString("gid");
             assert gid != null;
             MBWork work = find(gid);
             String composer = resultSet.getString("name");
-            if (composer != null) {
+            String alias = resultSet.getString("alias");
+            if (alias != null) {
+                if (!currName.equals(composer)) {
+                    work.addComposer(composer);
+                    currName = composer;
+                }
+                work.addComposer(alias);
+            } else {
                 work.addComposer(composer);
             }
         }
