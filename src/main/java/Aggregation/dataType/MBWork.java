@@ -25,9 +25,9 @@ import java.util.List;
 @ToString
 public class MBWork extends DataType {
 
-    private final List<String> artists = new ArrayList<>();
-    private final List<String> composers = new ArrayList<>();
-    private final List<String> names = new ArrayList<>();
+    @Getter private final List<String> artists = new ArrayList<>();
+    @Getter private final List<String> composers = new ArrayList<>();
+    @Getter private final List<String> names = new ArrayList<>();
 
     @Getter
     @JsonIgnore
@@ -114,8 +114,15 @@ public class MBWork extends DataType {
     public void addParts() throws SQLException {
         for (IdAndGid idAndGid : getPartsAsID()) {
             MBWork part = workStore.retrieve(idAndGid.id, idAndGid.gid);
-            part.addParts();
+            part.addParts(); // recursively find children
+            add(part); // add all information of the child tree to the work
         }
+    }
+
+    public void add(MBWork other) {
+        artists.addAll(other.artists);
+        composers.addAll(other.composers);
+        names.addAll(other.names);
     }
 
     @Override
