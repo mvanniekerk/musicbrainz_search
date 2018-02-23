@@ -160,6 +160,19 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
         return result;
     }
 
+    public MBWork retrieve(int id, String gid) throws SQLException {
+        MBWork result = works.get(gid);
+
+        if (result == null) {
+            aggregateFromDB(id);
+            result = works.get(gid);
+            assert result != null;
+            return result;
+        } else {
+            return result;
+        }
+    }
+
     public void elasticStore() {
         ElasticConnection conn = ElasticConnection.getInstance();
 

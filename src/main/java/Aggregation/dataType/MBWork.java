@@ -6,6 +6,7 @@ import Search.Work;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jsonSerializer.JacksonSerializer;
 import jsonSerializer.JsonSerializer;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -87,24 +88,34 @@ public class MBWork extends DataType {
         return work;
     }
 
-    public List<Integer> getPartsAsID() throws SQLException {
+    public List<IdAndGid> getPartsAsID() throws SQLException {
         PreparedStatement ps = conn.prepareStatement(
-        "SELECT l_work_work.entity1 FROM work " +
-            "JOIN l_work_work ON work.id=l_work_work.entity0 " +
-            "JOIN link ON l_work_work.link=link.id " +
-            "WHERE work.gid=?::uuid " +
+        "SELECT workpart.id, workpart.gid FROM work\n" +
+            "JOIN l_work_work ON work.id=l_work_work.entity0\n" +
+            "JOIN link ON l_work_work.link=link.id\n" +
+            "JOIN work AS workpart ON l_work_work.entity1=workpart.id\n" +
+            "WHERE work.gid=?::uuid\n" +
             "AND link.link_type=281"
         );
         ps.setString(1,gid);
         ResultSet rs = ps.executeQuery();
 
-        List<Integer> parts = new ArrayList<>();
+        List<IdAndGid> parts = new ArrayList<>();
 
         while (rs.next()) {
-            parts.add(rs.getInt(1));
+            int id = rs.getInt(1);
+            String gid = rs.getString(2);
+            parts.add(new IdAndGid(id, gid));
         }
 
         return parts;
+    }
+
+    public void addParts() throws SQLException {
+        for (IdAndGid idAndGid : getPartsAsID()) {
+            MBWork part = workStore.retrieve(idAndGid.id, idAndGid.gid);
+            part.addParts();
+        }
     }
 
     @Override
@@ -112,5 +123,12 @@ public class MBWork extends DataType {
         JsonSerializer serializer = JacksonSerializer.getInstance();
 
         return serializer.writeAsString(this);
+    }
+
+    @AllArgsConstructor
+    @ToString
+    private class IdAndGid {
+        @Getter final int id;
+        @Getter final String gid;
     }
 }
