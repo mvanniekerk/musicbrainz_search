@@ -55,13 +55,22 @@ public class WorkPartTest {
         assertThat(partCount).isEqualTo(1 + 2 + 29 + 39 + 48);
     }
 
+    @Test
+    void noDedicatedTo() throws Exception {
+        WorkStore works = new WorkStore(0,0);
+        works.aggregateFromDB(12624856); // Lutoslawski cello concerto
+
+        for (MBWork work : works) {
+            assertThat(work.getComposers()).doesNotContain("Rostropovich, Mstislav");
+            // This piece is dedicated to Rostropovich, but not written by him
+            // so he is filtered from the composers.
+        }
+    }
 
 
     int getPartsHelper(int id) throws Exception {
         WorkStore workStore = new WorkStore(0,0);
-
         workStore.aggregateFromDB(id);
-
         for (MBWork work : workStore) work.addParts();
 
         int count = 0;
