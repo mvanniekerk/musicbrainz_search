@@ -41,6 +41,16 @@ public class WorkPartTest {
     }
 
     @Test
+    void getPartsTestForSubPart() throws Exception {
+        // 4588c721-3537-34b8-b673-3ad2092d1dc3
+        int partCount = getPartsHelper(1627063);
+
+        // This is an example of a part of a greater work
+        // It should not find its parent work
+        assertThat(partCount).isEqualTo(1 + 0);
+    }
+
+    @Test
     void getNamesHaydn() throws Exception {
         List<String> names = getTheNamesOfTheCollection(12515793);
 
@@ -90,14 +100,19 @@ public class WorkPartTest {
         }
     }
 
-
     int getPartsHelper(int id) throws Exception {
+        return getPartsHelper(id, false);
+    }
+
+
+    int getPartsHelper(int id, boolean print) throws Exception {
         WorkStore workStore = new WorkStore(0,0);
         workStore.aggregateFromDB(id);
         for (MBWork work : workStore) work.addParts();
 
         int count = 0;
         for (MBWork work : workStore) {
+            if (print) System.out.println(work.getGid() + " " + work.getNames());
             count++;
         }
         return count;
@@ -115,7 +130,7 @@ public class WorkPartTest {
         return null;
     }
 
-    @Test
+    //@Test
     void aggregateForTiming() throws Exception {
         WorkStore works = new WorkStore(12500000, 12510000);
 

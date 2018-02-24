@@ -11,6 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.sql.Connection;
@@ -79,6 +80,7 @@ public class MBWork extends DataType {
         return getTokensFromList(artists);
     }
 
+    @JsonIgnore
     public Work toSearchWork() {
         List<String> terms = new ArrayList<>(getComposerTokens());
         terms.addAll(getNameTokens());
@@ -90,6 +92,7 @@ public class MBWork extends DataType {
         return work;
     }
 
+    @JsonIgnore
     public List<IdAndGid> getPartsAsID() throws SQLException {
         PreparedStatement ps = conn.prepareStatement(
         "SELECT workpart.id, workpart.gid FROM work\n" +
@@ -97,7 +100,7 @@ public class MBWork extends DataType {
             "JOIN link ON l_work_work.link=link.id\n" +
             "JOIN work AS workpart ON l_work_work.entity1=workpart.id\n" +
             "WHERE work.gid=?::uuid\n" +
-            "AND link.link_type=281"
+            "AND link.link_type=281 AND l_work_work.edits_pending=0" // this is to avoid endless recursion due to a bug in the database
         );
         ps.setString(1,gid);
         ResultSet rs = ps.executeQuery();
@@ -105,8 +108,8 @@ public class MBWork extends DataType {
         List<IdAndGid> parts = new ArrayList<>();
 
         while (rs.next()) {
-            int id = rs.getInt(1);
-            String gid = rs.getString(2);
+            @NonNull int id = rs.getInt(1);
+            @NonNull String gid = rs.getString(2);
             parts.add(new IdAndGid(id, gid));
         }
 

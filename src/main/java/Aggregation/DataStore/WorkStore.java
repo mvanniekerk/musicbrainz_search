@@ -3,6 +3,7 @@ package Aggregation.DataStore;
 import Aggregation.dataType.MBWork;
 import Database.ElasticConnection;
 import Search.Work;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.BufferedWriter;
@@ -103,7 +104,7 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
     private void checkForDuplicates(ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
             String comment = resultSet.getString("comment");
-            String gid = resultSet.getString("gid");
+            @NonNull String gid = resultSet.getString("gid");
             MBWork work = find(gid);
             if (comment != null && comment.equals("catch-all for arrangements")) {
                 work.setIgnore(true);
@@ -113,8 +114,7 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
 
     private void populateArtists(ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
-            String gid = resultSet.getString("gid");
-            assert gid != null;
+            @NonNull String gid = resultSet.getString("gid");
             MBWork work = find(gid);
             String artist = resultSet.getString("name");
             if (artist != null) {
@@ -126,11 +126,11 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
     private void populateComposers(ResultSet resultSet) throws SQLException {
         String currName = "";
         while (resultSet.next()) {
-            String gid = resultSet.getString("gid");
+            @NonNull String gid = resultSet.getString("gid");
             assert gid != null;
             MBWork work = find(gid);
-            String composer = resultSet.getString("name");
-            String alias = resultSet.getString("alias");
+            @NonNull String composer = resultSet.getString("name");
+            @NonNull String alias = resultSet.getString("alias");
             if (alias != null) {
                 if (!currName.equals(composer)) {
                     work.addComposer(composer);
@@ -167,10 +167,12 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
     public void aggregateParts() throws SQLException {
         Set<String> keys = new HashSet<>(works.keySet());
         for (String key : keys) {
-            works.get(key).addParts();
+            @NonNull MBWork work = works.get(key);
+            work.addParts();
         }
     }
 
+    @NonNull
     private MBWork find(String gid) {
         MBWork result = works.get(gid);
 
