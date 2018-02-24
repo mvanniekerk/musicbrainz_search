@@ -18,7 +18,7 @@ public class DataTypeTest {
 
     @Test
     void emptyWorkTest() {
-        String result = new MBWork("").jsonSearchRepr();
+        String result = new MBWork("", null, null).jsonSearchRepr();
 
         assertThat(result).isEqualTo("{\"artists\":[],\"composers\":[],\"names\":[]}");
     }

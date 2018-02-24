@@ -47,6 +47,7 @@ public class Aggregator {
     void aggregate(int from, int to) throws SQLException {
         WorkStore works = new WorkStore(from, to);
         works.aggregateFromDB();
+        works.aggregateParts();
         works.elasticStore();
     }
 

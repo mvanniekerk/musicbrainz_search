@@ -20,13 +20,23 @@ public abstract class DataStore {
         return MusicBrainzDB.getInstance();
     }
 
-    ResultSet executePreparedStatement(PreparedStatement pstmt) throws SQLException {
-        pstmt.setInt(1, lowerID);
-        pstmt.setInt(2, higherID);
+    ResultSet executePreparedStatement(PreparedStatement pstmt, int from, int to) throws SQLException {
+        pstmt.setInt(1, from);
+        pstmt.setInt(2, to);
 
         return pstmt.executeQuery();
     }
 
-    abstract void aggregateFromDB() throws SQLException;
+
+
+    public void aggregateFromDB() throws SQLException {
+        aggregateFromDB(lowerID, higherID);
+    }
+
+    public void aggregateFromDB(int from) throws SQLException {
+        aggregateFromDB(from, from+1);
+    }
+
+    abstract void aggregateFromDB(int from, int to) throws SQLException;
 
 }
