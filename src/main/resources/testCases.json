@@ -1,0 +1,55 @@
+[
+  { "query" : "Fur Elise"
+  , "expected" : "aced4197-c0f2-3964-b0b3-d71288bf5b20"},
+
+  { "query" : "pachelbel canon"
+  , "expected" : "3fa14686-8507-4f63-bf17-1b5f1f1a0088"},
+
+  { "query" : "Nibelungen Ring"
+  , "expected" : "597e017a-2c97-40c0-9eeb-430a0461e4ad"},
+
+  { "query" : "Moonlight sonata"
+  , "expected" : "d754d820-2036-39f6-9fd5-636cda85b3b2"},
+
+  { "query" : "Mondschein sonata"
+  , "expected" : "d754d820-2036-39f6-9fd5-636cda85b3b2"},
+
+  { "query" : "Mozart requiem"
+  , "expected" : "3b11692b-cdc7-4107-9708-e5b9ee386af3"},
+
+  { "query" : "Bach cello suite G"
+  , "expected" : "55b871c7-5174-422b-9987-01b96e292fbd"},
+
+  { "query" : "The joke Haydn"
+  , "expected" : "3856c58a-4b21-4633-ac58-80dd6d312c9a"},
+
+  { "query" : "also sprach zarathustra"
+  , "expected" : "fec1c6a5-ece2-393b-89ed-00cdf5cf2afa"},
+
+  { "query" : "matthaus passion bach"
+  , "expected" : "45afb3b2-18ac-4187-bc72-beb1b1c194ba"},
+
+  { "query" : "matteus passion bach"
+  , "expected" : "45afb3b2-18ac-4187-bc72-beb1b1c194ba"},
+
+  { "query" : "pavane faure"
+  , "expected" : "8acfbbf0-5dbf-3138-bddd-5dfdd15bb41b"},
+
+  { "query" : "egmont beethoven"
+  , "expected" : "d42bc69b-e432-4cf8-aaea-a5178271ee52"},
+
+  { "query" : "four seasons vivaldi"
+  , "expected" : "87886dcf-9776-49cb-b6f5-10104da6e42c"},
+
+  { "query" : "vier seizoenen vivaldi"
+  , "expected" : "87886dcf-9776-49cb-b6f5-10104da6e42c"},
+
+  { "query" : "swan lake"
+  , "expected" : "11f48c5e-5ee9-4646-9826-fb7c2fccce7f"},
+
+  { "query" : "zwanen meer"
+  , "expected" : "11f48c5e-5ee9-4646-9826-fb7c2fccce7f"},
+
+  { "query" : "dvorak quintet 2"
+  , "expected" : "5adbc202-905f-4184-bddc-d46b9bc452e8"}
+]

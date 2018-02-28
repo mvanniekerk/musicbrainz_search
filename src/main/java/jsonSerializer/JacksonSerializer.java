@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 public class JacksonSerializer implements JsonSerializer {
 
@@ -52,6 +53,5 @@ public class JacksonSerializer implements JsonSerializer {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 }

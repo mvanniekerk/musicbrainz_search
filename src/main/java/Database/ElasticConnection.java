@@ -76,7 +76,7 @@ public class ElasticConnection {
 
     }
 
-    public String search(String query, String composerQuery, String artistQuery, int from) {
+    public String search(String query, String composerQuery, String artistQuery, int from, int size) {
 
         String queryString = String.join(" AND ", Tokenizer.tokenize(query));
 
@@ -84,7 +84,7 @@ public class ElasticConnection {
         request.types(TYPE);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.from(from);
-        searchSourceBuilder.size(20);
+        searchSourceBuilder.size(size);
 
         QueryBuilder boolQuery = QueryBuilders.boolQuery().must(
                 QueryBuilders.queryStringQuery(queryString)
