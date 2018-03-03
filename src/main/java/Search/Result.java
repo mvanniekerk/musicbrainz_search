@@ -1,9 +1,13 @@
 package Search;
 
+import Database.ElasticConnection;
 import Database.SearchDB;
 import Tokenizer.Tokenizer;
+import com.fasterxml.jackson.databind.JsonNode;
 import jsonSerializer.JacksonSerializer;
 import jsonSerializer.JsonSerializer;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -17,109 +21,35 @@ import java.util.List;
 import java.util.Map;
 
 @ToString
-@NoArgsConstructor
+@AllArgsConstructor
 public class Result {
-    private final Map<String, Work> works = new HashMap<>();
+    @Getter
+    private final List<Work> works = new ArrayList<>();
 
-    private final List<Work> orderedWorkList = new ArrayList<>();
+    @Getter
+    int took;
 
-    private Connection getConnection() {
-        return SearchDB.getInstance();
-    }
+    static Result fromElastic(String resultString) {
+        JsonNode result = JacksonSerializer.getInstance().readTree(resultString);
+        int took = result.get("took").intValue();
 
-    Work getWork(String gid, int length) {
-        if (works.containsKey(gid)) {
-            return works.get(gid);
+        Result res = new Result(took);
+
+        JsonNode resultList = result.get("hits").get("hits");
+        for (JsonNode work : resultList) {
+            res.works.add(Work.fromElastic(work));
         }
-        Work work = new Work(gid, length);
-        works.put(gid, work);
 
-        return work;
+        return res;
     }
 
-    void calcTfIdf() {
-        for (Work work : works.values()) {
-            work.calculateTfIdf();
-        }
-    }
+    public static void main(String[] args) {
+        String resultString =
+                ElasticConnection.getInstance().search("beethoven cello sonata 3", "", "", 0, 50);
 
-    void tfIdfOrderedWorkList() {
-        calcTfIdf();
-        orderedWorkList.addAll(works.values());
-        orderedWorkList.sort(Work::compareTo);
-    }
+        Result result = Result.fromElastic(resultString);
+        System.out.println(JacksonSerializer.getInstance().writeAsString(result));
 
-    void retrieveQuery(String query) throws SQLException {
-        for (String term : Tokenizer.tokenize(query)) {
-            retrieveTerm(term);
-        }
-    }
-
-    void retrieveTerm(String termName) throws SQLException {
-        Connection conn = getConnection();
-
-        PreparedStatement ps = conn.prepareStatement(
-        "SELECT terms.freq\n" +
-            "FROM terms\n" +
-            "WHERE terms.term=?"
-        );
-
-        ps.setString(1, termName);
-        ResultSet resultSet = ps.executeQuery();
-
-        if (!resultSet.next()) {
-            return;
-        }
-        int termFreq = resultSet.getInt(1);
-
-        Term term = new Term(termFreq, termName);
-
-        retrieveDocuments(term);
-    }
-
-    private void retrieveDocuments(Term term) throws SQLException {
-        Connection conn = getConnection();
-
-        PreparedStatement ps = conn.prepareStatement(
-        "SELECT documents.gid, documents.length, documents_terms.freq\n" +
-            "FROM terms\n" +
-            "INNER JOIN documents_terms ON terms.id=documents_terms.term_id\n" +
-            "INNER JOIN documents ON documents_terms.document_id=documents.id\n" +
-            "WHERE terms.term=?"
-        );
-
-        ps.setString(1, term.getTerm());
-        ResultSet resultSet = ps.executeQuery();
-
-        while (resultSet.next()) {
-            String gid = resultSet.getString("gid");
-            int length = resultSet.getInt("length");
-            int freq = resultSet.getInt("freq");
-
-            assert gid != null;
-            Work work = getWork(gid, length);
-            work.addTermCount(term, freq);
-        }
-    }
-
-    public void getNames(int start, int end) throws SQLException {
-        for (Work work : orderedWorkList.subList(start, end)) {
-            work.retrieveWorkName();
-            work.retrieveWorkArtist();
-        }
-    }
-
-    public String orderedWorkListAsJson(int start, int end) {
-        JsonSerializer serializer = JacksonSerializer.getInstance();
-
-        return serializer.writeAsString(orderedWorkList.subList(start, end));
-    }
-
-    public static void main(String[] args) throws SQLException {
-        Result result = new Result();
-        result.retrieveQuery("brubeck take five");
-        result.calcTfIdf();
-        result.tfIdfOrderedWorkList();
-        System.out.println(result.orderedWorkListAsJson(0, 20));
+        ElasticConnection.getInstance().close();
     }
 }
