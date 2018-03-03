@@ -47,6 +47,11 @@ public class MBWork extends DataType {
     @JsonIgnore
     private boolean ignore = false;
 
+    @Setter
+    @Getter
+    @Nullable
+    private String workParent;
+
     public MBWork(String gid, Connection conn, WorkStore workStore) {
         this.gid = gid;
         this.conn = conn;
