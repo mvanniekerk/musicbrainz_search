@@ -20,7 +20,7 @@ public class DataTypeTest {
     void emptyWorkTest() {
         String result = new MBWork("", null, null).jsonSearchRepr();
 
-        assertThat(result).isEqualTo("{\"artists\":[],\"composers\":[],\"names\":[]}");
+        assertThat(result).isEqualTo("{\"artists\":[],\"composers\":[],\"names\":[],\"workParent\":null}");
     }
 
     @Test

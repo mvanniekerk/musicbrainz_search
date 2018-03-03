@@ -5,8 +5,8 @@ The following queries seem to be completely equivalent:
 {
     "query" : { 
         "query_string" : { 
-            "query" : "mozart AND clarinet AND quintet",
-            "fields" : ["artists", "composers", "names"]
+            "query" : "five",
+            "fields" : ["artists.folded", "composers.folded", "names.folded"]
         }
     } 
 }

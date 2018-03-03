@@ -3,6 +3,7 @@ package Database;
 import Aggregation.DataStore.WorkStore;
 import Aggregation.dataType.MBWork;
 import Tokenizer.Tokenizer;
+import lombok.Getter;
 import org.apache.http.HttpHost;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.elasticsearch.action.ActionListener;
@@ -32,6 +33,7 @@ import java.util.List;
 
 
 public class ElasticConnection {
+    @Getter
     private RestHighLevelClient client;
     private final String INDEX = "musicbrainz";
     private final String TYPE = "work";
