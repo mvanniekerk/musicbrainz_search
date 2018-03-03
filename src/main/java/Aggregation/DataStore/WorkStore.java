@@ -60,6 +60,19 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
         );
     }
 
+    private PreparedStatement getWorkParent() throws SQLException {
+        Connection conn = getConnection();
+
+        return conn.prepareStatement(
+        "SELECT workparent.gid as parent, work.gid FROM work\n" +
+            "JOIN l_work_work ON work.id=l_work_work.entity1\n" +
+            "JOIN link ON l_work_work.link=link.id\n" +
+            "JOIN work AS workparent ON l_work_work.entity0=workparent.id\n" +
+            "WHERE (work.id >= ?) AND (work.id < ?)\n" +
+            "AND link.link_type=281 AND l_work_work.edits_pending=0"
+        );
+    }
+
     private PreparedStatement getArtists() throws SQLException {
         Connection conn = getConnection();
 
@@ -112,6 +125,15 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
         }
     }
 
+    private void setParents(ResultSet resultSet) throws SQLException {
+        while (resultSet.next()) {
+            String parent = resultSet.getString("parent");
+            String gid = resultSet.getString("gid");
+            MBWork work = find(gid);
+            work.setWorkParent(parent);
+        }
+    }
+
     private void populateArtists(ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
             @NonNull String gid = resultSet.getString("gid");
@@ -150,6 +172,9 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
         // TODO: This solution is not very clean, since we query the result set twice
         ResultSet workDuplicateCheck = executePreparedStatement(getWorkNames(), from, to);
         checkForDuplicates(workDuplicateCheck);
+
+        ResultSet parents = executePreparedStatement(getWorkParent(), from, to);
+        setParents(parents);
 
         ResultSet workAliases = executePreparedStatement(getWorkAliasNames(), from, to);
         populateNames(workAliases);

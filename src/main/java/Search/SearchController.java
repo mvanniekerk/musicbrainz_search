@@ -32,7 +32,7 @@ public class SearchController {
             String artistQuery = result.get("artistQuery").textValue();
             int from = (page - 1) * RESULT_SIZE;
 
-            return ElasticConnection.getInstance().search(query, composerQuery, artistQuery, from);
+            return ElasticConnection.getInstance().search(query, composerQuery, artistQuery, from, 20);
         });
     }
 

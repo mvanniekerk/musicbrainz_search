@@ -100,6 +100,32 @@ public class WorkPartTest {
         }
     }
 
+    @Test
+    void workParentGetsSetCorrectly() throws Exception {
+        WorkStore works = new WorkStore(0,0);
+        works.aggregateFromDB(11365407); // Beethoven cello sonata 3, Allegro Ma Non Tanto
+
+        for (MBWork work : works) {
+            assertThat(work.getWorkParent()).isEqualTo("015dadf8-f382-434b-b88a-3838e7199358");
+            // Beethoven cello sonata 3
+        }
+    }
+
+    @Test
+    void noWorkParentGetsSet() throws Exception {
+        WorkStore works = new WorkStore(0,0);
+        works.aggregateFromDB(12435976); // Beethoven cello sonata 3
+
+        // We expect no parent to be set here, because the piece in the database does not
+        // have a parent. But in reality, it could be nice for the piece to be part of
+        // the collection of cello sonatas by Beethoven, even though this is arguably not
+        // what you would want.
+
+        for (MBWork work : works) {
+            assertThat(work.getWorkParent()).isNull();
+        }
+    }
+
     int getPartsHelper(int id) throws Exception {
         return getPartsHelper(id, false);
     }

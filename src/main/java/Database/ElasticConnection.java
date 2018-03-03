@@ -3,6 +3,7 @@ package Database;
 import Aggregation.DataStore.WorkStore;
 import Aggregation.dataType.MBWork;
 import Tokenizer.Tokenizer;
+import lombok.Getter;
 import org.apache.http.HttpHost;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.elasticsearch.action.ActionListener;
@@ -32,6 +33,7 @@ import java.util.List;
 
 
 public class ElasticConnection {
+    @Getter
     private RestHighLevelClient client;
     private final String INDEX = "musicbrainz";
     private final String TYPE = "work";
@@ -76,7 +78,7 @@ public class ElasticConnection {
 
     }
 
-    public String search(String query, String composerQuery, String artistQuery, int from) {
+    public String search(String query, String composerQuery, String artistQuery, int from, int size) {
 
         String queryString = String.join(" AND ", Tokenizer.tokenize(query));
 
@@ -84,7 +86,7 @@ public class ElasticConnection {
         request.types(TYPE);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.from(from);
-        searchSourceBuilder.size(20);
+        searchSourceBuilder.size(size);
 
         QueryBuilder boolQuery = QueryBuilders.boolQuery().must(
                 QueryBuilders.queryStringQuery(queryString)

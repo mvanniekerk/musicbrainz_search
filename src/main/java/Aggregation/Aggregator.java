@@ -1,6 +1,7 @@
 package Aggregation;
 
 import Aggregation.DataStore.WorkStore;
+import Database.ElasticConnection;
 import Database.MusicBrainzDB;
 
 import java.sql.Connection;
@@ -67,5 +68,6 @@ public class Aggregator {
     public static void main(String[] args) throws SQLException {
         Aggregator aggregator = new Aggregator(50000, 0);
         aggregator.aggregateAll();
+        ElasticConnection.getInstance().close();
     }
 }

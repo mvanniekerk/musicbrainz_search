@@ -1,7 +1,15 @@
 {"settings": {
     "index": {
       "number_of_shards": "5",
-      "number_of_replicas": "1"
+      "number_of_replicas": "1",
+      "similarity" : {
+        "my_similarity" : {
+          "type" : "BM25",
+          "k1" : "1.2",
+          "b" : "0.75",
+          "discount_overlaps" : "true"
+        }
+      }
     },
     "analysis": {
       "analyzer": {
@@ -22,6 +30,7 @@
           "fields": {
             "folded": {
               "type":       "text",
+              "similarity": "my_similarity",
               "analyzer":   "folding"
             }
           }
@@ -32,6 +41,7 @@
           "fields": {
             "folded": {
               "type":       "text",
+              "similarity": "my_similarity",
               "analyzer":   "folding"
             }
           }
@@ -42,6 +52,7 @@
           "fields": {
             "folded": {
               "type":       "text",
+              "similarity": "my_similarity",
               "analyzer":   "folding"
             }
           }
