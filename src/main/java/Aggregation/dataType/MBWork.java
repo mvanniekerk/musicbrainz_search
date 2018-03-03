@@ -22,7 +22,7 @@ import java.util.List;
 
 @EqualsAndHashCode(of = {"gid"}, callSuper = false)
 @ToString
-public class    MBWork extends DataType {
+public class MBWork extends DataType {
 
     @Getter private final List<String> artists = new ArrayList<>();
     @Getter private final List<String> composers = new ArrayList<>();

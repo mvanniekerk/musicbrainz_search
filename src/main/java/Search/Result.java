@@ -3,6 +3,7 @@ package Search;
 import Database.ElasticConnection;
 import Database.SearchDB;
 import Tokenizer.Tokenizer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import jsonSerializer.JacksonSerializer;
 import jsonSerializer.JsonSerializer;
@@ -20,14 +21,34 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@ToString
+@ToString(exclude = {"tempWorks"})
 @AllArgsConstructor
 public class Result {
     @Getter
     private final List<Work> works = new ArrayList<>();
 
+    @JsonIgnore
+    private final Map<String, Work> tempWorks = new HashMap<>();
+
     @Getter
-    int took;
+    private final int took;
+
+    void storeTempWorks() {
+        for (Work work : tempWorks.values()) {
+            String parentGid = work.getParent();
+
+            if (parentGid != null) {
+                Work parent = tempWorks.get(parentGid);
+                if (parent != null) {
+                    parent.addChild(work);
+                } else {
+                    // getWorkFromGid();
+                    // TODO
+                    throw new RuntimeException("Parent was not in the list of works");
+                }
+            }
+        }
+    }
 
     static Result fromElastic(String resultString) {
         JsonNode result = JacksonSerializer.getInstance().readTree(resultString);
@@ -36,10 +57,15 @@ public class Result {
         Result res = new Result(took);
 
         JsonNode resultList = result.get("hits").get("hits");
-        for (JsonNode work : resultList) {
-            res.works.add(Work.fromElastic(work));
+        for (JsonNode workNode : resultList) {
+            Work work = Work.fromElastic(workNode);
+            if (work.getParent() == null) {
+                res.works.add(work);
+            }
+            res.tempWorks.put(work.getGid(), work);
         }
 
+        res.storeTempWorks();
         return res;
     }
 
@@ -48,7 +74,7 @@ public class Result {
                 ElasticConnection.getInstance().search("beethoven cello sonata 3", "", "", 0, 50);
 
         Result result = Result.fromElastic(resultString);
-        System.out.println(JacksonSerializer.getInstance().writeAsString(result));
+        System.out.println(result.toString());
 
         ElasticConnection.getInstance().close();
     }

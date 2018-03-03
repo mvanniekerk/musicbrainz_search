@@ -11,12 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
-@ToString
+@ToString(of = {"gid", "children"})
 public class Work {
     private final List<String> artists = new ArrayList<>();
     private final List<String> composers = new ArrayList<>();
     private final List<String> names = new ArrayList<>();
 
+    @Getter
     private final List<Work> children = new ArrayList<>();
 
     @Getter
@@ -25,6 +26,10 @@ public class Work {
     @Getter
     @JsonIgnore
     private final String parent;
+
+    void addChild(Work work) {
+        children.add(work);
+    }
 
     static Work fromElastic(JsonNode node) {
         String gid = node.get("_id").textValue();
