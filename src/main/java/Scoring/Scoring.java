@@ -16,10 +16,8 @@ public class Scoring {
     @Getter
     TestCase[] testCases;
 
-    final int numResults = 50;
-    final double total = (double) numResults;
+    private final int numResults = 50;
 
-    Scoring() {}
 
     void loadTestCases(String filename) throws IOException {
         InputStream file = this.getClass().getResourceAsStream(filename);
@@ -41,12 +39,12 @@ public class Scoring {
             i++;
         }
 
+        double total = (double) numResults;
         return (total - i) / total;
     }
 
     double calculateScore() {
-        double i = 0;
-        double sum = 0;
+        double i = 0, sum = 0;
         for (TestCase testCase : testCases) {
             sum += calculateScore(testCase);
             i++;
@@ -57,10 +55,8 @@ public class Scoring {
     @ToString
     @AllArgsConstructor
     static class TestCase {
-        @Getter
-        private final String query;
-        @Getter
-        private final String expected;
+        @Getter private final String query;
+        @Getter private final String expected;
     }
 
     public static void main(String[] args) throws IOException {
