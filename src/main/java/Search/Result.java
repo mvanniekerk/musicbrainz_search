@@ -1,125 +1,72 @@
 package Search;
 
-import Database.SearchDB;
-import Tokenizer.Tokenizer;
+import Database.ElasticConnection;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
 import jsonSerializer.JacksonSerializer;
-import jsonSerializer.JsonSerializer;
-import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.ToString;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@ToString
-@NoArgsConstructor
+@ToString(exclude = {"tempWorks"})
+@AllArgsConstructor
 public class Result {
-    private final Map<String, Work> works = new HashMap<>();
+    @Getter
+    private final List<Work> works = new ArrayList<>();
 
-    private final List<Work> orderedWorkList = new ArrayList<>();
+    @JsonIgnore
+    private final Map<String, Work> tempWorks = new HashMap<>();
 
-    private Connection getConnection() {
-        return SearchDB.getInstance();
-    }
+    @Getter private final int took;
+    @Getter private int total;
 
-    Work getWork(String gid, int length) {
-        if (works.containsKey(gid)) {
-            return works.get(gid);
-        }
-        Work work = new Work(gid, length);
-        works.put(gid, work);
-
-        return work;
-    }
-
-    void calcTfIdf() {
-        for (Work work : works.values()) {
-            work.calculateTfIdf();
+    void storeTempWorks() {
+        for (Work work : tempWorks.values()) {
+            storeTempWork(work);
         }
     }
 
-    void tfIdfOrderedWorkList() {
-        calcTfIdf();
-        orderedWorkList.addAll(works.values());
-        orderedWorkList.sort(Work::compareTo);
+    void sort() {
+        works.sort(Work::compareTo);
+
+        for (Work work : works) work.sort();
     }
 
-    void retrieveQuery(String query) throws SQLException {
-        for (String term : Tokenizer.tokenize(query)) {
-            retrieveTerm(term);
+    void storeTempWork(Work work) {
+        String parentGid = work.getParent();
+        if (parentGid != null) {
+            Work parent = tempWorks.get(parentGid);
+            if (parent == null) {
+                String parentDoc = ElasticConnection.getInstance().getDocument(parentGid);
+                parent = Work.fromElastic(parentDoc);
+                storeTempWork(parent);
+            }
+            parent.addChild(work);
+        } else {
+            works.add(work);
         }
     }
 
-    void retrieveTerm(String termName) throws SQLException {
-        Connection conn = getConnection();
+    static Result fromElastic(String resultString) {
+        JsonNode result = JacksonSerializer.getInstance().readTree(resultString);
+        int took = result.get("took").intValue();
+        int total = result.get("hits").get("total").intValue();
 
-        PreparedStatement ps = conn.prepareStatement(
-        "SELECT terms.freq\n" +
-            "FROM terms\n" +
-            "WHERE terms.term=?"
-        );
+        Result res = new Result(took, total);
 
-        ps.setString(1, termName);
-        ResultSet resultSet = ps.executeQuery();
-
-        if (!resultSet.next()) {
-            return;
+        JsonNode resultList = result.get("hits").get("hits");
+        for (JsonNode workNode : resultList) {
+            Work work = Work.fromElastic(workNode);
+            res.tempWorks.put(work.getGid(), work);
         }
-        int termFreq = resultSet.getInt(1);
 
-        Term term = new Term(termFreq, termName);
-
-        retrieveDocuments(term);
-    }
-
-    private void retrieveDocuments(Term term) throws SQLException {
-        Connection conn = getConnection();
-
-        PreparedStatement ps = conn.prepareStatement(
-        "SELECT documents.gid, documents.length, documents_terms.freq\n" +
-            "FROM terms\n" +
-            "INNER JOIN documents_terms ON terms.id=documents_terms.term_id\n" +
-            "INNER JOIN documents ON documents_terms.document_id=documents.id\n" +
-            "WHERE terms.term=?"
-        );
-
-        ps.setString(1, term.getTerm());
-        ResultSet resultSet = ps.executeQuery();
-
-        while (resultSet.next()) {
-            String gid = resultSet.getString("gid");
-            int length = resultSet.getInt("length");
-            int freq = resultSet.getInt("freq");
-
-            assert gid != null;
-            Work work = getWork(gid, length);
-            work.addTermCount(term, freq);
-        }
-    }
-
-    public void getNames(int start, int end) throws SQLException {
-        for (Work work : orderedWorkList.subList(start, end)) {
-            work.retrieveWorkName();
-            work.retrieveWorkArtist();
-        }
-    }
-
-    public String orderedWorkListAsJson(int start, int end) {
-        JsonSerializer serializer = JacksonSerializer.getInstance();
-
-        return serializer.writeAsString(orderedWorkList.subList(start, end));
-    }
-
-    public static void main(String[] args) throws SQLException {
-        Result result = new Result();
-        result.retrieveQuery("brubeck take five");
-        result.calcTfIdf();
-        result.tfIdfOrderedWorkList();
-        System.out.println(result.orderedWorkListAsJson(0, 20));
+        res.storeTempWorks();
+        res.sort();
+        return res;
     }
 }

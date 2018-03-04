@@ -181,3 +181,7 @@ p {
     width: 400px;
     font-size: 15px;
 }
+
+.children {
+    margin-left: 40px;
+}

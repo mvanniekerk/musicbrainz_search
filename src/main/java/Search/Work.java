@@ -1,164 +1,76 @@
 package Search;
 
-import Database.MusicBrainzDB;
-import Database.SearchDB;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.EqualsAndHashCode;
+import com.fasterxml.jackson.databind.JsonNode;
+import jsonSerializer.JacksonSerializer;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
-
-@EqualsAndHashCode(of = {"gid"} )
-@ToString
+@AllArgsConstructor
+@ToString(of = {"gid", "children", "score"})
 public class Work implements Comparable<Work> {
-    private static final int TOTAL_N_DOCS = 851366;
+    private final List<String> artists = new ArrayList<>();
+    private final List<String> composers = new ArrayList<>();
+    private final List<String> names = new ArrayList<>();
+
+    @Getter
+    private final List<Work> children = new ArrayList<>();
+
     @Getter
     private final String gid;
+
     @Getter
-    private final int length;
     @JsonIgnore
-    private int id;
-
-
-    @Nullable
-    private String name;
-    @Nullable
-    private String composer;
+    private final String parent;
 
     @Getter
-    private double tfIdf = 0;
+    @JsonIgnore
+    private final double score;
 
-    // term, termFrequency
-    @Getter
-    private final Map<Term, Integer> terms = new HashMap<>();
-
-
-    public Work(String gid, int length) {
-        this.gid = gid;
-        this.length = length;
+    void addChild(Work work) {
+        children.add(work);
     }
 
-
-    Connection getSearchConnection() {
-        return SearchDB.getInstance();
+    static Work fromElastic(String node) {
+        JsonNode jsonNode = JacksonSerializer.getInstance().readTree(node);
+        return fromElastic(jsonNode);
     }
 
-    Connection getMBConnection() {
-        return MusicBrainzDB.getInstance();
-    }
+    static Work fromElastic(JsonNode node) {
+        String gid = node.get("_id").textValue();
+        String parent = node.get("_source").get("workParent").textValue();
+        double score = node.get("_score").asDouble();
 
-    public void retrieveWorkName() throws SQLException {
-        PreparedStatement ps = getMBConnection().prepareStatement(
-                "SELECT name, comment FROM work\n" +
-                        "WHERE gid=?::uuid"
-        );
-        ps.setString(1, gid);
-        ResultSet rs = ps.executeQuery();
-        rs.next();
+        Work work = new Work(gid, parent, score);
 
-        name = rs.getString(1);
-        String comment = rs.getString(2);
-        if (!(comment == null || comment.equals(""))) {
-            name += ", " + comment;
+        for (JsonNode artist : node.get("_source").get("artists")) {
+            work.artists.add(artist.textValue());
         }
+
+        for (JsonNode name : node.get("_source").get("names")) {
+            work.names.add(name.textValue());
+        }
+
+        for (JsonNode composer : node.get("_source").get("composers")) {
+            work.composers.add(composer.textValue());
+        }
+
+        return work;
     }
 
-    public void retrieveWorkArtist() throws SQLException {
-        PreparedStatement ps = getMBConnection().prepareStatement(
-                "SELECT link_type.name, artist.name\n" +
-                        "FROM work\n" +
-                        "  JOIN l_artist_work ON entity1=work.id\n" +
-                        "  JOIN artist ON entity0=artist.id\n" +
-                        "  JOIN link ON l_artist_work.link=link.id\n" +
-                        "  JOIN link_type ON link.link_type=link_type.id\n" +
-                        "WHERE work.gid = ?::uuid"
-        );
-        ps.setString(1, gid);
-        ResultSet rs = ps.executeQuery();
-        StringBuilder result = new StringBuilder();
+    void sort() {
+        children.sort(Work::compareTo);
 
-        while (rs.next()) {
-            if (result.length() > 0) {
-                result.append(", ");
-            }
-            result.append(rs.getString(1))
-                    .append(": ")
-                    .append(rs.getString(2));
-        }
-        composer = result.toString();
-    }
-
-    public void addTermCount(Term term, Integer count) {
-        assert count != 0;
-        if (terms.containsKey(term)) {
-            int oldCount = terms.get(term);
-            terms.replace(term, oldCount + count);
-        } else {
-            terms.put(term, count);
-        }
-    }
-
-    void calculateTfIdf() {
-        double result = 0;
-        assert length > 0 : "Length should be a natural number";
-        for (Map.Entry<Term, Integer> termCount : terms.entrySet()) {
-            double tf = (double) termCount.getValue() / Math.log10(10 + length); // length is the work length
-            assert termCount.getValue() > 0 : "Term count should be a natural number";
-            int count = termCount.getKey().getFrequency();
-            assert count > 0 : "Term count (in work) should be a natural number";
-            double idf = Math.log10((double) TOTAL_N_DOCS / count);
-            double tf_idf = tf * idf;
-            result += tf_idf;
-        }
-        tfIdf = result;
+        for (Work child : children) child.sort();
     }
 
     @Override
-    public int compareTo(Work other) {
-        int numTerms = Integer.compare(other.terms.size(), this.terms.size());
-        if (numTerms != 0) {
-            return numTerms;
-        }
-        return Double.compare(other.tfIdf, this.tfIdf);
-    }
-
-
-    private PreparedStatement documentQuery() throws SQLException {
-        Connection conn = getSearchConnection();
-        return conn.prepareStatement(
-                "INSERT INTO documents (gid, length)\n" +
-                        "VALUES (?::uuid, ?)\n" +
-                        "ON CONFLICT (gid) DO UPDATE SET length = documents.length + ?\n" +
-                        "RETURNING id"
-        );
-    }
-
-    public void store() throws SQLException {
-        int size = length;
-        PreparedStatement docQuery = documentQuery();
-        docQuery.setString(1, gid);
-        docQuery.setInt(2, size);
-        docQuery.setInt(3, size);
-
-        ResultSet docResult = docQuery.executeQuery();
-        docResult.next();
-        id = docResult.getInt(1);
-    }
-
-    public void storeTerms() throws SQLException {
-        getSearchConnection().setAutoCommit(false);
-        for (Map.Entry<Term, Integer> entry : terms.entrySet()) {
-            entry.getKey().store(id,  entry.getValue());
-        }
-        getSearchConnection().commit();
-        getSearchConnection().setAutoCommit(true);
+    public int compareTo(@NotNull Work o) {
+        return Double.compare(o.score, score);
     }
 }

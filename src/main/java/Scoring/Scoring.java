@@ -45,14 +45,15 @@ public class Scoring {
         JsonNode result = JacksonSerializer.getInstance().readTree(resultString);
         JsonNode resultList = result.get("hits").get("hits");
 
-        int i = 0;
+        int i = 1;
         for (JsonNode work : resultList) {
-            if (work.get("_id").asText().equals(testCase.expected)) break;
+            if (work.get("_id").asText().equals(testCase.expected)) {
+                return ((double) numResults / i) / numResults;
+            }
             i++;
         }
 
-        double total = (double) numResults;
-        return (total - i) / total;
+        return 0;
     }
 
     double calculateScore() {
@@ -130,7 +131,7 @@ public class Scoring {
     public static void main(String[] args) throws IOException {
         Scoring scoring = new Scoring();
 
-        scoring.updateParameters(0.6, 0.25);
+        scoring.updateParameters(1.4, 0.3);
 
         scoring.loadTestCases("/testCases.json");
         System.out.println("\nFinal score: " + scoring.calculateScore());

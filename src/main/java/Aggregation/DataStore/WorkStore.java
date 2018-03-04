@@ -2,22 +2,15 @@ package Aggregation.DataStore;
 
 import Aggregation.dataType.MBWork;
 import Database.ElasticConnection;
-import Search.Work;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -231,14 +224,6 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
             if (!work.isIgnore()) {
                 conn.storeDocument(json, gid);
             }
-        }
-    }
-
-    public void store() throws SQLException {
-        for (MBWork mbWork : works.values()) {
-            Work work = mbWork.toSearchWork();
-            work.store();
-            work.storeTerms();
         }
     }
 

@@ -1,8 +1,6 @@
 package Aggregation.dataType;
 
 import Aggregation.DataStore.WorkStore;
-import Search.Term;
-import Search.Work;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jsonSerializer.JacksonSerializer;
 import jsonSerializer.JsonSerializer;
@@ -20,9 +18,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @EqualsAndHashCode(of = {"gid"}, callSuper = false)
 @ToString
@@ -83,18 +79,6 @@ public class MBWork extends DataType {
     @JsonIgnore
     public Collection<String> getArtistTokens() {
         return getTokensFromList(artists);
-    }
-
-    @JsonIgnore
-    public Work toSearchWork() {
-        List<String> terms = new ArrayList<>(getComposerTokens());
-        terms.addAll(getNameTokens());
-        terms.addAll(getArtistTokens());
-        Work work = new Work(gid, terms.size());
-        for (String term : terms) {
-            work.addTermCount(new Term(1, term), 1);
-        }
-        return work;
     }
 
     @JsonIgnore

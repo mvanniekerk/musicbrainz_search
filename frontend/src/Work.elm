@@ -10,7 +10,15 @@ type alias Work =
     , name : List String
     , composer : Composers
     , artist : Artists
+    , children : Children
     }
 
-work : String -> List String -> Composers -> Artists -> Work
+type Children = Children (List Work)
+
+children : Children -> List Work
+children child =
+    case child of
+        Children c -> c
+
+work : String -> List String -> Composers -> Artists -> Children -> Work
 work = Work False False
