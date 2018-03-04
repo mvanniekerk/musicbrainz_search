@@ -114,6 +114,7 @@ workView work =
                 [ text name ]
             , composerView work.composer work.gid work.showMoreComposers
             , artistView work.artist work.gid work.showMoreArtists
+            , div [ Attr.class "children" ] <| List.map workView <| children work.children
             ]
 
 composerView : List String -> String -> Bool -> Html ResultMsg
