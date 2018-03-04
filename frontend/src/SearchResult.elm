@@ -3,6 +3,7 @@ module SearchResult exposing (..)
 import Html exposing (..)
 import Html.Attributes as Attr
 import Html.Events exposing (onClick)
+import Regex
 
 import Work exposing (..)
 import Utils exposing (sortByOccurrence)
@@ -83,7 +84,7 @@ searchResultView sr =
     div [ Attr.class "search-result" ]
         [ p [ Attr.class "status-message" ]
             [ text <| toString sr.total ++ " results, took " ++ toString sr.took ++ " ms" ]
-        , div [] <| List.map workView sr.works
+        , div [] <| List.map defaultWorkView sr.works
         , moreResultsButton sr
         ]
 
@@ -97,12 +98,30 @@ moreResultsButton sr =
     else
         p [] []
 
-workView : Work -> Html ResultMsg
-workView work =
-    let
-        name : String
-        name = Maybe.withDefault "no name" <| List.head work.name
 
+stringDiff : Maybe String -> Maybe String -> String
+stringDiff am bm =
+    let
+        a = Maybe.withDefault "" am
+        b = Maybe.withDefault "no name" bm
+
+        reduce : String -> String -> String
+        reduce parent child =
+            case (String.uncons parent, String.uncons child) of
+                (Nothing, Just _) -> child
+                (_, Nothing) -> ""
+                (Just (c1, s1), Just (c2, s2)) -> if c1 == c2 then reduce s1 s2 else child
+
+        reduced = reduce a b
+    in
+        Regex.replace Regex.All (Regex.regex "^((\\.|,|:) *)" ) (\_ -> "") reduced
+
+defaultWorkView : Work -> Html ResultMsg
+defaultWorkView w = workView w <| Maybe.withDefault "no name" <| List.head w.name
+
+workView : Work -> String -> Html ResultMsg
+workView work name =
+    let
         artistShow = if work.showMoreArtists then 100 else 5
         composerShow = if work.showMoreComposers then 100 else 1
     in
@@ -114,7 +133,10 @@ workView work =
                 [ text name ]
             , composerView work.composer work.gid work.showMoreComposers
             , artistView work.artist work.gid work.showMoreArtists
-            , div [ Attr.class "children" ] <| List.map workView <| children work.children
+            , div [ Attr.class "children" ]
+            <| List.map (\w -> workView w
+            <| stringDiff (List.head work.name) (List.head w.name))
+            <| children work.children
             ]
 
 composerView : List String -> String -> Bool -> Html ResultMsg
