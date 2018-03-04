@@ -1,21 +1,13 @@
 package Search;
 
 import Database.ElasticConnection;
-import Database.SearchDB;
-import Tokenizer.Tokenizer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import jsonSerializer.JacksonSerializer;
-import jsonSerializer.JsonSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -71,7 +63,7 @@ public class Result {
 
     public static void main(String[] args) {
         String resultString =
-                ElasticConnection.getInstance().search("beethoven cello sonata 3", "", "", 0, 50);
+                ElasticConnection.getInstance().search("beethoven cello sonata 3", "", "", 0, 9);
 
         Result result = Result.fromElastic(resultString);
         System.out.println(result.toString());
