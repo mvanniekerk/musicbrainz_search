@@ -2,6 +2,7 @@ package Search;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
+import jsonSerializer.JacksonSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -28,6 +29,11 @@ public class Work {
 
     void addChild(Work work) {
         children.add(work);
+    }
+
+    static Work fromElastic(String node) {
+        JsonNode jsonNode = JacksonSerializer.getInstance().readTree(node);
+        return fromElastic(jsonNode);
     }
 
     static Work fromElastic(JsonNode node) {

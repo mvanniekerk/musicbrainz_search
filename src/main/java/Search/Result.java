@@ -27,18 +27,22 @@ public class Result {
 
     void storeTempWorks() {
         for (Work work : tempWorks.values()) {
-            String parentGid = work.getParent();
+            storeTempWork(work);
+        }
+    }
 
-            if (parentGid != null) {
-                Work parent = tempWorks.get(parentGid);
-                if (parent != null) {
-                    parent.addChild(work);
-                } else {
-                    // getWorkFromGid();
-                    // TODO
-                    throw new RuntimeException("Parent was not in the list of works");
-                }
+    void storeTempWork(Work work) {
+        String parentGid = work.getParent();
+        if (parentGid != null) {
+            Work parent = tempWorks.get(parentGid);
+            if (parent == null) {
+                String parentDoc = ElasticConnection.getInstance().getDocument(parentGid);
+                parent = Work.fromElastic(parentDoc);
+                storeTempWork(parent);
             }
+            parent.addChild(work);
+        } else {
+            works.add(work);
         }
     }
 
@@ -51,23 +55,10 @@ public class Result {
         JsonNode resultList = result.get("hits").get("hits");
         for (JsonNode workNode : resultList) {
             Work work = Work.fromElastic(workNode);
-            if (work.getParent() == null) {
-                res.works.add(work);
-            }
             res.tempWorks.put(work.getGid(), work);
         }
 
         res.storeTempWorks();
         return res;
-    }
-
-    public static void main(String[] args) {
-        String resultString =
-                ElasticConnection.getInstance().search("beethoven cello sonata 3", "", "", 0, 9);
-
-        Result result = Result.fromElastic(resultString);
-        System.out.println(result.toString());
-
-        ElasticConnection.getInstance().close();
     }
 }

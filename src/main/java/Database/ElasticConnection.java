@@ -7,6 +7,8 @@ import lombok.Getter;
 import org.apache.http.HttpHost;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.action.get.GetRequest;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
@@ -76,6 +78,16 @@ public class ElasticConnection {
             e.printStackTrace();
         }
 
+    }
+
+    public String getDocument(String gid) {
+        GetRequest getRequest = new GetRequest(INDEX, TYPE, gid);
+
+        try {
+            return client.get(getRequest).toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String search(String query, String composerQuery, String artistQuery, int from, int size) {
