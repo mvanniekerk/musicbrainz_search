@@ -31,6 +31,12 @@ public class Result {
         }
     }
 
+    void sort() {
+        works.sort(Work::compareTo);
+
+        for (Work work : works) work.sort();
+    }
+
     void storeTempWork(Work work) {
         String parentGid = work.getParent();
         if (parentGid != null) {
@@ -60,6 +66,7 @@ public class Result {
         }
 
         res.storeTempWorks();
+        res.sort();
         return res;
     }
 }

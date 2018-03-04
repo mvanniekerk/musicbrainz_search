@@ -40,6 +40,4 @@ public class ResultTest {
         assertThat(result.getWorks().get(0).getParent()).isNull();
         assertThat(result.getTotal()).isEqualTo(19);
     }
-
-
 }
