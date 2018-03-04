@@ -40,14 +40,15 @@ decodeResult : De.Decoder Response
 decodeResult =
     De.map3 Response
         (De.field "took" De.int)
-        (De.at ["hits", "total"] De.int)
-        (De.at ["hits", "hits"] <| De.list decodeWork)
+        (De.field "total" De.int)
+        (De.field "works" <| De.list decodeWork)
 
 
 decodeWork : De.Decoder Work
 decodeWork =
-    De.map4 work
-        (De.field "_id" De.string)
-        (De.at ["_source", "names"] <| De.list De.string)
-        (De.at ["_source", "composers"] <| De.list De.string)
-        (De.at ["_source", "artists"] <| De.list De.string)
+    De.map5 work
+        (De.field "gid" De.string)
+        (De.field "names" <| De.list De.string)
+        (De.field "composers" <| De.list De.string)
+        (De.field "artists" <| De.list De.string)
+        (De.field "children" <| De.map Children <| De.list <| De.lazy (\_ -> decodeWork))

@@ -3,9 +3,7 @@ package Search;
 import Database.ElasticConnection;
 import com.fasterxml.jackson.databind.JsonNode;
 import jsonSerializer.JacksonSerializer;
-import jsonSerializer.JsonSerializer;
 
-import static spark.Spark.get;
 import static spark.Spark.post;
 import static spark.Spark.staticFiles;
 
@@ -32,7 +30,9 @@ public class SearchController {
             String artistQuery = result.get("artistQuery").textValue();
             int from = (page - 1) * RESULT_SIZE;
 
-            return ElasticConnection.getInstance().search(query, composerQuery, artistQuery, from, 20);
+            String strResult = ElasticConnection.getInstance().search(query, composerQuery, artistQuery, from, 20);
+            Result treeStyle = Result.fromElastic(strResult);
+            return JacksonSerializer.getInstance().writeAsString(treeStyle);
         });
     }
 

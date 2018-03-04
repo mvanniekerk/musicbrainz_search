@@ -22,8 +22,8 @@ public class Result {
     @JsonIgnore
     private final Map<String, Work> tempWorks = new HashMap<>();
 
-    @Getter
-    private final int took;
+    @Getter private final int took;
+    @Getter private int total;
 
     void storeTempWorks() {
         for (Work work : tempWorks.values()) {
@@ -49,8 +49,9 @@ public class Result {
     static Result fromElastic(String resultString) {
         JsonNode result = JacksonSerializer.getInstance().readTree(resultString);
         int took = result.get("took").intValue();
+        int total = result.get("hits").get("total").intValue();
 
-        Result res = new Result(took);
+        Result res = new Result(took, total);
 
         JsonNode resultList = result.get("hits").get("hits");
         for (JsonNode workNode : resultList) {

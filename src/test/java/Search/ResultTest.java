@@ -21,7 +21,9 @@ public class ResultTest {
         Result result = Result.fromElastic(resultString);
         assertThat(result.getWorks().get(0).getParent()).isNull();
 
+
         // Potentially flaky
+        assertThat(result.getTotal()).isEqualTo(19);
         assertThat(result.getWorks()).hasSize(1);
         assertThat(result.getWorks().get(0).getChildren()).hasSize(1);
         assertThat(result.getWorks().get(0).getGid()).isEqualTo("015dadf8-f382-434b-b88a-3838e7199358");
@@ -36,6 +38,7 @@ public class ResultTest {
 
         assertThat(result.getWorks()).hasSize(1);
         assertThat(result.getWorks().get(0).getParent()).isNull();
+        assertThat(result.getTotal()).isEqualTo(19);
     }
 
 
