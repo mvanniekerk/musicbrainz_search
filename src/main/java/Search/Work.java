@@ -41,6 +41,15 @@ public class Work implements Comparable<Work> {
         return fromElastic(jsonNode);
     }
 
+    private double getMaxScore() {
+        double max = getScore();
+        for (Work work : children) {
+            double newScore = work.getMaxScore();
+            if (newScore > max) max = newScore;
+        }
+        return max;
+    }
+
     static Work fromElastic(JsonNode node) {
         String gid = node.get("_id").textValue();
         String parent = node.get("_source").get("workParent").textValue();
@@ -71,6 +80,6 @@ public class Work implements Comparable<Work> {
 
     @Override
     public int compareTo(@NotNull Work o) {
-        return Double.compare(o.score, score);
+        return Double.compare(o.getMaxScore(), getMaxScore());
     }
 }

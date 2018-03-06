@@ -52,3 +52,5 @@ decodeWork =
         (De.field "composers" <| De.list De.string)
         (De.field "artists" <| De.list De.string)
         (De.field "children" <| De.map Children <| De.list <| De.lazy (\_ -> decodeWork))
+
+-- test = De.map Children <| De.list <| De.lazy (\_ -> decodeWork)
