@@ -1,12 +1,15 @@
 package Database;
 
+import Aggregation.DataStore.RecordingStore;
 import Aggregation.DataStore.WorkStore;
 import Aggregation.dataType.MBWork;
+import Aggregation.dataType.Recording;
 import Tokenizer.Tokenizer;
 import lombok.Getter;
 import org.apache.http.HttpHost;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -68,7 +71,25 @@ public class ElasticConnection {
     }
 
     public void storeDocument(String json, String id) {
-        IndexRequest request = new IndexRequest(INDEX, TYPE, id);
+        storeDocument(json, id, INDEX, TYPE);
+    }
+
+    public void storeBulk(String index, String type, RecordingStore recordings) {
+        BulkRequest request = new BulkRequest();
+        for (Recording recording : recordings) {
+            request.add(new IndexRequest(index, type, recording.getGid())
+                    .source(recording.jsonSearchRepr(), XContentType.JSON));
+        }
+
+        try {
+            client.bulk(request);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void storeDocument(String json, String id, String index, String type) {
+        IndexRequest request = new IndexRequest(index, type, id);
 
         request.source(json, XContentType.JSON);
 
@@ -81,7 +102,11 @@ public class ElasticConnection {
     }
 
     public String getDocument(String gid) {
-        GetRequest getRequest = new GetRequest(INDEX, TYPE, gid);
+        return getDocument(gid, INDEX, TYPE);
+    }
+
+    public String getDocument(String gid, String index, String type) {
+        GetRequest getRequest = new GetRequest(index, type, gid);
 
         try {
             return client.get(getRequest).toString();

@@ -1,5 +1,6 @@
 package Aggregation;
 
+import Aggregation.DataStore.RecordingStore;
 import Aggregation.DataStore.WorkStore;
 import Database.ElasticConnection;
 import Database.MusicBrainzDB;
@@ -12,6 +13,8 @@ import java.sql.SQLException;
 public class Aggregator {
     private final int stepSize;
     private final int start;
+
+    private long startTime = 0;
 
     public Aggregator(int stepSize, int start) {
         this.stepSize = stepSize;
@@ -46,15 +49,16 @@ public class Aggregator {
     }
 
     void aggregate(int from, int to) throws SQLException {
-        WorkStore works = new WorkStore(from, to);
-        works.aggregateFromDB();
-        works.aggregateParts();
-        works.elasticStore();
+        RecordingStore store = new RecordingStore(from, to);
+        store.aggregateFromDB();
+        System.out.println("Aggregation took: " + (System.currentTimeMillis() - startTime));
+        // works.aggregateParts();
+        store.elasticStore();
     }
 
     void aggregateWithTime(int from, int to) throws SQLException {
         System.out.println("indexing from " + from + " to " + to);
-        long startTime = System.currentTimeMillis();
+        startTime = System.currentTimeMillis();
 
         aggregate(from, to);
 
@@ -66,7 +70,7 @@ public class Aggregator {
     }
 
     public static void main(String[] args) throws SQLException {
-        Aggregator aggregator = new Aggregator(50000, 0);
+        Aggregator aggregator = new Aggregator(10000, 0);
         aggregator.aggregateAll();
         ElasticConnection.getInstance().close();
     }

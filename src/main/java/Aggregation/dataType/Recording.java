@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 public class Recording {
-    @Getter private final String gid;
+    @JsonIgnore @Getter private final String gid;
     @Getter private final String name;
     @Getter private final String work_gid;
 
