@@ -16,7 +16,7 @@ public class RecordingTest {
 
         recordingStore.aggregateFromDB(12834183);
 
-        assertThat(recordingStore.getRecordings().size()).isEqualTo(3);
+        assertThat(recordingStore.getMap().size()).isEqualTo(3);
 
         for (Recording recording : recordingStore) {
             assertThat(recording.getWork_gid()).isEqualTo("80a09313-56b6-4bb1-9870-6b5ac5fbc0aa");
@@ -40,7 +40,7 @@ public class RecordingTest {
         recordingStore.aggregateFromDB(19609, 19938);
 
         boolean containsIt = false;
-        System.out.println(recordingStore.getRecordings());
+        System.out.println(recordingStore.getMap());
         for (Recording recording : recordingStore) {
             if (recording.getGid().equals(gid)) {
                 assertThat(recording.getArtists()).containsOnly("Radiohead");

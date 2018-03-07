@@ -1,7 +1,9 @@
 package Database;
 
+import Aggregation.DataStore.DataStore;
 import Aggregation.DataStore.RecordingStore;
 import Aggregation.DataStore.WorkStore;
+import Aggregation.dataType.DataType;
 import Aggregation.dataType.MBWork;
 import Aggregation.dataType.Recording;
 import Tokenizer.Tokenizer;
@@ -74,11 +76,11 @@ public class ElasticConnection {
         storeDocument(json, id, INDEX, TYPE);
     }
 
-    public void storeBulk(String index, String type, RecordingStore recordings) {
+    public void storeBulk(String index, String type, DataStore<? extends DataType> dataStore) {
         BulkRequest request = new BulkRequest();
-        for (Recording recording : recordings) {
-            request.add(new IndexRequest(index, type, recording.getGid())
-                    .source(recording.jsonSearchRepr(), XContentType.JSON));
+        for (DataType dataType : dataStore) {
+            request.add(new IndexRequest(index, type, dataType.getGid())
+                    .source(dataType.jsonSearchRepr(), XContentType.JSON));
         }
 
         try {

@@ -2,33 +2,29 @@ package Aggregation.DataStore;
 
 import Aggregation.dataType.Recording;
 import Database.ElasticConnection;
-import lombok.Getter;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 
-public class RecordingStore extends DataStore implements Iterable<Recording> {
+public class RecordingStore extends DataStore<Recording> {
 
-    @Getter
-    private final Map<String, Recording> recordings = new HashMap<>();
+    private static final String INDEX = "mb";
+    private static final String TYPE = "recording";
 
     public RecordingStore(int lowerID, int higherID) {
         super(lowerID, higherID);
     }
 
     private Recording find(String gid, String name, String work_gid) {
-        Recording recording = recordings.get(gid);
+        Recording recording = map.get(gid);
 
         if (recording == null) {
             recording = new Recording(gid, name, work_gid);
-            recordings.put(gid, recording);
+            map.put(gid, recording);
         }
 
         return recording;
@@ -88,12 +84,12 @@ public class RecordingStore extends DataStore implements Iterable<Recording> {
         }
     }
 
-    void populateArtists(ResultSet resultSet) throws SQLException {
+    private void populateArtists(ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
             String name = resultSet.getString("name");
             String gid = resultSet.getString("gid");
 
-            Recording recording = recordings.get(gid);
+            Recording recording = map.get(gid);
             if (recording != null) recording.getArtists().add(name);
         }
     }
@@ -109,22 +105,6 @@ public class RecordingStore extends DataStore implements Iterable<Recording> {
 
     public void elasticStore() {
         ElasticConnection conn = ElasticConnection.getInstance();
-
-        conn.storeBulk("mb", "recording", this);
-    }
-
-    @Override
-    public Iterator<Recording> iterator() {
-        return recordings.values().iterator();
-    }
-
-    public static void main(String[] args) throws SQLException {
-        RecordingStore recordingStore = new RecordingStore(0, 10000);
-
-        recordingStore.aggregateFromDB();
-
-        recordingStore.elasticStore();
-
-        ElasticConnection.getInstance().close();
+        conn.storeBulk(INDEX, TYPE, this);
     }
 }
