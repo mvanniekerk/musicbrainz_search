@@ -2,11 +2,10 @@ package Aggregation.DataStore;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import Aggregation.dataType.Recording;
+import Aggregation.dataType.MBRecording;
 import Database.ElasticConnection;
 import com.fasterxml.jackson.databind.JsonNode;
 import jsonSerializer.JacksonSerializer;
-import jsonSerializer.JsonSerializer;
 import org.junit.jupiter.api.Test;
 
 public class RecordingTest {
@@ -18,7 +17,7 @@ public class RecordingTest {
 
         assertThat(recordingStore.getMap().size()).isEqualTo(3);
 
-        for (Recording recording : recordingStore) {
+        for (MBRecording recording : recordingStore) {
             assertThat(recording.getWork_gid()).isEqualTo("80a09313-56b6-4bb1-9870-6b5ac5fbc0aa");
             System.out.println(recording);
         }
@@ -41,7 +40,7 @@ public class RecordingTest {
 
         boolean containsIt = false;
         System.out.println(recordingStore.getMap());
-        for (Recording recording : recordingStore) {
+        for (MBRecording recording : recordingStore) {
             if (recording.getGid().equals(gid)) {
                 assertThat(recording.getArtists()).containsOnly("Radiohead");
                 containsIt = true;
@@ -63,7 +62,7 @@ public class RecordingTest {
 
         recordingStore.aggregateFromDB(12834183);
 
-        for (Recording recording : recordingStore) {
+        for (MBRecording recording : recordingStore) {
             System.out.println(recording.jsonSearchRepr());
         }
     }

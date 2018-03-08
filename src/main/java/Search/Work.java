@@ -1,5 +1,6 @@
 package Search;
 
+import Database.ElasticConnection;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import jsonSerializer.JacksonSerializer;
@@ -20,6 +21,9 @@ public class Work implements Comparable<Work> {
 
     @Getter
     private final List<Work> children = new ArrayList<>();
+
+    @Getter
+    private final List<Recording> recordings = new ArrayList<>();
 
     @Getter
     private final String gid;
@@ -50,10 +54,24 @@ public class Work implements Comparable<Work> {
         return max;
     }
 
+    void retrieveRecordings(String query) {
+        String res = ElasticConnection.getInstance().recordingSearch(query, gid);
+
+        JsonNode tree = JacksonSerializer.getInstance().readTree(res);
+
+        for (JsonNode node : tree.get("hits").get("hits")) {
+            recordings.add(Recording.fromElastic(node));
+        }
+    }
+
+
     static Work fromElastic(JsonNode node) {
         String gid = node.get("_id").textValue();
         String parent = node.get("_source").get("workParent").textValue();
-        double score = node.get("_score").asDouble();
+        double score = 0;
+        if (node.has("_score")) {
+            node.get("_score").asDouble();
+        }
 
         Work work = new Work(gid, parent, score);
 

@@ -54,7 +54,7 @@ public class Result {
 
     static Result fromElastic(String resultString) {
         JsonNode result = JacksonSerializer.getInstance().readTree(resultString);
-        int took = result.get("took").intValue();
+        int took = result.get("took").asInt(0);
         int total = result.get("hits").get("total").intValue();
 
         Result res = new Result(took, total);
@@ -67,6 +67,7 @@ public class Result {
 
         res.storeTempWorks();
         res.sort();
+
         return res;
     }
 }

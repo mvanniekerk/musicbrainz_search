@@ -1,6 +1,6 @@
 package Aggregation.DataStore;
 
-import Aggregation.dataType.Recording;
+import Aggregation.dataType.MBRecording;
 import Database.ElasticConnection;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -10,7 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 
-public class RecordingStore extends DataStore<Recording> {
+public class RecordingStore extends DataStore<MBRecording> {
 
     private static final String INDEX = "mb";
     private static final String TYPE = "recording";
@@ -19,11 +19,11 @@ public class RecordingStore extends DataStore<Recording> {
         super(lowerID, higherID);
     }
 
-    private Recording find(String gid, String name, String work_gid) {
-        Recording recording = map.get(gid);
+    private MBRecording find(String gid, String name, String work_gid) {
+        MBRecording recording = map.get(gid);
 
         if (recording == null) {
-            recording = new Recording(gid, name, work_gid);
+            recording = new MBRecording(gid, name, work_gid);
             map.put(gid, recording);
         }
 
@@ -64,7 +64,7 @@ public class RecordingStore extends DataStore<Recording> {
     }
 
     private void populateReleases(ResultSet resultSet) throws SQLException {
-        @Nullable Recording recording = null;
+        @Nullable MBRecording recording = null;
         while (resultSet.next()) {
             String gid = resultSet.getString("recording");
             String name = resultSet.getString("name");
@@ -78,7 +78,7 @@ public class RecordingStore extends DataStore<Recording> {
             if (recording == null || !recording.getGid().equals(gid))
                 recording = find(gid, name, work_gid);
 
-            Recording.Release release = new Recording.Release(track, release_name, release_gid, cover_art);
+            MBRecording.Release release = new MBRecording.Release(track, release_name, release_gid, cover_art);
 
             recording.addRelease(release);
         }
@@ -89,7 +89,7 @@ public class RecordingStore extends DataStore<Recording> {
             String name = resultSet.getString("name");
             String gid = resultSet.getString("gid");
 
-            Recording recording = map.get(gid);
+            MBRecording recording = map.get(gid);
             if (recording != null) recording.getArtists().add(name);
         }
     }

@@ -13,7 +13,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @ToString
-public class Recording extends DataType {
+public class MBRecording extends DataType {
     @JsonIgnore @Getter private final String gid;
     @Getter private final String name;
     @Getter private final String work_gid;

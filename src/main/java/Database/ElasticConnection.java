@@ -1,42 +1,25 @@
 package Database;
 
 import Aggregation.DataStore.DataStore;
-import Aggregation.DataStore.RecordingStore;
-import Aggregation.DataStore.WorkStore;
 import Aggregation.dataType.DataType;
-import Aggregation.dataType.MBWork;
-import Aggregation.dataType.Recording;
 import Tokenizer.Tokenizer;
 import lombok.Getter;
 import org.apache.http.HttpHost;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.QueryShardContext;
-import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.index.search.MatchQuery;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 
 public class ElasticConnection {
@@ -115,6 +98,21 @@ public class ElasticConnection {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String recordingSearch(String query, String gid) {
+        SearchRequest request = new SearchRequest("mb").types("recording");
+
+        SearchSourceBuilder sb = new SearchSourceBuilder();
+
+        QueryBuilder termQuery = QueryBuilders.termQuery("work_gid.keyword", gid);
+        request.source(sb.query(termQuery));
+        try {
+            return client.search(request).toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     public String search(String query, String composerQuery, String artistQuery, int from, int size) {

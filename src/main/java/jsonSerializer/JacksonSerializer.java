@@ -54,4 +54,12 @@ public class JacksonSerializer implements JsonSerializer {
             throw new RuntimeException(e);
         }
     }
+
+    public <T> T readValue(JsonNode node, Class<T> o) {
+        try {
+            return objectMapper.treeToValue(node, o);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
