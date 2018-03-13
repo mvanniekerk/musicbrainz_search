@@ -20,5 +20,7 @@ public class RecordingTest {
 
         Recording recording = res.getRecordings().get(0);
         assertThat(recording.getName()).isEqualTo("Cello Concerto in E minor, op. 58: I. Andante");
+
+        ElasticConnection.getInstance().close();
     }
 }

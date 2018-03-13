@@ -25,19 +25,19 @@ public class Result {
     @Getter private final int took;
     @Getter private int total;
 
-    void storeTempWorks() {
+    private void storeTempWorks() {
         for (Work work : tempWorks.values()) {
             storeTempWork(work);
         }
     }
 
-    void sort() {
+    private void sort() {
         works.sort(Work::compareTo);
 
         for (Work work : works) work.sort();
     }
 
-    void storeTempWork(Work work) {
+    private void storeTempWork(Work work) {
         String parentGid = work.getParent();
         if (parentGid != null) {
             Work parent = tempWorks.get(parentGid);
@@ -60,8 +60,13 @@ public class Result {
         Result res = new Result(took, total);
 
         JsonNode resultList = result.get("hits").get("hits");
+        int recordingTop = 5;
         for (JsonNode workNode : resultList) {
             Work work = Work.fromElastic(workNode);
+
+            if (recordingTop > 0) work.retrieveRecordings("");
+            recordingTop--;
+
             res.tempWorks.put(work.getGid(), work);
         }
 

@@ -185,3 +185,10 @@ p {
 .children {
     margin-left: 40px;
 }
+
+.rel_img {
+    width: 75px;
+    height: 75px;
+    background-image: url("No-album-art.png");
+    background-size: 100%;
+}

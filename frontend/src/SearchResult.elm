@@ -116,6 +116,22 @@ stringDiff am bm =
     in
         Regex.replace Regex.All (Regex.regex "^((\\.|,|:) *)" ) (\_ -> "") reduced
 
+releaseView : (Release, String) -> Html ResultMsg
+releaseView (r, artist) =
+    div [ Attr.class "work" ]
+        [ img
+            [ Attr.class "rel_img"
+            , Attr.src <| Maybe.withDefault "" r.coverArt ]
+            []
+        , a
+            [ Attr.href ("https://musicbrainz.org/track/" ++ r.gid )
+            , Attr.class "work-link" ]
+            [ text r.name ]
+        , p
+            [ Attr.class "artist-name" ]
+            [ text artist ]
+        ]
+
 defaultWorkView : Work -> Html ResultMsg
 defaultWorkView w = workView w <| Maybe.withDefault "no name" <| List.head w.name
 
@@ -133,6 +149,7 @@ workView work name =
                 [ text name ]
             , composerView work.composer work.gid work.showMoreComposers
             , artistView work.artist work.gid work.showMoreArtists
+            , Maybe.withDefault (div [] []) <| Maybe.map releaseView (getRelease work)
             , div [ Attr.class "children" ]
             <| List.map (\w -> workView w
             <| stringDiff (List.head work.name) (List.head w.name))
