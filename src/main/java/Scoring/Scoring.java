@@ -45,15 +45,18 @@ public class Scoring {
         JsonNode result = JacksonSerializer.getInstance().readTree(resultString);
         JsonNode resultList = result.get("hits").get("hits");
 
+        double score = 0;
+
         int i = 1;
         for (JsonNode work : resultList) {
             if (work.get("_id").asText().equals(testCase.expected)) {
-                return ((double) numResults / i) / numResults;
+                double dcg = 1 / (Math.log(i + 1) / Math.log(2));
+                score += dcg;
             }
             i++;
         }
 
-        return 0;
+        return score;
     }
 
     double calculateScore() {
