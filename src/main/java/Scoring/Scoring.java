@@ -63,7 +63,7 @@ public class Scoring {
         double i = 0, sum = 0;
         for (TestCase testCase : testCases) {
             double score = calculateScore(testCase);
-            System.out.println("Score: " + score + " , query: " + testCase.query);
+            // System.out.println("Score: " + score + " , query: " + testCase.query);
             sum += score;
             i++;
         }
@@ -116,8 +116,10 @@ public class Scoring {
 
         Response response = httpClient.newCall(request).execute();
         ResponseBody rb = response.body();
-        if (rb != null && !rb.string().equals("{\"acknowledged\":true}"))
+        if (rb != null && !rb.string().equals("{\"acknowledged\":true}")) {
             throw new RuntimeException("Scoring change was not accepted, error msg: " + rb.string());
+        }
+
 
         OpenIndexRequest openIndexRequest = new OpenIndexRequest("musicbrainz");
         OpenIndexResponse openIndexResponse = client.indices().open(openIndexRequest);
@@ -131,13 +133,42 @@ public class Scoring {
         @Getter private final String expected;
     }
 
+    double parameterRange(double lower, double higher, double step) {
+        double highestScore = 0;
+        double bestLower = lower;
+        double bestHigher = higher;
+        try {
+            loadTestCases("/testCases.json");
+            for (double i = lower; i < higher; i += step) {
+                for (double j = lower; j < higher; j += step) {
+                    updateParameters(i, j);
+                    double score = calculateScore();
+                    if (score > highestScore) {
+                        highestScore = score;
+                        bestLower = i;
+                        bestHigher = j;
+                    }
+                    System.out.println(i + " " + j + " " + score);
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(bestLower + " " + bestHigher + " " + highestScore);
+        return highestScore;
+    }
+
     public static void main(String[] args) throws IOException {
         Scoring scoring = new Scoring();
 
-        scoring.updateParameters(1.4, 0.3);
-
         scoring.loadTestCases("/testCases.json");
-        System.out.println("\nFinal score: " + scoring.calculateScore());
+        scoring.updateParameters(0.6, 1.0);
+
+        //scoring.parameterRange(0.6, 2.0, 0.2);
+        double score = scoring.calculateScore();
+        System.out.println(score);
         ElasticConnection.getInstance().close();
     }
 }
