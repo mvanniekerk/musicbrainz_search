@@ -63,7 +63,7 @@ public class Scoring {
         double i = 0, sum = 0;
         for (TestCase testCase : testCases) {
             double score = calculateScore(testCase);
-            // System.out.println("Score: " + score + " , query: " + testCase.query);
+            System.out.println("Score: " + score + " , query: " + testCase.query);
             sum += score;
             i++;
         }
@@ -116,14 +116,18 @@ public class Scoring {
 
         Response response = httpClient.newCall(request).execute();
         ResponseBody rb = response.body();
-        if (rb != null && !rb.string().equals("{\"acknowledged\":true}")) {
-            throw new RuntimeException("Scoring change was not accepted, error msg: " + rb.string());
+        if (rb == null) {
+            throw new RuntimeException("rb is null");
+        }
+        String responseString = rb.string();
+        if (!responseString.equals("{\"acknowledged\":true}")) {
+            throw new RuntimeException("Scoring change was not accepted, error msg: " + responseString);
         }
 
 
         OpenIndexRequest openIndexRequest = new OpenIndexRequest("musicbrainz");
         OpenIndexResponse openIndexResponse = client.indices().open(openIndexRequest);
-        if (!openIndexResponse.isAcknowledged()) throw new RuntimeException("Index still closed");
+        if (!openIndexResponse.isShardsAcknowledged()) throw new RuntimeException("Index still closed");
     }
 
     @ToString
@@ -135,20 +139,25 @@ public class Scoring {
 
     double parameterRange(double lower, double higher, double step) {
         double highestScore = 0;
-        double bestLower = lower;
-        double bestHigher = higher;
+        double bestK1 = lower;
+        double bestB = higher;
+
+        final double lowerB = 0;
+        final double higherB = 1;
+        final double stepB = 0.1;
         try {
             loadTestCases("/testCases.json");
-            for (double i = lower; i < higher; i += step) {
-                for (double j = lower; j < higher; j += step) {
-                    updateParameters(i, j);
+            for (double k1 = lower; k1 < higher; k1 += step) {
+                for (double b = lowerB; b < higherB; b += stepB) {
+                    updateParameters(k1, b);
+                    Thread.sleep(1000);
                     double score = calculateScore();
                     if (score > highestScore) {
                         highestScore = score;
-                        bestLower = i;
-                        bestHigher = j;
+                        bestK1 = k1;
+                        bestB = b;
                     }
-                    System.out.println(i + " " + j + " " + score);
+                    System.out.println(k1 + " " + b + " " + score);
                 }
 
             }
@@ -156,19 +165,21 @@ public class Scoring {
             e.printStackTrace();
         }
 
-        System.out.println(bestLower + " " + bestHigher + " " + highestScore);
+        System.out.println(bestK1 + " " + bestB + " " + highestScore);
         return highestScore;
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         Scoring scoring = new Scoring();
 
-        scoring.loadTestCases("/testCases.json");
-        scoring.updateParameters(0.6, 1.0);
 
-        //scoring.parameterRange(0.6, 2.0, 0.2);
-        double score = scoring.calculateScore();
-        System.out.println(score);
+        scoring.updateParameters(3.4, 0.03);
+        Thread.sleep(1000);
+        scoring.loadTestCases("/testCases.json");
+
+        System.out.println("\nFinal score: " + scoring.calculateScore());
+
+        // scoring.parameterRange(0.6, 4.0, 0.2);
         ElasticConnection.getInstance().close();
     }
 }
