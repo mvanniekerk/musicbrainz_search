@@ -1,6 +1,7 @@
 package Scoring;
 
 import Database.ElasticConnection;
+import Database.MusicBrainzDB;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jsonSerializer.JacksonSerializer;
@@ -22,6 +23,11 @@ import org.elasticsearch.client.RestHighLevelClient;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Random;
 
 public class Scoring {
     @SuppressWarnings("nullness")
@@ -36,6 +42,35 @@ public class Scoring {
         if (file == null) throw new IOException("file does not exist");
 
         testCases = new ObjectMapper().readValue(file, TestCase[].class);
+    }
+
+    void loadSQLTestCases(int testSize, double seed) throws SQLException {
+        assert seed > 0.0 && seed < 1.0;
+
+        Connection conn = MusicBrainzDB.getInstance();
+        PreparedStatement seedStatement = conn.prepareStatement("SELECT setseed(?)");
+        seedStatement.setDouble(1, seed);
+        seedStatement.executeQuery();
+
+        PreparedStatement ps = conn.prepareStatement(
+                 "SELECT lastfm_name, work_gid\n" +
+                        "FROM lastfm_works\n" +
+                        "WHERE work_gid is not null\n" +
+                        "ORDER BY random()\n" +
+                        "LIMIT ?;");
+        ps.setInt(1, testSize);
+        ResultSet rs = ps.executeQuery();
+
+        int index = 0;
+        testCases = new TestCase[testSize];
+        while (rs.next()) {
+            String name = rs.getString("lastfm_name");
+            String gid = rs.getString("work_gid");
+
+            testCases[index] = new TestCase(name, gid);
+            index++;
+        }
+        assert index == testSize;
     }
 
     double calculateScore(TestCase testCase) {
@@ -63,7 +98,7 @@ public class Scoring {
         double i = 0, sum = 0;
         for (TestCase testCase : testCases) {
             double score = calculateScore(testCase);
-            System.out.println("Score: " + score + " , query: " + testCase.query);
+            System.out.println(score + ", " + testCase.query + ", " + testCase.expected);
             sum += score;
             i++;
         }
@@ -171,15 +206,17 @@ public class Scoring {
 
     public static void main(String[] args) throws Exception {
         Scoring scoring = new Scoring();
+        Random random = new Random();
+        scoring.loadSQLTestCases(1000, random.nextDouble());
 
-
-        scoring.updateParameters(3.4, 0.03);
-        Thread.sleep(1000);
-        scoring.loadTestCases("/testCases.json");
-
+//        scoring.updateParameters(3.4, 0.03);
+//        Thread.sleep(1000);
+//
+//        scoring.loadTestCases("/testCases.json");
+//
         System.out.println("\nFinal score: " + scoring.calculateScore());
-
-        // scoring.parameterRange(0.6, 4.0, 0.2);
+//
+//        scoring.parameterRange(0.6, 4.0, 0.2);
         ElasticConnection.getInstance().close();
     }
 }

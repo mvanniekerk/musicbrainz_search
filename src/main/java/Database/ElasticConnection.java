@@ -115,17 +115,8 @@ public class ElasticConnection {
 
     }
 
-    public String search(String query, String composerQuery, String artistQuery, int from, int size) {
-
-        String queryString = String.join(" AND ", Tokenizer.tokenize(query));
-
-        SearchRequest request = new SearchRequest(INDEX);
-        request.types(TYPE);
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        searchSourceBuilder.from(from);
-        searchSourceBuilder.size(size);
-
-        QueryBuilder boolQuery = QueryBuilders.boolQuery().must(
+    private QueryBuilder buildSearchQuery(String queryString, String composerQuery, String artistQuery) {
+        return QueryBuilders.boolQuery().must(
                 QueryBuilders.queryStringQuery(queryString)
                         .field("artists.folded")
                         .field("composers.folded")
@@ -139,6 +130,19 @@ public class ElasticConnection {
                         .operator(Operator.OR)
                         .zeroTermsQuery(MatchQuery.ZeroTermsQuery.ALL)
         );
+    }
+
+    public String search(String query, String composerQuery, String artistQuery, int from, int size) {
+
+        String queryString = String.join(" AND ", Tokenizer.tokenize(query));
+
+        SearchRequest request = new SearchRequest(INDEX);
+        request.types(TYPE);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.from(from);
+        searchSourceBuilder.size(size);
+
+        QueryBuilder boolQuery = buildSearchQuery(queryString, artistQuery, composerQuery);
 
         searchSourceBuilder.query(boolQuery);
 
