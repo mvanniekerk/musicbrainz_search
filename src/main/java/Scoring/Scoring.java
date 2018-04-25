@@ -2,6 +2,8 @@ package Scoring;
 
 import Database.ElasticConnection;
 import Database.MusicBrainzDB;
+import Search.Result;
+import Search.Work;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jsonSerializer.JacksonSerializer;
@@ -27,6 +29,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Random;
 
 public class Scoring {
@@ -75,16 +78,20 @@ public class Scoring {
 
     double calculateScore(TestCase testCase) {
         String resultString =
-                ElasticConnection.getInstance().search(testCase.query, "", "", 0, numResults);
+                ElasticConnection
+                        .getInstance()
+                        .search(testCase.query, "", "", 0, numResults);
 
-        JsonNode result = JacksonSerializer.getInstance().readTree(resultString);
-        JsonNode resultList = result.get("hits").get("hits");
+        Result result = Result.fromElastic(resultString);
+
+        List<Work> resultList = result.getLeaves();
+        System.out.println(resultList.stream().map(Work::getGid).reduce("", (str, s) -> str + " " + s));
 
         double score = 0;
 
         int i = 1;
-        for (JsonNode work : resultList) {
-            if (work.get("_id").asText().equals(testCase.expected)) {
+        for (Work work : resultList) {
+            if (work.getGid().equals(testCase.expected)) {
                 double dcg = 1 / (Math.log(i + 1) / Math.log(2));
                 score += dcg;
             }
@@ -207,7 +214,7 @@ public class Scoring {
     public static void main(String[] args) throws Exception {
         Scoring scoring = new Scoring();
         Random random = new Random();
-        scoring.loadSQLTestCases(1000, random.nextDouble());
+        scoring.loadSQLTestCases(500, 0.333);
 
 //        scoring.updateParameters(3.4, 0.03);
 //        Thread.sleep(1000);

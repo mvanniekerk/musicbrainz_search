@@ -132,7 +132,8 @@ public class ElasticConnection {
         );
     }
 
-    public String search(String query, String composerQuery, String artistQuery, int from, int size) {
+    public String search(
+            String query, String composerQuery, String artistQuery, int from, int size) {
 
         String queryString = String.join(" AND ", Tokenizer.tokenize(query));
 

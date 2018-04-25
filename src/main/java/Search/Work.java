@@ -90,6 +90,18 @@ public class Work implements Comparable<Work> {
         return work;
     }
 
+    List<Work> getLeaves() {
+        List<Work> leaves = new ArrayList<>();
+        if (children.isEmpty()) {
+            leaves.add(this);
+        } else {
+            for (Work work : children) {
+                leaves.addAll(work.getLeaves());
+            }
+        }
+        return leaves;
+    }
+
     void sort() {
         children.sort(Work::compareTo);
 
