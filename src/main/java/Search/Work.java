@@ -17,7 +17,7 @@ import java.util.List;
 public class Work implements Comparable<Work> {
     private final List<String> artists = new ArrayList<>();
     private final List<String> composers = new ArrayList<>();
-    private final List<String> names = new ArrayList<>();
+    @Getter private final List<String> names = new ArrayList<>();
 
     @Getter
     private final List<Work> children = new ArrayList<>();

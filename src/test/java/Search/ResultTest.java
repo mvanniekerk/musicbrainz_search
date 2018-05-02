@@ -6,6 +6,8 @@ import Database.ElasticConnection;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 public class ResultTest {
 
     @AfterAll
@@ -39,5 +41,45 @@ public class ResultTest {
         assertThat(result.getWorks()).hasSize(1);
         assertThat(result.getWorks().get(0).getParent()).isNull();
         assertThat(result.getTotal()).isEqualTo(19);
+    }
+
+    @Test
+    void sortingFlatList() {
+        Work work1 = new Work("a", null, 0.4);
+        Work work2 = new Work("b", null, 0.5);
+        Work work3 = new Work("c", null, 0.6);
+
+        Result result = new Result(0, 3);
+
+        result.getTempWorks().put(work1.getGid(), work1);
+        result.getTempWorks().put(work2.getGid(), work2);
+        result.getTempWorks().put(work3.getGid(), work3);
+
+        result.storeTempWorks();
+        result.sort();
+
+        List<Work> leaves = result.getLeaves();
+
+        assertThat(leaves.stream().map(Work::getGid).toArray()).isEqualTo(new String[]{"c","b","a"});
+    }
+
+    @Test
+    void sortingNestedList() {
+        Work work1 = new Work("a", null, 0.4);
+        Work work2 = new Work("b", null, 0.3);
+        Work work3 = new Work("c", "b", 0.6);
+
+        Result result = new Result(0, 3);
+
+        result.getTempWorks().put(work1.getGid(), work1);
+        result.getTempWorks().put(work2.getGid(), work2);
+        result.getTempWorks().put(work3.getGid(), work3);
+
+        result.storeTempWorks();
+        result.sort();
+
+        List<Work> leaves = result.getLeaves();
+
+        assertThat(leaves.stream().map(Work::getGid).toArray()).isEqualTo(new String[]{"c","a"});
     }
 }

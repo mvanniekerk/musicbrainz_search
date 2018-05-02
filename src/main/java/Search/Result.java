@@ -20,18 +20,19 @@ public class Result {
     private final List<Work> works = new ArrayList<>();
 
     @JsonIgnore
+    @Getter
     private final Map<String, Work> tempWorks = new HashMap<>();
 
     @Getter private final int took;
     @Getter private int total;
 
-    private void storeTempWorks() {
+    void storeTempWorks() {
         for (Work work : tempWorks.values()) {
             storeTempWork(work);
         }
     }
 
-    private void sort() {
+    void sort() {
         works.sort(Work::compareTo);
 
         for (Work work : works) work.sort();

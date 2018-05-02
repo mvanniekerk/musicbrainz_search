@@ -29,6 +29,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -37,7 +38,7 @@ public class Scoring {
     @Getter
     TestCase[] testCases;
 
-    private final int numResults = 50;
+    private final int numResults = 20;
 
 
     void loadTestCases(String filename) throws IOException {
@@ -85,7 +86,11 @@ public class Scoring {
         Result result = Result.fromElastic(resultString);
 
         List<Work> resultList = result.getLeaves();
-        System.out.println(resultList.stream().map(Work::getGid).reduce("", (str, s) -> str + " " + s));
+//        System.out.println(resultList
+//                .stream()
+//                .map(a -> a.getNames().get(0))
+//                .reduce("", (str, s) -> str + "; " + s)
+//        );
 
         double score = 0;
 
@@ -188,7 +193,6 @@ public class Scoring {
         final double higherB = 1;
         final double stepB = 0.1;
         try {
-            loadTestCases("/testCases.json");
             for (double k1 = lower; k1 < higher; k1 += step) {
                 for (double b = lowerB; b < higherB; b += stepB) {
                     updateParameters(k1, b);
@@ -214,10 +218,10 @@ public class Scoring {
     public static void main(String[] args) throws Exception {
         Scoring scoring = new Scoring();
         Random random = new Random();
-        scoring.loadSQLTestCases(500, 0.333);
+        scoring.loadSQLTestCases(100, 0.333);
 
-//        scoring.updateParameters(3.4, 0.03);
-//        Thread.sleep(1000);
+        // scoring.updateParameters(3.4, 0.03);
+        // Thread.sleep(1000);
 //
 //        scoring.loadTestCases("/testCases.json");
 //
