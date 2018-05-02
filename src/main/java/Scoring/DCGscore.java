@@ -8,24 +8,11 @@ import lombok.AllArgsConstructor;
 import java.util.List;
 
 @AllArgsConstructor
-public class DCGscore implements Scorer {
+public class DCGscore extends Scorer {
     private int numResults;
 
-
     double calculateScore(TestCase testCase) {
-        String resultString =
-                ElasticConnection
-                        .getInstance()
-                        .search(testCase.getQuery(), "", "", 0, numResults);
-
-        Result result = Result.fromElastic(resultString);
-
-        List<Work> resultList = result.getLeaves();
-//        System.out.println(resultList
-//                .stream()
-//                .map(a -> a.getNames().get(0))
-//                .reduce("", (str, s) -> str + "; " + s)
-//        );
+        List<Work> resultList = search(testCase, numResults);
 
         double score = 0;
 

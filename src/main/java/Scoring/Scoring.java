@@ -146,6 +146,7 @@ public class Scoring {
 
     public static void main(String[] args) throws Exception {
         Scorer scorer = new DCGscore(20);
+        scorer = new PrecisionScore(20, true);
         Loader loader = new SQLloader(100, 0.333);
         Scoring scoring = new Scoring(scorer, loader);
         scoring.loadTestCases();
