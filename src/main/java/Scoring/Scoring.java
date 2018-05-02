@@ -37,84 +37,12 @@ public class Scoring {
     @SuppressWarnings("nullness")
     @Getter
     TestCase[] testCases;
+    Scorer scorer;
+    Loader loader;
 
-    private final int numResults = 20;
-
-
-    void loadTestCases(String filename) throws IOException {
-        InputStream file = this.getClass().getResourceAsStream(filename);
-        if (file == null) throw new IOException("file does not exist");
-
-        testCases = new ObjectMapper().readValue(file, TestCase[].class);
-    }
-
-    void loadSQLTestCases(int testSize, double seed) throws SQLException {
-        assert seed > 0.0 && seed < 1.0;
-
-        Connection conn = MusicBrainzDB.getInstance();
-        PreparedStatement seedStatement = conn.prepareStatement("SELECT setseed(?)");
-        seedStatement.setDouble(1, seed);
-        seedStatement.executeQuery();
-
-        PreparedStatement ps = conn.prepareStatement(
-                 "SELECT lastfm_name, work_gid\n" +
-                        "FROM lastfm_works\n" +
-                        "WHERE work_gid is not null\n" +
-                        "ORDER BY random()\n" +
-                        "LIMIT ?;");
-        ps.setInt(1, testSize);
-        ResultSet rs = ps.executeQuery();
-
-        int index = 0;
-        testCases = new TestCase[testSize];
-        while (rs.next()) {
-            String name = rs.getString("lastfm_name");
-            String gid = rs.getString("work_gid");
-
-            testCases[index] = new TestCase(name, gid);
-            index++;
-        }
-        assert index == testSize;
-    }
-
-    double calculateScore(TestCase testCase) {
-        String resultString =
-                ElasticConnection
-                        .getInstance()
-                        .search(testCase.query, "", "", 0, numResults);
-
-        Result result = Result.fromElastic(resultString);
-
-        List<Work> resultList = result.getLeaves();
-//        System.out.println(resultList
-//                .stream()
-//                .map(a -> a.getNames().get(0))
-//                .reduce("", (str, s) -> str + "; " + s)
-//        );
-
-        double score = 0;
-
-        int i = 1;
-        for (Work work : resultList) {
-            if (work.getGid().equals(testCase.expected)) {
-                double dcg = 1 / (Math.log(i + 1) / Math.log(2));
-                score += dcg;
-            }
-            i++;
-        }
-
-        return score;
-    }
-
-    double calculateScore() {
-        double i = 0, sum = 0;
-        for (TestCase testCase : testCases) {
-            double score = calculateScore(testCase);
-            System.out.println(score + ", " + testCase.query + ", " + testCase.expected);
-            sum += score;
-            i++;
-        }
-        return sum / i;
+    Scoring(Scorer scorer, Loader loader) {
+        this.scorer = scorer;
+        this.loader = loader;
     }
 
     private RequestBody createRequestBody(double k1, double b) {
@@ -177,11 +105,12 @@ public class Scoring {
         if (!openIndexResponse.isShardsAcknowledged()) throw new RuntimeException("Index still closed");
     }
 
-    @ToString
-    @AllArgsConstructor
-    static class TestCase {
-        @Getter private final String query;
-        @Getter private final String expected;
+    double calculateScore() {
+        return scorer.calculateScore(testCases);
+    }
+
+    void loadTestCases() throws Exception {
+        testCases = loader.loadTestCases();
     }
 
     double parameterRange(double lower, double higher, double step) {
@@ -216,18 +145,15 @@ public class Scoring {
     }
 
     public static void main(String[] args) throws Exception {
-        Scoring scoring = new Scoring();
-        Random random = new Random();
-        scoring.loadSQLTestCases(100, 0.333);
+        Scorer scorer = new DCGscore(20);
+        Loader loader = new SQLloader(100, 0.333);
+        Scoring scoring = new Scoring(scorer, loader);
+        scoring.loadTestCases();
 
         // scoring.updateParameters(3.4, 0.03);
         // Thread.sleep(1000);
-//
-//        scoring.loadTestCases("/testCases.json");
-//
+
         System.out.println("\nFinal score: " + scoring.calculateScore());
-//
-//        scoring.parameterRange(0.6, 4.0, 0.2);
         ElasticConnection.getInstance().close();
     }
 }
