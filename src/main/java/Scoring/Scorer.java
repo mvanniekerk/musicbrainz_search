@@ -4,12 +4,13 @@ import Database.ElasticConnection;
 import Search.Result;
 import Search.Work;
 
+import java.io.IOException;
 import java.util.List;
 
 abstract class Scorer {
-    abstract double calculateScore(TestCase[] testCases);
+    abstract double calculateScore(TestCase[] testCases) throws IOException;
 
-    List<Work> search(TestCase testCase, int numResults) {
+    List<Work> search(TestCase testCase, int numResults) throws IOException {
         String resultString =
                 ElasticConnection
                         .getInstance()

@@ -86,18 +86,14 @@ public class ElasticConnection {
 
     }
 
-    public String getDocument(String gid) {
+    public String getDocument(String gid) throws IOException {
         return getDocument(gid, INDEX, TYPE);
     }
 
-    public String getDocument(String gid, String index, String type) {
+    public String getDocument(String gid, String index, String type) throws IOException {
         GetRequest getRequest = new GetRequest(index, type, gid);
 
-        try {
-            return client.get(getRequest).toString();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return client.get(getRequest).toString();
     }
 
     public String recordingSearch(String query, String gid) {
@@ -133,7 +129,7 @@ public class ElasticConnection {
     }
 
     public String search(
-            String query, String composerQuery, String artistQuery, int from, int size) {
+            String query, String composerQuery, String artistQuery, int from, int size) throws IOException {
 
         String queryString = String.join(" AND ", Tokenizer.tokenize(query));
 
@@ -149,10 +145,6 @@ public class ElasticConnection {
 
         request.source(searchSourceBuilder);
 
-        try {
-            return client.search(request).toString();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return client.search(request).toString();
     }
 }

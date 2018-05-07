@@ -6,6 +6,7 @@ import Database.ElasticConnection;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.List;
 
 public class ResultTest {
@@ -16,9 +17,15 @@ public class ResultTest {
     }
 
     @Test
-    void treeStyleResults() {
-        String resultString =
-                ElasticConnection.getInstance().search("beethoven cello sonata 3", "", "", 0, 2);
+    void treeStyleResults() throws IOException {
+        String resultString;
+        try {
+            resultString =
+                    ElasticConnection.getInstance().search("beethoven cello sonata 3", "", "", 0, 2);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
 
         Result result = Result.fromElastic(resultString);
         assertThat(result.getWorks().get(0).getParent()).isNull();
@@ -33,7 +40,8 @@ public class ResultTest {
     }
 
     @Test
-    void parentsWillBeGotten() {
+    void parentsWillBeGotten() throws IOException {
+
         String resultString =
                 ElasticConnection.getInstance().search("beethoven cello sonata 3", "", "", 1, 1);
         Result result = Result.fromElastic(resultString);
@@ -44,7 +52,7 @@ public class ResultTest {
     }
 
     @Test
-    void sortingFlatList() {
+    void sortingFlatList() throws IOException {
         Work work1 = new Work("a", null, 0.4);
         Work work2 = new Work("b", null, 0.5);
         Work work3 = new Work("c", null, 0.6);
@@ -64,7 +72,7 @@ public class ResultTest {
     }
 
     @Test
-    void sortingNestedList() {
+    void sortingNestedList() throws IOException {
         Work work1 = new Work("a", null, 0.4);
         Work work2 = new Work("b", null, 0.3);
         Work work3 = new Work("c", "b", 0.6);

@@ -17,6 +17,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.admin.indices.close.CloseIndexRequest;
 import org.elasticsearch.action.admin.indices.close.CloseIndexResponse;
 import org.elasticsearch.action.admin.indices.open.OpenIndexRequest;
@@ -74,7 +76,7 @@ public class Scoring {
 
         CloseIndexRequest closeIndexRequest = new CloseIndexRequest("musicbrainz");
         CloseIndexResponse closeIndexResponse = client.indices().close(closeIndexRequest);
-        if (!closeIndexResponse.isAcknowledged()) throw new RuntimeException("Index still open");
+        if (!closeIndexResponse.isAcknowledged()) throw new IOException("Index still open");
 
 
         // Sadly, elasticsearch does not seem to be completely up to date with the high level API
@@ -92,20 +94,36 @@ public class Scoring {
         Response response = httpClient.newCall(request).execute();
         ResponseBody rb = response.body();
         if (rb == null) {
-            throw new RuntimeException("rb is null");
+            throw new IOException("rb is null");
         }
         String responseString = rb.string();
         if (!responseString.equals("{\"acknowledged\":true}")) {
-            throw new RuntimeException("Scoring change was not accepted, error msg: " + responseString);
+            throw new IOException("Scoring change was not accepted, error msg: " + responseString);
         }
 
 
         OpenIndexRequest openIndexRequest = new OpenIndexRequest("musicbrainz");
         OpenIndexResponse openIndexResponse = client.indices().open(openIndexRequest);
-        if (!openIndexResponse.isShardsAcknowledged()) throw new RuntimeException("Index still closed");
+        if (!openIndexResponse.isShardsAcknowledged()) throw new IOException("Index still closed");
     }
 
-    double calculateScore() {
+    double safeCalculateScore() throws InterruptedException {
+        for (int i = 0; i < 5; i++) {
+            try {
+                return calculateScore();
+            } catch (Exception e) {
+                if (i == 4) {
+                    System.out.println("Tried 5 times...");
+                    throw new RuntimeException(e);
+                } else {
+                    Thread.sleep(1000);
+                }
+            }
+        }
+        throw new RuntimeException("Unreachable");
+    }
+
+    double calculateScore() throws IOException {
         return scorer.calculateScore(testCases);
     }
 
@@ -113,7 +131,7 @@ public class Scoring {
         testCases = loader.loadTestCases();
     }
 
-    double parameterRange(double lower, double higher, double step) {
+    void parameterRange(double lower, double higher, double step) throws InterruptedException {
         double highestScore = 0;
         double bestK1 = lower;
         double bestB = higher;
@@ -121,38 +139,42 @@ public class Scoring {
         final double lowerB = 0;
         final double higherB = 1;
         final double stepB = 0.1;
-        try {
-            for (double k1 = lower; k1 < higher; k1 += step) {
-                for (double b = lowerB; b < higherB; b += stepB) {
+
+        for (double k1 = lower; k1 < higher; k1 += step) {
+            for (double b = lowerB; b < higherB; b += stepB) {
+                try {
                     updateParameters(k1, b);
-                    Thread.sleep(1000);
-                    double score = calculateScore();
-                    if (score > highestScore) {
-                        highestScore = score;
-                        bestK1 = k1;
-                        bestB = b;
-                    }
-                    System.out.println(k1 + " " + b + " " + score);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
 
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+                Thread.sleep(1000);
+                double score = safeCalculateScore();
 
+                if (score > highestScore) {
+                    highestScore = score;
+                    bestK1 = k1;
+                    bestB = b;
+                }
+                System.out.println(k1 + " " + b + " " + score);
+            }
+        }
         System.out.println(bestK1 + " " + bestB + " " + highestScore);
-        return highestScore;
+        try {
+            updateParameters(bestK1, bestB);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void main(String[] args) throws Exception {
         Scorer scorer = new DCGscore(20);
-        scorer = new PrecisionScore(20, true);
+        scorer = new PrecisionScore(20, false);
         Loader loader = new SQLloader(100, 0.333);
         Scoring scoring = new Scoring(scorer, loader);
         scoring.loadTestCases();
 
-        // scoring.updateParameters(3.4, 0.03);
-        // Thread.sleep(1000);
+        scoring.parameterRange(0.6, 3.0, 0.2);
 
         System.out.println("\nFinal score: " + scoring.calculateScore());
         ElasticConnection.getInstance().close();

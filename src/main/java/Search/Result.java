@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +27,7 @@ public class Result {
     @Getter private final int took;
     @Getter private int total;
 
-    void storeTempWorks() {
+    void storeTempWorks() throws IOException {
         for (Work work : tempWorks.values()) {
             storeTempWork(work);
         }
@@ -38,7 +39,7 @@ public class Result {
         for (Work work : works) work.sort();
     }
 
-    private void storeTempWork(Work work) {
+    private void storeTempWork(Work work) throws IOException {
         String parentGid = work.getParent();
         if (parentGid != null) {
             Work parent = tempWorks.get(parentGid);
@@ -61,7 +62,7 @@ public class Result {
         return leaves;
     }
 
-    public static Result fromElastic(String resultString) {
+    public static Result fromElastic(String resultString) throws IOException {
         JsonNode result = JacksonSerializer.getInstance().readTree(resultString);
         int took = result.get("took").asInt(0);
         int total = result.get("hits").get("total").intValue();

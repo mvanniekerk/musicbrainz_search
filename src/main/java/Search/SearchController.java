@@ -4,6 +4,8 @@ import Database.ElasticConnection;
 import com.fasterxml.jackson.databind.JsonNode;
 import jsonSerializer.JacksonSerializer;
 
+import java.io.IOException;
+
 import static spark.Spark.post;
 import static spark.Spark.staticFiles;
 
@@ -30,7 +32,14 @@ public class SearchController {
             String artistQuery = result.get("artistQuery").textValue();
             int from = (page - 1) * RESULT_SIZE;
 
-            String strResult = ElasticConnection.getInstance().search(query, composerQuery, artistQuery, from, 20);
+            String strResult;
+            try {
+                strResult = ElasticConnection.getInstance().
+                        search(query, composerQuery, artistQuery, from, 20);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
             Result treeStyle = Result.fromElastic(strResult);
             return JacksonSerializer.getInstance().writeAsString(treeStyle);
         });

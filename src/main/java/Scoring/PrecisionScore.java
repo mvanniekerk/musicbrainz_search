@@ -3,6 +3,7 @@ package Scoring;
 import Search.Work;
 import lombok.AllArgsConstructor;
 
+import java.io.IOException;
 import java.util.List;
 
 @AllArgsConstructor
@@ -10,7 +11,7 @@ public class PrecisionScore extends Scorer {
     private int numResults;
     private boolean printEachTestCase;
 
-    double calculateScore(TestCase testCase) {
+    private double calculateScore(TestCase testCase) throws IOException {
         List<Work> resultList = search(testCase, numResults);
         if (resultList.size() == 0) {
             return 0;
@@ -24,7 +25,7 @@ public class PrecisionScore extends Scorer {
         }
     }
 
-    void printTestCase(TestCase testCase) {
+    private void printTestCase(TestCase testCase) throws IOException {
         List<Work> resultList = search(testCase, numResults);
 
         int position = 1;
@@ -37,7 +38,8 @@ public class PrecisionScore extends Scorer {
         }
     }
 
-    double calculateScore(TestCase[] testCases) {
+    @Override
+    double calculateScore(TestCase[] testCases) throws IOException {
         double truePositives = 0;
         for (TestCase testCase: testCases) {
             if (printEachTestCase) printTestCase(testCase);

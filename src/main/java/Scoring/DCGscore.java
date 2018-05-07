@@ -5,13 +5,14 @@ import Search.Result;
 import Search.Work;
 import lombok.AllArgsConstructor;
 
+import java.io.IOException;
 import java.util.List;
 
 @AllArgsConstructor
 public class DCGscore extends Scorer {
     private int numResults;
 
-    double calculateScore(TestCase testCase) {
+    private double calculateScore(TestCase testCase) throws IOException {
         List<Work> resultList = search(testCase, numResults);
 
         double score = 0;
@@ -28,7 +29,8 @@ public class DCGscore extends Scorer {
         return score;
     }
 
-    public double calculateScore(TestCase[] testCases) {
+    @Override
+    public double calculateScore(TestCase[] testCases) throws IOException {
         double i = 0, sum = 0;
         for (TestCase testCase : testCases) {
             double score = calculateScore(testCase);
