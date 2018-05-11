@@ -2,6 +2,7 @@ package Scoring;
 
 import Database.ElasticConnection;
 import lombok.Getter;
+import lombok.Setter;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -15,13 +16,16 @@ import org.elasticsearch.action.admin.indices.open.OpenIndexResponse;
 import org.elasticsearch.client.RestHighLevelClient;
 
 import java.io.IOException;
+import java.util.Random;
 
 public class Scoring {
     @SuppressWarnings("nullness")
     @Getter
-    TestCase[] testCases;
-    Scorer scorer;
-    Loader loader;
+    private TestCase[] testCases;
+    @Setter
+    private Scorer scorer;
+    @Setter
+    private Loader loader;
 
     Scoring(Scorer scorer, Loader loader) {
         this.scorer = scorer;
@@ -149,15 +153,25 @@ public class Scoring {
     }
 
     public static void main(String[] args) throws Exception {
+        double seed = new Random().nextDouble();
         Scorer scorer = new DcgScore(20, false);
-        scorer = new PrecisionScore(20, true);
-        Loader loader = new SqlArtistLoader(100, 0.333);
+        scorer = new PrecisionScore(20, false);
+
+        Loader loader = new SqlLoader(200, seed);
         Scoring scoring = new Scoring(scorer, loader);
         scoring.loadTestCases();
+        double score = scoring.calculateScore();
+
+        scoring.setLoader(new SqlArtistLoader(200, seed));
+        scoring.loadTestCases();
+        double artistScore = scoring.calculateScore();
 
         // scoring.parameterRange(0.6, 3.0, 0.2);
 
-        System.out.println("\nFinal score: " + scoring.calculateScore());
+        System.out.println("\nFinal score: " + score);
+        System.out.println("With artists: " + artistScore);
+        System.out.println("Difference: " + (artistScore - score));
+        System.out.println("Seed: " + seed);
         ElasticConnection.getInstance().close();
     }
 }

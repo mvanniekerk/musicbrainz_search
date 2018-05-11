@@ -36,14 +36,18 @@ public class PrecisionScore extends Scorer {
             }
             position++;
         }
+        System.out.println(-1 + ", " + testCase.getQuery() + ", " + testCase.getExpected());
     }
 
     @Override
     double calculateScore(TestCase[] testCases) throws IOException {
         double truePositives = 0;
         for (TestCase testCase: testCases) {
-            if (printEachTestCase) printTestCase(testCase);
-            truePositives += calculateScore(testCase);
+            double score = calculateScore(testCase);
+            truePositives += score;
+            if (printEachTestCase && score != 1) {
+                printTestCase(testCase);
+            }
         }
         return truePositives / (double) testCases.length;
     }
