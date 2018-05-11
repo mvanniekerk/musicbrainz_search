@@ -150,14 +150,14 @@ public class Scoring {
 
     public static void main(String[] args) throws Exception {
         Scorer scorer = new DcgScore(20, false);
-//        scorer = new PrecisionScore(20, false);
+        scorer = new PrecisionScore(20, true);
         Loader loader = new SqlArtistLoader(100, 0.333);
         Scoring scoring = new Scoring(scorer, loader);
         scoring.loadTestCases();
 
-        scoring.parameterRange(0.6, 3.0, 0.2);
+        // scoring.parameterRange(0.6, 3.0, 0.2);
 
-        // System.out.println("\nFinal score: " + scoring.calculateScore());
+        System.out.println("\nFinal score: " + scoring.calculateScore());
         ElasticConnection.getInstance().close();
     }
 }

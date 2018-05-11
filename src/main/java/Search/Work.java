@@ -45,7 +45,7 @@ public class Work implements Comparable<Work> {
         return fromElastic(jsonNode);
     }
 
-    private double getMaxScore() {
+    double getMaxScore() {
         double max = getScore();
         for (Work work : children) {
             double newScore = work.getMaxScore();
@@ -70,7 +70,7 @@ public class Work implements Comparable<Work> {
         String parent = node.get("_source").get("workParent").textValue();
         double score = 0;
         if (node.has("_score")) {
-            node.get("_score").asDouble();
+            score = node.get("_score").asDouble();
         }
 
         Work work = new Work(gid, parent, score);

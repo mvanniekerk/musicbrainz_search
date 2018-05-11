@@ -40,6 +40,21 @@ public class ResultTest {
     }
 
     @Test
+    void strangeCase() throws IOException {
+        String resultString =
+                ElasticConnection.getInstance().search("Yyz Rush", "", "", 0, 20);
+        Result results = Result.fromElastic(resultString);
+
+
+        double prevScore = Double.MAX_VALUE;
+        for (Work resultWork : results.getWorks()) {
+            assertThat(resultWork.getMaxScore()).isLessThan(prevScore);
+            prevScore = resultWork.getMaxScore();
+        }
+
+    }
+
+    @Test
     void parentsWillBeGotten() throws IOException {
 
         String resultString =
