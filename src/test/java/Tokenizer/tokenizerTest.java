@@ -11,6 +11,11 @@ public class tokenizerTest {
         assertThat(Tokenizer.toAscii("Paul Tortelier")).isEqualTo("Paul Tortelier");
     }
 
+    @Test
+    void dots() {
+        assertThat(Tokenizer.tokenize("The Saga Of H.M.S. Bounty Vangelis")).isEqualTo(new String[0]);
+    }
+
     /**
      * Apparently this is considered a separate letter in Norwegian and Danish. I probably still
      * would like to convert this to an ascii o, since most people searching will use ascii keyboards.

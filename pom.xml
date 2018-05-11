@@ -45,11 +45,6 @@
         <shade.plugin.version>2.4.3</shade.plugin.version>
         <surefire.plugin.version>2.19.1</surefire.plugin.version>
 
-        <checkerframework.plugin.version>2.1.10</checkerframework.plugin.version>
-        <!-- IntelliJ will warn about this line, but the maven-dependency-plugin
-             does correctly resolve this, so there is nothing to worry about. -->
-        <annotatedJdk>${org.checkerframework:jdk8:jar}</annotatedJdk>
-
         <lombok.version>1.16.6</lombok.version>
     </properties>
 
@@ -112,37 +107,6 @@
             <artifactId>assertj-core</artifactId>
             <version>${assertj.version}</version>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>info.cukes</groupId>
-            <artifactId>cucumber-java</artifactId>
-            <version>${cucumber.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>info.cukes</groupId>
-            <artifactId>cucumber-junit</artifactId>
-            <version>${cucumber.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- annotations from the Checker Framework: nullness, interning, locking, ... -->
-        <dependency>
-            <groupId>org.checkerframework</groupId>
-            <artifactId>checker-qual</artifactId>
-            <version>${checkerframework.plugin.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.checkerframework</groupId>
-            <artifactId>checker</artifactId>
-            <version>${checkerframework.plugin.version}</version>
-        </dependency>
-        <!-- The annotated JDK to use (change to jdk7 if using Java 7). -->
-        <dependency>
-            <groupId>org.checkerframework</groupId>
-            <artifactId>jdk8</artifactId>
-            <version>${checkerframework.plugin.version}</version>
         </dependency>
 
         <!-- lombok -->
@@ -229,7 +193,6 @@
                     <target>${maven.compiler.target}</target>
                     <fork>true</fork>
                     <annotationProcessors>
-                        <annotationProcessor>org.checkerframework.checker.nullness.NullnessChecker</annotationProcessor>
                         <annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</annotationProcessor>
                     </annotationProcessors>
                     <compilerArgs>
@@ -241,26 +204,6 @@
                 </configuration>
             </plugin>
 
-            <!-- The checkstyle, findbugs and PMD plugins have configurations, for
-                the checkstyle:checkstyle and pmd:pmd to work properly, the plugins should
-                also be specified under the build section. See: https://github.com/sevntu-checkstyle/checkstyle-samples/blob/master/maven-project/pom.xml -->
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${checkstyle.plugin.version}</version>
-                <configuration>
-                    <configLocation>${basedir}/checkstyle.xml</configLocation>
-                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.puppycrawl.tools</groupId>
-                        <artifactId>checkstyle</artifactId>
-                        <version>${checkstyle.version}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -301,7 +244,7 @@
                         <configuration>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>Aggregation.DataStore.Aggregator</mainClass>
+                                    <mainClass>Aggregation.DataStore.WorkAggregator</mainClass>
                                 </transformer>
                             </transformers>
                             <createDependencyReducedPom>false</createDependencyReducedPom>

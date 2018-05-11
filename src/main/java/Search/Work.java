@@ -7,7 +7,6 @@ import jsonSerializer.JacksonSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,7 +108,7 @@ public class Work implements Comparable<Work> {
     }
 
     @Override
-    public int compareTo(@NotNull Work o) {
+    public int compareTo(Work o) {
         return Double.compare(o.getMaxScore(), getMaxScore());
     }
 }

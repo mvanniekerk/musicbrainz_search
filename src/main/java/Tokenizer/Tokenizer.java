@@ -1,10 +1,10 @@
 package Tokenizer;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 import lombok.AllArgsConstructor;
 
 import java.text.Normalizer;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +24,7 @@ public class Tokenizer {
         }
 
         String lemmatized = lemmatize(string);
-        String[] result = lemmatized.split("[^a-z|'|0-9]+");
+        String[] result = lemmatized.split("[^a-z|'\\.|0-9]+");
         return stripBadResult(result);
     }
 

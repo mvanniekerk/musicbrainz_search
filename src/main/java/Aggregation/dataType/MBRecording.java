@@ -6,7 +6,7 @@ import jsonSerializer.JsonSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
-import org.checkerframework.checker.nullness.qual.Nullable;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,7 @@ public class MBRecording extends DataType {
         @JsonIgnore private final String release_gid;
         @JsonIgnore private final long cover_art;
 
-        @Nullable
+
         public String getCoverArtUrl() {
             if (cover_art == 0) return null;
             return "https://coverartarchive.org/release/" + release_gid + "/" + cover_art + ".jpg";

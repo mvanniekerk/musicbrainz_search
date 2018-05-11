@@ -5,7 +5,6 @@ import Aggregation.dataType.DataType;
 import Tokenizer.Tokenizer;
 import lombok.Getter;
 import org.apache.http.HttpHost;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.index.IndexRequest;
@@ -28,7 +27,7 @@ public class ElasticConnection {
     private final String INDEX = "musicbrainz";
     private final String TYPE = "work";
 
-    @Nullable
+
     private static ElasticConnection elasticConnection;
 
     private ElasticConnection() {

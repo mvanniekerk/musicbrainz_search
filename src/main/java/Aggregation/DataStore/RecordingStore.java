@@ -2,7 +2,6 @@ package Aggregation.DataStore;
 
 import Aggregation.dataType.MBRecording;
 import Database.ElasticConnection;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -64,7 +63,7 @@ public class RecordingStore extends DataStore<MBRecording> {
     }
 
     private void populateReleases(ResultSet resultSet) throws SQLException {
-        @Nullable MBRecording recording = null;
+        MBRecording recording = null;
         while (resultSet.next()) {
             String gid = resultSet.getString("recording");
             String name = resultSet.getString("name");

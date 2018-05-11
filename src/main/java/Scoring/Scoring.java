@@ -154,13 +154,14 @@ public class Scoring {
 
     public static void main(String[] args) throws Exception {
         double seed = new Random().nextDouble();
+        seed = 0.41599346367269363;
         Scorer scorer = new DcgScore(20, false);
-        scorer = new PrecisionScore(20, false);
+        scorer = new PrecisionScore(20, true);
 
         Loader loader = new SqlLoader(200, seed);
         Scoring scoring = new Scoring(scorer, loader);
-        scoring.loadTestCases();
-        double score = scoring.calculateScore();
+//        scoring.loadTestCases();
+//        double score = scoring.calculateScore();
 
         scoring.setLoader(new SqlArtistLoader(200, seed));
         scoring.loadTestCases();
@@ -168,9 +169,9 @@ public class Scoring {
 
         // scoring.parameterRange(0.6, 3.0, 0.2);
 
-        System.out.println("\nFinal score: " + score);
+//        System.out.println("\nFinal score: " + score);
         System.out.println("With artists: " + artistScore);
-        System.out.println("Difference: " + (artistScore - score));
+//        System.out.println("Difference: " + (artistScore - score));
         System.out.println("Seed: " + seed);
         ElasticConnection.getInstance().close();
     }

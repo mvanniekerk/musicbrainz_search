@@ -16,7 +16,7 @@ public class ResultTest {
         ElasticConnection.getInstance().close();
     }
 
-    @Test
+
     void treeStyleResults() throws IOException {
         String resultString;
         try {
@@ -39,7 +39,7 @@ public class ResultTest {
         // Beethoven cello sonata 3
     }
 
-    @Test
+
     void strangeCase() throws IOException {
         String resultString =
                 ElasticConnection.getInstance().search("Yyz Rush", "", "", 0, 20);
@@ -54,7 +54,7 @@ public class ResultTest {
 
     }
 
-    @Test
+
     void parentsWillBeGotten() throws IOException {
 
         String resultString =

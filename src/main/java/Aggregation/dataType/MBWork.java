@@ -9,8 +9,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -45,7 +43,6 @@ public class MBWork extends DataType {
 
     @Setter
     @Getter
-    @Nullable
     private String workParent;
 
     public MBWork(String gid, Connection conn, WorkStore workStore) {
@@ -97,8 +94,8 @@ public class MBWork extends DataType {
         List<IdAndGid> parts = new ArrayList<>();
 
         while (rs.next()) {
-            @NonNull int id = rs.getInt(1);
-            @NonNull String gid = rs.getString(2);
+            int id = rs.getInt(1);
+            String gid = rs.getString(2);
             parts.add(new IdAndGid(id, gid));
         }
 

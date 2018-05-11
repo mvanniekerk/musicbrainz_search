@@ -2,16 +2,12 @@ package Aggregation.DataStore;
 
 import Aggregation.dataType.MBWork;
 import Database.ElasticConnection;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 public class WorkStore extends DataStore<MBWork> {
@@ -45,10 +41,11 @@ public class WorkStore extends DataStore<MBWork> {
         Connection conn = getConnection();
 
         return conn.prepareStatement(
-        "SELECT recording.name, work.gid FROM recording " +
-            "LEFT JOIN l_recording_work ON entity0=recording.id " +
-            "LEFT JOIN work on entity1=work.id " +
-            "WHERE (work.id >= ?) AND (work.id < ?)"
+        "SELECT DISTINCT track.name, work.gid FROM recording\n" +
+            "JOIN l_recording_work ON entity0=recording.id\n" +
+            "JOIN work ON entity1=work.id\n" +
+            "JOIN track ON track.recording=recording.id\n" +
+            "WHERE (WORK.id >= ?) AND (WORK.id < ?)"
         );
     }
 
@@ -109,7 +106,7 @@ public class WorkStore extends DataStore<MBWork> {
     private void checkForDuplicates(ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
             String comment = resultSet.getString("comment");
-            @NonNull String gid = resultSet.getString("gid");
+            String gid = resultSet.getString("gid");
             MBWork work = find(gid);
             if (comment != null && comment.equals("catch-all for arrangements")) {
                 work.setIgnore(true);
@@ -128,7 +125,7 @@ public class WorkStore extends DataStore<MBWork> {
 
     private void populateArtists(ResultSet resultSet) throws SQLException {
         while (resultSet.next()) {
-            @NonNull String gid = resultSet.getString("gid");
+            String gid = resultSet.getString("gid");
             MBWork work = find(gid);
             String artist = resultSet.getString("name");
             if (artist != null) {
@@ -140,11 +137,11 @@ public class WorkStore extends DataStore<MBWork> {
     private void populateComposers(ResultSet resultSet) throws SQLException {
         String currName = "";
         while (resultSet.next()) {
-            @NonNull String gid = resultSet.getString("gid");
+            String gid = resultSet.getString("gid");
             assert gid != null;
             MBWork work = find(gid);
-            @NonNull String composer = resultSet.getString("name");
-            @NonNull String alias = resultSet.getString("alias");
+            String composer = resultSet.getString("name");
+            String alias = resultSet.getString("alias");
             if (alias != null) {
                 if (!currName.equals(composer)) {
                     work.addComposer(composer);
@@ -184,12 +181,12 @@ public class WorkStore extends DataStore<MBWork> {
     public void aggregateParts() throws SQLException {
         Set<String> keys = new HashSet<>(map.keySet());
         for (String key : keys) {
-            @NonNull MBWork work = map.get(key);
+            MBWork work = map.get(key);
             work.addParts();
         }
     }
 
-    @NonNull
+
     private MBWork find(String gid) {
         MBWork result = map.get(gid);
 
