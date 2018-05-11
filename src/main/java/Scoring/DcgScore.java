@@ -9,8 +9,9 @@ import java.io.IOException;
 import java.util.List;
 
 @AllArgsConstructor
-public class DCGscore extends Scorer {
+public class DcgScore extends Scorer {
     private int numResults;
+    private boolean printEachTestcase;
 
     private double calculateScore(TestCase testCase) throws IOException {
         List<Work> resultList = search(testCase, numResults);
@@ -34,7 +35,8 @@ public class DCGscore extends Scorer {
         double i = 0, sum = 0;
         for (TestCase testCase : testCases) {
             double score = calculateScore(testCase);
-            System.out.println(score + ", " + testCase.getQuery() + ", " + testCase.getExpected());
+            if (printEachTestcase)
+                System.out.println(score + ", " + testCase.getQuery() + ", " + testCase.getExpected());
             sum += score;
             i++;
         }

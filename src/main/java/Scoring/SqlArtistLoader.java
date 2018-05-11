@@ -3,18 +3,17 @@ package Scoring;
 import Database.MusicBrainzDB;
 import lombok.AllArgsConstructor;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @AllArgsConstructor
-public class SQLloader implements Loader {
+public class SqlArtistLoader implements Loader {
     int testSize;
     double seed;
 
-
+    @Override
     public TestCase[] loadTestCases() throws SQLException {
         assert seed > 0.0 && seed < 1.0;
 
@@ -24,8 +23,8 @@ public class SQLloader implements Loader {
         seedStatement.executeQuery();
 
         PreparedStatement ps = conn.prepareStatement(
-                "SELECT lastfm_name, work_gid\n" +
-                        "FROM lastfm_works\n" +
+                "SELECT lastfm_artist, lastfm_name, work_gid\n" +
+                        "FROM lastfm_artist_works\n" +
                         "WHERE work_gid is not null\n" +
                         "ORDER BY random()\n" +
                         "LIMIT ?;");
@@ -36,9 +35,10 @@ public class SQLloader implements Loader {
         TestCase[] testCases = new TestCase[testSize];
         while (rs.next()) {
             String name = rs.getString("lastfm_name");
+            String artist = rs.getString("lastfm_artist");
             String gid = rs.getString("work_gid");
 
-            testCases[index] = new TestCase(name, gid);
+            testCases[index] = new TestCase(name + " " + artist, gid);
             index++;
         }
         assert index == testSize;

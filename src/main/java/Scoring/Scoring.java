@@ -1,24 +1,13 @@
 package Scoring;
 
 import Database.ElasticConnection;
-import Database.MusicBrainzDB;
-import Search.Result;
-import Search.Work;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jsonSerializer.JacksonSerializer;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NonNull;
-import lombok.ToString;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import org.elasticsearch.ElasticsearchException;
-import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.admin.indices.close.CloseIndexRequest;
 import org.elasticsearch.action.admin.indices.close.CloseIndexResponse;
 import org.elasticsearch.action.admin.indices.open.OpenIndexRequest;
@@ -26,14 +15,6 @@ import org.elasticsearch.action.admin.indices.open.OpenIndexResponse;
 import org.elasticsearch.client.RestHighLevelClient;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
 
 public class Scoring {
     @SuppressWarnings("nullness")
@@ -168,15 +149,15 @@ public class Scoring {
     }
 
     public static void main(String[] args) throws Exception {
-        Scorer scorer = new DCGscore(20);
-        scorer = new PrecisionScore(20, false);
-        Loader loader = new SQLloader(100, 0.333);
+        Scorer scorer = new DcgScore(20, false);
+//        scorer = new PrecisionScore(20, false);
+        Loader loader = new SqlArtistLoader(100, 0.333);
         Scoring scoring = new Scoring(scorer, loader);
         scoring.loadTestCases();
 
         scoring.parameterRange(0.6, 3.0, 0.2);
 
-        System.out.println("\nFinal score: " + scoring.calculateScore());
+        // System.out.println("\nFinal score: " + scoring.calculateScore());
         ElasticConnection.getInstance().close();
     }
 }

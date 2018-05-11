@@ -3,10 +3,12 @@ package Scoring;
 import Database.ElasticConnection;
 import Search.Result;
 import Search.Work;
+import lombok.AllArgsConstructor;
 
 import java.io.IOException;
 import java.util.List;
 
+@AllArgsConstructor
 abstract class Scorer {
     abstract double calculateScore(TestCase[] testCases) throws IOException;
 
