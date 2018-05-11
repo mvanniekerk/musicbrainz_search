@@ -1,5 +1,6 @@
 package Search;
 
+import Database.ElasticConnection;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import jsonSerializer.JacksonSerializer;
@@ -16,10 +17,13 @@ import java.util.List;
 public class Work implements Comparable<Work> {
     private final List<String> artists = new ArrayList<>();
     private final List<String> composers = new ArrayList<>();
-    private final List<String> names = new ArrayList<>();
+    @Getter private final List<String> names = new ArrayList<>();
 
     @Getter
     private final List<Work> children = new ArrayList<>();
+
+    @Getter
+    private final List<Recording> recordings = new ArrayList<>();
 
     @Getter
     private final String gid;
@@ -41,10 +45,33 @@ public class Work implements Comparable<Work> {
         return fromElastic(jsonNode);
     }
 
+    double getMaxScore() {
+        double max = getScore();
+        for (Work work : children) {
+            double newScore = work.getMaxScore();
+            if (newScore > max) max = newScore;
+        }
+        return max;
+    }
+
+    void retrieveRecordings(String query) {
+        String res = ElasticConnection.getInstance().recordingSearch(query, gid);
+
+        JsonNode tree = JacksonSerializer.getInstance().readTree(res);
+
+        for (JsonNode node : tree.get("hits").get("hits")) {
+            recordings.add(Recording.fromElastic(node));
+        }
+    }
+
+
     static Work fromElastic(JsonNode node) {
         String gid = node.get("_id").textValue();
         String parent = node.get("_source").get("workParent").textValue();
-        double score = node.get("_score").asDouble();
+        double score = 0;
+        if (node.has("_score")) {
+            score = node.get("_score").asDouble();
+        }
 
         Work work = new Work(gid, parent, score);
 
@@ -63,6 +90,18 @@ public class Work implements Comparable<Work> {
         return work;
     }
 
+    List<Work> getLeaves() {
+        List<Work> leaves = new ArrayList<>();
+        if (children.isEmpty()) {
+            leaves.add(this);
+        } else {
+            for (Work work : children) {
+                leaves.addAll(work.getLeaves());
+            }
+        }
+        return leaves;
+    }
+
     void sort() {
         children.sort(Work::compareTo);
 
@@ -71,6 +110,6 @@ public class Work implements Comparable<Work> {
 
     @Override
     public int compareTo(@NotNull Work o) {
-        return Double.compare(o.score, score);
+        return Double.compare(o.getMaxScore(), getMaxScore());
     }
 }

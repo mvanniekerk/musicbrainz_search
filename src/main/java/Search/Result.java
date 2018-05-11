@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,12 +21,13 @@ public class Result {
     private final List<Work> works = new ArrayList<>();
 
     @JsonIgnore
+    @Getter
     private final Map<String, Work> tempWorks = new HashMap<>();
 
     @Getter private final int took;
     @Getter private int total;
 
-    void storeTempWorks() {
+    void storeTempWorks() throws IOException {
         for (Work work : tempWorks.values()) {
             storeTempWork(work);
         }
@@ -37,7 +39,7 @@ public class Result {
         for (Work work : works) work.sort();
     }
 
-    void storeTempWork(Work work) {
+    private void storeTempWork(Work work) throws IOException {
         String parentGid = work.getParent();
         if (parentGid != null) {
             Work parent = tempWorks.get(parentGid);
@@ -52,21 +54,35 @@ public class Result {
         }
     }
 
-    static Result fromElastic(String resultString) {
+    public List<Work> getLeaves() {
+        List<Work> leaves = new ArrayList<>();
+        for (Work work : works) {
+            leaves.addAll(work.getLeaves());
+        }
+        return leaves;
+    }
+
+    public static Result fromElastic(String resultString) throws IOException {
         JsonNode result = JacksonSerializer.getInstance().readTree(resultString);
-        int took = result.get("took").intValue();
+        int took = result.get("took").asInt(0);
         int total = result.get("hits").get("total").intValue();
 
         Result res = new Result(took, total);
 
         JsonNode resultList = result.get("hits").get("hits");
+        int recordingTop = 5;
         for (JsonNode workNode : resultList) {
             Work work = Work.fromElastic(workNode);
+
+            if (recordingTop > 0) work.retrieveRecordings("");
+            recordingTop--;
+
             res.tempWorks.put(work.getGid(), work);
         }
 
         res.storeTempWorks();
         res.sort();
+
         return res;
     }
 }

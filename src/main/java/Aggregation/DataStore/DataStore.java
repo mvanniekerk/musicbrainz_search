@@ -1,15 +1,23 @@
 package Aggregation.DataStore;
 
+import Aggregation.dataType.DataType;
 import Database.MusicBrainzDB;
+import lombok.Getter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
-public abstract class DataStore {
+public abstract class DataStore<E extends DataType> implements Iterable<E> {
     private final int lowerID;
     private final int higherID;
+
+    @Getter
+    final Map<String, E> map = new HashMap<>();
 
     DataStore(int lowerID, int higherID) {
         this.lowerID = lowerID;
@@ -39,4 +47,8 @@ public abstract class DataStore {
 
     abstract void aggregateFromDB(int from, int to) throws SQLException;
 
+    @Override
+    public Iterator<E> iterator() {
+        return map.values().iterator();
+    }
 }

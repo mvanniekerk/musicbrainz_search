@@ -46,9 +46,27 @@ decodeResult =
 
 decodeWork : De.Decoder Work
 decodeWork =
-    De.map5 work
+    De.map6 work
         (De.field "gid" De.string)
         (De.field "names" <| De.list De.string)
         (De.field "composers" <| De.list De.string)
         (De.field "artists" <| De.list De.string)
         (De.field "children" <| De.map Children <| De.list <| De.lazy (\_ -> decodeWork))
+        (De.field "recordings" <| De.list decodeRecording)
+
+-- test = De.map Children <| De.list <| De.lazy (\_ -> decodeWork)
+
+decodeRecording : De.Decoder Recording
+decodeRecording =
+    De.map3 Recording
+        (De.field "name" De.string)
+        (De.field "artists" <| De.list De.string)
+        (De.field "releases" <| De.list decodeRelease)
+
+
+decodeRelease : De.Decoder Release
+decodeRelease =
+    De.map3 Release
+        (De.field "gid" De.string)
+        (De.field "release_name" De.string)
+        (De.field "coverArtUrl" <| De.maybe De.string)

@@ -51,5 +51,58 @@
   , "expected" : "11f48c5e-5ee9-4646-9826-fb7c2fccce7f"},
 
   { "query" : "dvorak quintet 2"
-  , "expected" : "5adbc202-905f-4184-bddc-d46b9bc452e8"}
+  , "expected" : "5adbc202-905f-4184-bddc-d46b9bc452e8"},
+
+  { "query" : "bach cello suite 1 prelude"
+  , "expected" : "b80b189d-f15e-39fe-b965-a9ba030383d0"},
+
+
+  { "query" : "mozart clarinet quintet allegro"
+  , "expected" : "4d0387e5-e9d8-37ed-9893-c97b536c45cc"},
+
+  { "query" : "brahms cello sonata 2 allegro"
+  , "expected" : "f5b8d3b5-8c6b-3c87-b0c0-0d6efd78fcc3"},
+
+  { "query" : "schumann arabeske"
+  , "expected" : "f90c60d1-11b5-32e1-b633-bcfd088c0e15"},
+
+  { "query" : "rondo alla turca"
+  , "expected" : "9f213234-ecbc-34bf-9d9b-8962bd3557e6"},
+
+  { "query" : "hungarian rhapsody no 2"
+  , "expected" : "90929826-5064-3212-89c1-689be90e1d4d"},
+
+  { "query" : "flight of the bumblebee"
+  , "expected" : "8ede039a-e269-3afa-88d6-8dbb6d7ba18e"},
+
+  { "query" : "rhapsody in blue"
+  , "expected" : "28fbc4a5-5b5c-472a-8b88-8a469487344b"},
+
+  { "query" : "beethoven pathetique"
+  , "expected" : "c366ec5b-9d61-3057-827c-afd61a237b23"},
+
+  { "query" : "kinderszenen traumerei"
+  , "expected" : "437982b9-be3c-3b17-a102-f34cc46504aa"},
+
+  { "query" : "dvorak humoresque"
+  , "expected" : "077beb4e-3072-4002-8c0d-16514c2b0b84"},
+
+  { "query" : "paganini caprice 1"
+  , "expected" : "487ed36a-22e3-3d61-a9eb-0bde3d9fb522"},
+
+  { "query" : "tchaikovski violin concerto finale"
+  , "expected" : "f7136e19-4a8a-42ae-be40-01e9d78b45d5"},
+
+  { "query" : "beethoven violin concerto d larghetto"
+  , "expected" : "da878d11-c80d-381a-9b0f-a430c796a42d"},
+
+  { "query" : "bach chaconne d minor"
+  , "expected" : "36f493da-44aa-33ed-be17-459b28a1d872"},
+
+  { "query" : "the swan saint saens"
+  , "expected" : "7d078026-e006-3fe1-b5d2-2a865f82ccef"},
+
+  { "query" : "elgar cello moderato"
+  , "expected" : "bcfe6060-b77b-354e-9cc3-543fe9d8d2b2"}
+
 ]

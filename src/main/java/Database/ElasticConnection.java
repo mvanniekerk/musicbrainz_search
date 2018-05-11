@@ -1,37 +1,25 @@
 package Database;
 
-import Aggregation.DataStore.WorkStore;
-import Aggregation.dataType.MBWork;
+import Aggregation.DataStore.DataStore;
+import Aggregation.dataType.DataType;
 import Tokenizer.Tokenizer;
 import lombok.Getter;
 import org.apache.http.HttpHost;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.elasticsearch.action.ActionListener;
+import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.QueryShardContext;
-import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.index.search.MatchQuery;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 
 public class ElasticConnection {
@@ -68,7 +56,25 @@ public class ElasticConnection {
     }
 
     public void storeDocument(String json, String id) {
-        IndexRequest request = new IndexRequest(INDEX, TYPE, id);
+        storeDocument(json, id, INDEX, TYPE);
+    }
+
+    public void storeBulk(String index, String type, DataStore<? extends DataType> dataStore) {
+        BulkRequest request = new BulkRequest();
+        for (DataType dataType : dataStore) {
+            request.add(new IndexRequest(index, type, dataType.getGid())
+                    .source(dataType.jsonSearchRepr(), XContentType.JSON));
+        }
+
+        try {
+            client.bulk(request);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void storeDocument(String json, String id, String index, String type) {
+        IndexRequest request = new IndexRequest(index, type, id);
 
         request.source(json, XContentType.JSON);
 
@@ -80,27 +86,33 @@ public class ElasticConnection {
 
     }
 
-    public String getDocument(String gid) {
-        GetRequest getRequest = new GetRequest(INDEX, TYPE, gid);
+    public String getDocument(String gid) throws IOException {
+        return getDocument(gid, INDEX, TYPE);
+    }
 
+    public String getDocument(String gid, String index, String type) throws IOException {
+        GetRequest getRequest = new GetRequest(index, type, gid);
+
+        return client.get(getRequest).toString();
+    }
+
+    public String recordingSearch(String query, String gid) {
+        SearchRequest request = new SearchRequest("mb").types("recording");
+
+        SearchSourceBuilder sb = new SearchSourceBuilder();
+
+        QueryBuilder termQuery = QueryBuilders.termQuery("work_gid.keyword", gid);
+        request.source(sb.query(termQuery));
         try {
-            return client.get(getRequest).toString();
+            return client.search(request).toString();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
     }
 
-    public String search(String query, String composerQuery, String artistQuery, int from, int size) {
-
-        String queryString = String.join(" AND ", Tokenizer.tokenize(query));
-
-        SearchRequest request = new SearchRequest(INDEX);
-        request.types(TYPE);
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-        searchSourceBuilder.from(from);
-        searchSourceBuilder.size(size);
-
-        QueryBuilder boolQuery = QueryBuilders.boolQuery().must(
+    private QueryBuilder buildSearchQuery(String queryString, String composerQuery, String artistQuery) {
+        return QueryBuilders.boolQuery().must(
                 QueryBuilders.queryStringQuery(queryString)
                         .field("artists.folded")
                         .field("composers.folded")
@@ -114,15 +126,25 @@ public class ElasticConnection {
                         .operator(Operator.OR)
                         .zeroTermsQuery(MatchQuery.ZeroTermsQuery.ALL)
         );
+    }
+
+    public String search(
+            String query, String composerQuery, String artistQuery, int from, int size) throws IOException {
+
+        String queryString = String.join(" AND ", Tokenizer.tokenize(query));
+
+        SearchRequest request = new SearchRequest(INDEX);
+        request.types(TYPE);
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        searchSourceBuilder.from(from);
+        searchSourceBuilder.size(size);
+
+        QueryBuilder boolQuery = buildSearchQuery(queryString, artistQuery, composerQuery);
 
         searchSourceBuilder.query(boolQuery);
 
         request.source(searchSourceBuilder);
 
-        try {
-            return client.search(request).toString();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return client.search(request).toString();
     }
 }

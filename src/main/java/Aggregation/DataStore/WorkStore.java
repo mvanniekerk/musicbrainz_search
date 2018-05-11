@@ -14,13 +14,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class WorkStore extends DataStore implements Iterable<MBWork> {
-
-    private final Map<String, MBWork> works;
+public class WorkStore extends DataStore<MBWork> {
+    private static final String INDEX = "musicbrainz";
+    private static final String TYPE = "work";
 
     public WorkStore(int lowerID, int higherID) {
         super(lowerID, higherID);
-        works = new HashMap<>();
     }
 
     private PreparedStatement getWorkNames() throws SQLException {
@@ -183,31 +182,31 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
     }
 
     public void aggregateParts() throws SQLException {
-        Set<String> keys = new HashSet<>(works.keySet());
+        Set<String> keys = new HashSet<>(map.keySet());
         for (String key : keys) {
-            @NonNull MBWork work = works.get(key);
+            @NonNull MBWork work = map.get(key);
             work.addParts();
         }
     }
 
     @NonNull
     private MBWork find(String gid) {
-        MBWork result = works.get(gid);
+        MBWork result = map.get(gid);
 
         if (result == null) {
             result = new MBWork(gid, getConnection(), this);
-            works.put(gid, result);
+            map.put(gid, result);
         }
 
         return result;
     }
 
     public MBWork retrieve(int id, String gid) throws SQLException {
-        MBWork result = works.get(gid);
+        MBWork result = map.get(gid);
 
         if (result == null) {
             aggregateFromDB(id);
-            result = works.get(gid);
+            result = map.get(gid);
             assert result != null;
             return result;
         } else {
@@ -217,18 +216,6 @@ public class WorkStore extends DataStore implements Iterable<MBWork> {
 
     public void elasticStore() {
         ElasticConnection conn = ElasticConnection.getInstance();
-
-        for (MBWork work : works.values()) {
-            String json = work.jsonSearchRepr();
-            String gid = work.getGid();
-            if (!work.isIgnore()) {
-                conn.storeDocument(json, gid);
-            }
-        }
-    }
-
-    @Override
-    public Iterator<MBWork> iterator() {
-        return works.values().iterator();
+        conn.storeBulk(INDEX, TYPE, this);
     }
 }
