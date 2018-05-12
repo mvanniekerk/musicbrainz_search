@@ -5,6 +5,7 @@ import Aggregation.dataType.DataType;
 import Tokenizer.Tokenizer;
 import lombok.Getter;
 import org.apache.http.HttpHost;
+import org.elasticsearch.action.ActionRequestValidationException;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.index.IndexRequest;
@@ -67,8 +68,10 @@ public class ElasticConnection {
 
         try {
             client.bulk(request);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            if (!(e instanceof ActionRequestValidationException)) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

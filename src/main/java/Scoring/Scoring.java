@@ -2,6 +2,7 @@ package Scoring;
 
 import Database.ElasticConnection;
 import Database.LuceneSearcher;
+import Database.MultiTermSearcher;
 import lombok.Getter;
 import lombok.Setter;
 import okhttp3.MediaType;
@@ -156,8 +157,7 @@ public class Scoring {
     public static void main(String[] args) throws Exception {
         double seed = new Random().nextDouble();
         seed = 0.41599346367269363;
-        Scorer scorer = new DcgScore(new LuceneSearcher(), false, 20);
-        scorer = new PrecisionScore(new LuceneSearcher(), true, 20);
+        Scorer scorer = new PrecisionScore(new MultiTermSearcher(), true, 20);
 
         Loader loader = new SqlLoader(200, seed);
         Scoring scoring = new Scoring(scorer, loader);
