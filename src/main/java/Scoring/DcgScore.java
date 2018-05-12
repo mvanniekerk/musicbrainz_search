@@ -1,6 +1,7 @@
 package Scoring;
 
 import Database.ElasticConnection;
+import Database.Searcher;
 import Search.Result;
 import Search.Work;
 import lombok.AllArgsConstructor;
@@ -8,10 +9,12 @@ import lombok.AllArgsConstructor;
 import java.io.IOException;
 import java.util.List;
 
-@AllArgsConstructor
 public class DcgScore extends Scorer {
-    private int numResults;
-    private boolean printEachTestcase;
+
+    public DcgScore(Searcher searcher, boolean printEachTestCase, int numResults) {
+        super(searcher, printEachTestCase, numResults);
+    }
+
 
     private double calculateScore(TestCase testCase) throws IOException {
         List<Work> resultList = search(testCase, numResults);
@@ -35,7 +38,7 @@ public class DcgScore extends Scorer {
         double i = 0, sum = 0;
         for (TestCase testCase : testCases) {
             double score = calculateScore(testCase);
-            if (printEachTestcase)
+            if (printEachTestCase)
                 System.out.println(score + ", " + testCase.getQuery() + ", " + testCase.getExpected());
             sum += score;
             i++;

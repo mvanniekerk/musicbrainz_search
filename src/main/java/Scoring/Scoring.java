@@ -1,6 +1,7 @@
 package Scoring;
 
 import Database.ElasticConnection;
+import Database.LuceneSearcher;
 import lombok.Getter;
 import lombok.Setter;
 import okhttp3.MediaType;
@@ -155,8 +156,8 @@ public class Scoring {
     public static void main(String[] args) throws Exception {
         double seed = new Random().nextDouble();
         seed = 0.41599346367269363;
-        Scorer scorer = new DcgScore(20, false);
-        scorer = new PrecisionScore(20, true);
+        Scorer scorer = new DcgScore(new LuceneSearcher(), false, 20);
+        scorer = new PrecisionScore(new LuceneSearcher(), true, 20);
 
         Loader loader = new SqlLoader(200, seed);
         Scoring scoring = new Scoring(scorer, loader);
@@ -167,7 +168,7 @@ public class Scoring {
         scoring.loadTestCases();
         double artistScore = scoring.calculateScore();
 
-        // scoring.parameterRange(0.6, 3.0, 0.2);
+//        scoring.parameterRange(0.6, 3.0, 0.2);
 
 //        System.out.println("\nFinal score: " + score);
         System.out.println("With artists: " + artistScore);

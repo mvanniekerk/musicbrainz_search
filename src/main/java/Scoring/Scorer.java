@@ -1,22 +1,28 @@
 package Scoring;
 
 import Database.ElasticConnection;
+import Database.LuceneSearcher;
+import Database.Searcher;
 import Search.Result;
 import Search.Work;
 import lombok.AllArgsConstructor;
+import lombok.Setter;
 
 import java.io.IOException;
 import java.util.List;
 
 @AllArgsConstructor
 abstract class Scorer {
+    @Setter
+    private Searcher searcher = new LuceneSearcher();
+    boolean printEachTestCase;
+    int numResults;
+
     abstract double calculateScore(TestCase[] testCases) throws IOException;
 
     List<Work> search(TestCase testCase, int numResults) throws IOException {
-        String resultString =
-                ElasticConnection
-                        .getInstance()
-                        .search(testCase.getQuery(), "", "", 0, numResults);
+        String resultString = searcher
+                .search(testCase.getQuery(), "", "", 0, numResults);
 
         Result result = Result.fromElastic(resultString);
 

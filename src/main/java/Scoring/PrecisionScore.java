@@ -1,15 +1,19 @@
 package Scoring;
 
+import Database.Searcher;
 import Search.Work;
 import lombok.AllArgsConstructor;
 
 import java.io.IOException;
 import java.util.List;
 
-@AllArgsConstructor
 public class PrecisionScore extends Scorer {
-    private int numResults;
-    private boolean printEachTestCase;
+
+
+    public PrecisionScore(Searcher searcher, boolean printEachTestCase, int numResults) {
+        super(searcher, printEachTestCase, numResults);
+    }
+
 
     private double calculateScore(TestCase testCase) throws IOException {
         List<Work> resultList = search(testCase, numResults);
