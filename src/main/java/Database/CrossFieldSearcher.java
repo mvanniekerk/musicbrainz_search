@@ -1,20 +1,23 @@
 package Database;
 
 import Tokenizer.Tokenizer;
+import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.search.MatchQuery;
 
-public class LuceneSearcher extends Searcher {
+public class CrossFieldSearcher extends Searcher {
     QueryBuilder buildSearchQuery(String query, String composerQuery, String artistQuery) {
         String queryString = String.join(" AND ", Tokenizer.tokenize(query));
 
         return QueryBuilders.boolQuery().must(
-                QueryBuilders.queryStringQuery(queryString)
+                QueryBuilders.multiMatchQuery(query)
                         .field("artists.folded")
                         .field("composers.folded")
-                        .field("names.folded", 6)
+                        .field("names.folded", 1)
+                        .type(MultiMatchQueryBuilder.Type.CROSS_FIELDS)
+                        .operator(Operator.OR)
         ).must(
                 QueryBuilders.matchQuery("composers.folded", composerQuery)
                         .operator(Operator.OR)

@@ -37,7 +37,7 @@ public class WorkStore extends DataStore<MBWork> {
         );
     }
 
-    private PreparedStatement getRecordingName() throws SQLException {
+    private PreparedStatement getTrackName() throws SQLException {
         Connection conn = getConnection();
 
         return conn.prepareStatement(
@@ -45,6 +45,17 @@ public class WorkStore extends DataStore<MBWork> {
             "JOIN l_recording_work ON entity0=recording.id\n" +
             "JOIN work ON entity1=work.id\n" +
             "JOIN track ON track.recording=recording.id\n" +
+            "WHERE (WORK.id >= ?) AND (WORK.id < ?)"
+        );
+    }
+
+    private PreparedStatement getRecordingName() throws SQLException {
+        Connection conn = getConnection();
+
+        return conn.prepareStatement(
+        "SELECT DISTINCT recording.name, work.gid FROM recording\n" +
+            "JOIN l_recording_work ON entity0=recording.id\n" +
+            "JOIN work ON entity1=work.id\n" +
             "WHERE (WORK.id >= ?) AND (WORK.id < ?)"
         );
     }
@@ -170,6 +181,9 @@ public class WorkStore extends DataStore<MBWork> {
 
         ResultSet recordingNames = executePreparedStatement(getRecordingName(), from, to);
         populateNames(recordingNames);
+
+        ResultSet trackNames = executePreparedStatement(getTrackName(), from, to);
+        populateNames(trackNames);
 
         ResultSet artists = executePreparedStatement(getArtists(), from, to);
         populateArtists(artists);

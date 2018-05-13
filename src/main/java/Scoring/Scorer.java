@@ -1,7 +1,6 @@
 package Scoring;
 
-import Database.ElasticConnection;
-import Database.LuceneSearcher;
+import Database.CrossFieldSearcher;
 import Database.Searcher;
 import Search.Result;
 import Search.Work;
@@ -14,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 abstract class Scorer {
     @Setter
-    private Searcher searcher = new LuceneSearcher();
+    private Searcher searcher = new CrossFieldSearcher();
     boolean printEachTestCase;
     int numResults;
 

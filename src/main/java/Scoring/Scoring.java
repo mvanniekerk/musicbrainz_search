@@ -1,8 +1,7 @@
 package Scoring;
 
 import Database.ElasticConnection;
-import Database.LuceneSearcher;
-import Database.MultiTermSearcher;
+import Database.CrossFieldSearcher;
 import lombok.Getter;
 import lombok.Setter;
 import okhttp3.MediaType;
@@ -125,7 +124,7 @@ public class Scoring {
 
         final double lowerB = 0;
         final double higherB = 1;
-        final double stepB = 0.1;
+        final double stepB = 0.2;
 
         for (double k1 = lower; k1 < higher; k1 += step) {
             for (double b = lowerB; b < higherB; b += stepB) {
@@ -156,19 +155,19 @@ public class Scoring {
 
     public static void main(String[] args) throws Exception {
         double seed = new Random().nextDouble();
-        seed = 0.41599346367269363;
-        Scorer scorer = new PrecisionScore(new MultiTermSearcher(), true, 20);
+        seed = 0.7874337238944252;
+        Scorer scorer = new PrecisionScore(new CrossFieldSearcher(), true, 20);
 
-        Loader loader = new SqlLoader(200, seed);
+        Loader loader = new SqlLoader(1000, seed);
         Scoring scoring = new Scoring(scorer, loader);
 //        scoring.loadTestCases();
 //        double score = scoring.calculateScore();
 
-        scoring.setLoader(new SqlArtistLoader(200, seed));
+        scoring.setLoader(new SqlArtistLoader(1000, seed));
         scoring.loadTestCases();
         double artistScore = scoring.calculateScore();
 
-//        scoring.parameterRange(0.6, 3.0, 0.2);
+//        scoring.parameterRange(0.6, 3.0, 0.4);
 
 //        System.out.println("\nFinal score: " + score);
         System.out.println("With artists: " + artistScore);

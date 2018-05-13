@@ -7,7 +7,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 
-public class MultiTermSearcher extends Searcher {
+public class MostFieldSearcher extends Searcher {
 
     @Override
     QueryBuilder buildSearchQuery(String query, String composerQuery, String artistQuery) {

@@ -1,5 +1,6 @@
 package Search;
 
+import Database.CrossFieldSearcher;
 import Database.ElasticConnection;
 import com.fasterxml.jackson.databind.JsonNode;
 import jsonSerializer.JacksonSerializer;
@@ -34,7 +35,7 @@ public class SearchController {
 
             String strResult;
             try {
-                strResult = ElasticConnection.getInstance().
+                strResult = new CrossFieldSearcher().
                         search(query, composerQuery, artistQuery, from, 20);
             } catch (IOException e) {
                 throw new RuntimeException(e);

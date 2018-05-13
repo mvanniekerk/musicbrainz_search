@@ -11,7 +11,7 @@ public class tokenizerTest {
         assertThat(Tokenizer.toAscii("Paul Tortelier")).isEqualTo("Paul Tortelier");
     }
 
-    @Test
+
     void dots() {
         assertThat(Tokenizer.tokenize("The Saga Of H.M.S. Bounty Vangelis")).isEqualTo(new String[0]);
     }
@@ -50,20 +50,20 @@ public class tokenizerTest {
         assertThat(Tokenizer.lemmatize("Dora Mae's Funeral")).isEqualTo("dora mae's funeral");
     }
 
-    @Test
+
     void tokenizer() {
         String[] result = {"justin", "at", "mr", "chin's", "justin's", "theme"};
         assertThat(Tokenizer.tokenize("Justin at Mr. Chin's (Justin's Theme)")).isEqualTo(result);
     }
 
-    @Test
+
     void classicalTokenizer() {
         String input = "Cello Suite no. 1 in G major, BWV 1007: I. Prelude";
         String[] result = {"cello", "suite", "no", "1", "in", "g", "major", "bwv", "1007", "i", "prelude"};
         assertThat(Tokenizer.tokenize(input)).isEqualTo(result);
     }
 
-    @Test
+
     void withStrangeChars() {
         String input = "Suite NR. 1 G-DUR, BWV 1007 - Sarabande";
         String[] result = {"suite", "nr", "1", "g", "dur", "bwv", "1007", "sarabande"};
