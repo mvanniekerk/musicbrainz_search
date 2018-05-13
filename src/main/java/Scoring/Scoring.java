@@ -28,9 +28,16 @@ public class Scoring {
     @Setter
     private Loader loader;
 
+    private ParameterOptimizer optimizer;
+
     Scoring(Scorer scorer, Loader loader) {
         this.scorer = scorer;
         this.loader = loader;
+    }
+
+    void setParameterOptimizer(ParameterOptimizer optimizer) {
+        this.optimizer = optimizer;
+        optimizer.setScoring(this);
     }
 
     private RequestBody createRequestBody(double k1, double b) {
@@ -117,60 +124,32 @@ public class Scoring {
         testCases = loader.loadTestCases();
     }
 
-    void parameterRange(double lower, double higher, double step) throws InterruptedException {
-        double highestScore = 0;
-        double bestK1 = lower;
-        double bestB = higher;
-
-        final double lowerB = 0;
-        final double higherB = 1;
-        final double stepB = 0.2;
-
-        for (double k1 = lower; k1 < higher; k1 += step) {
-            for (double b = lowerB; b < higherB; b += stepB) {
-                try {
-                    updateParameters(k1, b);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-                Thread.sleep(1000);
-                double score = safeCalculateScore();
-
-                if (score > highestScore) {
-                    highestScore = score;
-                    bestK1 = k1;
-                    bestB = b;
-                }
-                System.out.println(k1 + " " + b + " " + score);
-            }
-        }
-        System.out.println(bestK1 + " " + bestB + " " + highestScore);
-        try {
-            updateParameters(bestK1, bestB);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    void optimize() throws InterruptedException {
+        optimizer.optimize();
     }
+
+
 
     public static void main(String[] args) throws Exception {
         double seed = new Random().nextDouble();
         seed = 0.7874337238944252;
-        Scorer scorer = new PrecisionScore(new CrossFieldSearcher(), true, 20);
+        Scorer scorer = new PrecisionScore(new CrossFieldSearcher(), false, 20);
 
-        Loader loader = new SqlLoader(1000, seed);
+        Loader loader = new SqlLoader(200, seed);
         Scoring scoring = new Scoring(scorer, loader);
 //        scoring.loadTestCases();
 //        double score = scoring.calculateScore();
 
-        scoring.setLoader(new SqlArtistLoader(1000, seed));
+        scoring.setLoader(new SqlArtistLoader(200, seed));
         scoring.loadTestCases();
-        double artistScore = scoring.calculateScore();
+//        double artistScore = scoring.calculateScore();
 
-//        scoring.parameterRange(0.6, 3.0, 0.4);
+        ParameterOptimizer optimizer = new GridSearchParameterOptimizer(0.6, 3, 0.4, 0, 1, 0.2);
+        scoring.setParameterOptimizer(optimizer);
+        scoring.optimize();
 
 //        System.out.println("\nFinal score: " + score);
-        System.out.println("With artists: " + artistScore);
+//        System.out.println("With artists: " + artistScore);
 //        System.out.println("Difference: " + (artistScore - score));
         System.out.println("Seed: " + seed);
         ElasticConnection.getInstance().close();

@@ -9,8 +9,6 @@ import org.elasticsearch.index.search.MatchQuery;
 
 public class CrossFieldSearcher extends Searcher {
     QueryBuilder buildSearchQuery(String query, String composerQuery, String artistQuery) {
-        String queryString = String.join(" AND ", Tokenizer.tokenize(query));
-
         return QueryBuilders.boolQuery().must(
                 QueryBuilders.multiMatchQuery(query)
                         .field("artists.folded")
