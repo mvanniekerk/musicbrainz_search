@@ -1,14 +1,28 @@
 package Database;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.io.IOException;
 
+@AllArgsConstructor
 public abstract class Searcher {
     private final String INDEX = "musicbrainz";
     private final String TYPE = "work";
+
+    @Getter
+    @Setter
+    private float artistBoost = 1;
+    @Getter
+    @Setter
+    private float composerBoost = 1;
+    @Getter
+    @Setter
+    private float namesBoost = 1;
 
     abstract QueryBuilder buildSearchQuery(String query, String composerQuery, String artistQuery);
 

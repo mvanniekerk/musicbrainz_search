@@ -10,8 +10,8 @@ import java.util.List;
 public class PrecisionScore extends Scorer {
 
 
-    public PrecisionScore(Searcher searcher, boolean printEachTestCase, int numResults) {
-        super(searcher, printEachTestCase, numResults);
+    public PrecisionScore(boolean printEachTestCase, int numResults) {
+        super(printEachTestCase, numResults);
     }
 
 

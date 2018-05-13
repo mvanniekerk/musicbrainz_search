@@ -11,8 +11,8 @@ import java.util.List;
 
 public class DcgScore extends Scorer {
 
-    public DcgScore(Searcher searcher, boolean printEachTestCase, int numResults) {
-        super(searcher, printEachTestCase, numResults);
+    public DcgScore(boolean printEachTestCase, int numResults) {
+        super(printEachTestCase, numResults);
     }
 
 

@@ -2,6 +2,8 @@ package Scoring;
 
 import Database.ElasticConnection;
 import Database.CrossFieldSearcher;
+import Database.MostFieldSearcher;
+import Database.Searcher;
 import lombok.Getter;
 import lombok.Setter;
 import okhttp3.MediaType;
@@ -23,21 +25,33 @@ public class Scoring {
     @SuppressWarnings("nullness")
     @Getter
     private TestCase[] testCases;
-    @Setter
     private Scorer scorer;
-    @Setter
     private Loader loader;
+    @Getter
+    private Searcher searcher;
 
     private ParameterOptimizer optimizer;
 
-    Scoring(Scorer scorer, Loader loader) {
-        this.scorer = scorer;
+    Scoring setLoader(Loader loader) {
         this.loader = loader;
+        return this;
     }
 
-    void setParameterOptimizer(ParameterOptimizer optimizer) {
+    Scoring setSearcher(Searcher searcher) {
+        this.searcher = searcher;
+        return this;
+    }
+
+    Scoring setScorer(Scorer scorer) {
+        this.scorer = scorer;
+        scorer.setScoring(this);
+        return this;
+    }
+
+    Scoring setParameterOptimizer(ParameterOptimizer optimizer) {
         this.optimizer = optimizer;
         optimizer.setScoring(this);
+        return this;
     }
 
     private RequestBody createRequestBody(double k1, double b) {
@@ -133,25 +147,23 @@ public class Scoring {
     public static void main(String[] args) throws Exception {
         double seed = new Random().nextDouble();
         seed = 0.7874337238944252;
-        Scorer scorer = new PrecisionScore(new CrossFieldSearcher(), false, 20);
 
-        Loader loader = new SqlLoader(200, seed);
-        Scoring scoring = new Scoring(scorer, loader);
-//        scoring.loadTestCases();
-//        double score = scoring.calculateScore();
+        Scoring scoring = new Scoring()
+                .setLoader(new SqlArtistLoader(200, seed))
+                .setScorer(new PrecisionScore(false, 20))
+                .setSearcher(new CrossFieldSearcher(1,1,1))
+//                .setParameterOptimizer(new GridSearchParameterOptimizer(0.6, 3, 0.4, 0, 1, 0.2))
+                .setParameterOptimizer(new BoostParameterOptimizer(1, 3, 1))
+                ;
 
-        scoring.setLoader(new SqlArtistLoader(200, seed));
         scoring.loadTestCases();
-//        double artistScore = scoring.calculateScore();
 
-        ParameterOptimizer optimizer = new GridSearchParameterOptimizer(0.6, 3, 0.4, 0, 1, 0.2);
-        scoring.setParameterOptimizer(optimizer);
+        double artistScore = scoring.calculateScore();
         scoring.optimize();
 
-//        System.out.println("\nFinal score: " + score);
-//        System.out.println("With artists: " + artistScore);
-//        System.out.println("Difference: " + (artistScore - score));
+        System.out.println("\nFinal score:: " + artistScore);
         System.out.println("Seed: " + seed);
+
         ElasticConnection.getInstance().close();
     }
 }
