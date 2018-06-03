@@ -12,7 +12,7 @@
 number of lastfm tracks with track in mb: 17 million. 
 When aggregating for track, the number of times a track occurs in the dataset:
 
-```
+```sql
 select
   min(count) as min,
   max(count) as max,
@@ -35,7 +35,7 @@ min | max | average | standard deviation | count
 
 An average track is listened to 17 times. Most likely following some kind of pareto distribution. 
 
-```
+```sql
 select
   min(count) as min,
   max(count) as max,
@@ -56,7 +56,7 @@ min | max | average | standard deviation | count
 1 | 5839 | 55.5700877384706654 | 154.280090029713 | 160135
 
 When converting tracks to works the average work is listened to 55 times. To do this analysis I had to remove a large part of the dataset (8106098 listen events of a total of 17004814) because those recordings are not resolvable to works. Is the improvement just because of popularity bias (more popular recordings have a higher chance of being resolvable to a work) or because work aggregates multiple recordings?
-```
+```sql
 select
   min(count) as min,
   max(count) as max,
@@ -82,7 +82,7 @@ The first analysis but just with tracks that can be resolved to works. So the di
 
 
 Only including works that have a high chance to be a classical work. All (most) classical works have a composer, so lets only include the tracks that have a composer and where the composer is tagged to be classical.
-```
+```sql
 select distinct listens.*
 from
   (select
@@ -101,11 +101,11 @@ where link.link_type = 168 and tag = 15 and artist_tag.count > 0
 --type 168 = composer, tag 15 = classical, some tags have count 0 meaning they are deleted
 ```
 min | max | average | standard deviation | count | sum
-| --- | --- | ------- | ------------------ | ----- |
+| --- | --- | ------- | ------------------ | ----- | --- |
 1 | 1394 | 15.2713273038376925 | 45.6655513574835789 | 8182 | 124950
 
 
-```
+```sql
 select
   min(listencount) as min,
   max(listencount) as max,
@@ -149,7 +149,7 @@ How many unique tracks are there per user vs how many unique works are there per
 
 How many tracks are there per user?
 
-```
+```sql
 select
   min(listencount) as min,
   max(listencount) as max,
@@ -179,7 +179,7 @@ min | max | average | standard deviation | count | sum
 
 How many works are there per user? There are slightly less works in total, since the whole point is to combine tracks. The difference between the amount of tracks is only about 5%. Maybe the difference is bigger for classical tracks?
 
-```
+```sql
 select
   min(listencount) as min,
   max(listencount) as max,
@@ -210,7 +210,7 @@ from
 
 Repeat this for only classical tracks and works. How many classical tracks are there per user?
 
-```
+```sql
 select
   min(listencount) as min,
   max(listencount) as max,
