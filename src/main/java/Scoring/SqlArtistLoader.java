@@ -23,9 +23,9 @@ public class SqlArtistLoader implements Loader {
         seedStatement.executeQuery();
 
         PreparedStatement ps = conn.prepareStatement(
-                "SELECT lastfm_artist, lastfm_name, work_gid\n" +
-                        "FROM lastfm_artist_works\n" +
-                        "WHERE work_gid is not null\n" +
+                "SELECT name, work_gid\n" +
+                        "FROM lastfm_test_dataset\n" +
+                        "WHERE NOT excluded\n" +
                         "ORDER BY random()\n" +
                         "LIMIT ?;");
         ps.setInt(1, testSize);
@@ -34,11 +34,10 @@ public class SqlArtistLoader implements Loader {
         int index = 0;
         TestCase[] testCases = new TestCase[testSize];
         while (rs.next()) {
-            String name = rs.getString("lastfm_name");
-            String artist = rs.getString("lastfm_artist");
+            String name = rs.getString("name");
             String gid = rs.getString("work_gid");
 
-            testCases[index] = new TestCase(name + " " + artist, gid);
+            testCases[index] = new TestCase(name, gid);
             index++;
         }
         assert index == testSize;
