@@ -1,0 +1,12 @@
+version: '2.2'
+services:
+  elasticsearch:
+    build: elastic-docker
+    ports:
+      - 9200:9200
+      - 9300:9300
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+volumes:
+  esdata:
+    driver: local

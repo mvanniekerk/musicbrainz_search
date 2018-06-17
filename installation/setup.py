@@ -1,7 +1,7 @@
 import requests
 import sys
 
-url = "http://192.168.99.100:9200/musicbrainz"
+url = "http://localhost:9200/musicbrainz"
 
 def init():
     data = open("elastic_settings.json", "r")
