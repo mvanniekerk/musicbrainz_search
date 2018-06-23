@@ -18,6 +18,9 @@ services:
       - 80:4567
     volumes:
       - frdata:/public
+    environment:
+      - MB_SEARCH=${MB_SEARCH}
+    network_mode: host
     depends_on:
       - elasticsearch
       - frontend
