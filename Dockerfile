@@ -1,10 +1,6 @@
-FROM maven:3-jdk-8
+FROM openjdk:8-jre-alpine
 
-ADD pom.xml pom.xml
-ADD src src
-RUN mvn dependency:resolve
-
-RUN mvn package -DskipTests
+ADD target/musicbrainz_search-*.jar musicbrainz_search.jar
 
 EXPOSE 4567
-CMD java -jar target/musicbrainz_search-1.0.0-SNAPSHOT.jar
+CMD java -jar musicbrainz_search.jar
