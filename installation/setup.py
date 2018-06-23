@@ -4,7 +4,7 @@ import sys
 url = "http://localhost:9200/musicbrainz"
 
 def init():
-    data = open("elastic_settings.json", "r")
+    data = open("elasticSettings.json", "r")
     headers = {'Content-Type' : 'application/json'}
     r = requests.put(url, data = data.read(), headers = headers)
 

@@ -5,7 +5,10 @@ import Aggregation.dataType.DataType;
 import Tokenizer.Tokenizer;
 import lombok.Getter;
 import org.apache.http.HttpHost;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.ActionRequestValidationException;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.index.IndexRequest;
@@ -17,6 +20,7 @@ import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.search.MatchQuery;
+import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.io.IOException;
@@ -34,7 +38,7 @@ public class ElasticConnection {
     private ElasticConnection() {
         client = new RestHighLevelClient(
                 RestClient.builder(
-                        new HttpHost("elasticsearch", 9200, "http")
+                        new HttpHost("127.0.0.1", 9200, "http")
                 )
         );
     }
@@ -86,6 +90,23 @@ public class ElasticConnection {
             e.printStackTrace();
         }
 
+    }
+
+    public void deleteIndex() throws IOException {
+        deleteIndex(INDEX);
+    }
+
+    public void deleteIndex(String index) throws IOException {
+        DeleteIndexRequest request = new DeleteIndexRequest(index);
+
+        try {
+            client.indices().delete(request);
+        } catch (ElasticsearchException exception) {
+            if (exception.status() == RestStatus.NOT_FOUND) {
+                return;
+            }
+            throw exception;
+        }
     }
 
     public String getDocument(String gid) throws IOException {

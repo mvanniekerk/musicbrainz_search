@@ -93,7 +93,7 @@ public class Scoring {
 
         OkHttpClient httpClient = new OkHttpClient();
         Request request = new Request.Builder()
-                .url("http://192.168.99.100:9200/musicbrainz/_settings")
+                .url("http://127.0.0.1:9200/musicbrainz/_settings")
                 .addHeader("Content-Type", "application/json")
                 .put(createRequestBody(k1, b))
                 .build();
