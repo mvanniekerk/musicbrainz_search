@@ -16,7 +16,7 @@ public class RecordingAggregator extends Aggregator {
         store.elasticStore();
     }
 
-    public static void main(String[] args) throws SQLException {
+    public static void aggregate() throws SQLException {
         Aggregator aggregator = new RecordingAggregator(10000, 0);
         aggregator.aggregateAll();
         ElasticConnection.getInstance().close();

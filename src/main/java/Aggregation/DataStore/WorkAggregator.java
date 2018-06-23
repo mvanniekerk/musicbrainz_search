@@ -17,7 +17,7 @@ public class WorkAggregator extends Aggregator {
         works.elasticStore();
     }
 
-    public static void main(String[] args) throws SQLException {
+    public static void aggregate() throws SQLException {
         Aggregator aggregator = new WorkAggregator(5000, 0);
         aggregator.aggregateAll();
         ElasticConnection.getInstance().close();

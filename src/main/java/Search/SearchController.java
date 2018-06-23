@@ -13,7 +13,7 @@ public class SearchController {
 
     private static final int RESULT_SIZE = 20;
 
-    public static void main(String[] args) {
+    public static void run() {
 //        staticFileLocation("/public");
         // a little hack that auto reloads the static files when they are changed. In production just use
         // staticFileLocation

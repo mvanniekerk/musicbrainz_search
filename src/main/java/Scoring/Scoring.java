@@ -144,7 +144,7 @@ public class Scoring {
 
 
 
-    public static void main(String[] args) throws Exception {
+    public static void run() throws Exception {
         double seed = new Random().nextDouble();
 //        seed = 0.8663059579405396;
 

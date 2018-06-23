@@ -176,8 +176,6 @@
             <artifactId>okhttp</artifactId>
             <version>3.10.0</version>
         </dependency>
-
-
     </dependencies>
 
     <build>
@@ -207,7 +205,6 @@
                         <annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</annotationProcessor>
                     </annotationProcessors>
                     <compilerArgs>
-                        <arg>-Xbootclasspath/p:${annotatedJdk}</arg>
                         <arg>-AskipUses=^java</arg>
                         <arg>-AskipDefs=Test$|e2e</arg>
                         <arg>-AassumeAssertionsAreEnabled</arg>
@@ -275,52 +272,4 @@
             </plugin>
         </plugins>
     </build>
-
-
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>${projectinfo.plugin.version}</version>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>${javadoc.plugin.version}</version>
-                <configuration>
-                    <failOnError>false</failOnError>
-                </configuration>
-                <reportSets>
-                    <reportSet>
-                        <id>default</id>
-                        <reports>
-                            <report>javadoc</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jxr-plugin</artifactId>
-                <version>${jxr.plugin.version}</version>
-                <configuration>
-                    <linkJavadoc>true</linkJavadoc>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${checkstyle.plugin.version}</version>
-                <configuration>
-                    <configLocation>${basedir}/checkstyle.xml</configLocation>
-                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                </configuration>
-            </plugin>
-        </plugins>
-    </reporting>
-
 </project>
