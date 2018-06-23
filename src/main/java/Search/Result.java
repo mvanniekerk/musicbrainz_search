@@ -74,7 +74,8 @@ public class Result {
         for (JsonNode workNode : resultList) {
             Work work = Work.fromElastic(workNode);
 
-            if (recordingTop > 0) work.retrieveRecordings("");
+            // TODO: Because the recording db is not up to date, I ignore that part for now
+//            if (recordingTop > 0) work.retrieveRecordings("");
             recordingTop--;
 
             res.tempWorks.put(work.getGid(), work);

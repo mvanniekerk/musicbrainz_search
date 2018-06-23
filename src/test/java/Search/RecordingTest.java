@@ -3,10 +3,13 @@ package Search;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import Database.ElasticConnection;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
+@Ignore
 public class RecordingTest {
 
+    @Test
     void getRecordingFromWork() throws Exception {
         String doc = ElasticConnection.getInstance().getDocument("c9980c62-29e2-48a8-bb74-4909d3df175d");
         // Prokofiev cello concerto e minor, 1st mvmt

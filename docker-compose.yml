@@ -1,25 +1,20 @@
-version: '2'
-
-volumes:
-  pgdata:
-    external:
-      name: musicbrainzdocker_pgdata
-
+version: '2.2'
 services:
-  db:
-    build: postgres-dockerfile
+  elasticsearch:
+    build: elastic-docker
     ports:
-      - "5432:5432"
-    restart: unless-stopped
-    env_file:
-      - ./postgres-dockerfile/postgres.env
+      - 9200:9200
+      - 9300:9300
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - esdata:/usr/share/elasticsearch/data
 
-  search:
+  controller:
     build: .
     ports:
-      - "80:4567"
-    restart: unless-stopped
+      - 4567:4567
     depends_on:
-      - db
+      - elasticsearch
+
+volumes:
+  esdata:
+    driver: local

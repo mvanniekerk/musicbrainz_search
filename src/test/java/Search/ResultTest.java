@@ -3,12 +3,14 @@ package Search;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import Database.ElasticConnection;
+import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.List;
 
+@Ignore
 public class ResultTest {
 
     @AfterAll

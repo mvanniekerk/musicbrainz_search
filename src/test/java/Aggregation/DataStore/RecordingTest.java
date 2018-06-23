@@ -6,8 +6,10 @@ import Aggregation.dataType.MBRecording;
 import Database.ElasticConnection;
 import com.fasterxml.jackson.databind.JsonNode;
 import jsonSerializer.JacksonSerializer;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
+@Ignore
 public class RecordingTest {
     @Test
     void getRecordingsTest() throws Exception {

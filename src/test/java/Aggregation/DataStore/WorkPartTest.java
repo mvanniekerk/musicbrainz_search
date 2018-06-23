@@ -3,10 +3,12 @@ package Aggregation.DataStore;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import Aggregation.dataType.MBWork;
+import org.junit.Ignore;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+@Ignore
 public class WorkPartTest {
 
     @Test
@@ -156,7 +158,7 @@ public class WorkPartTest {
         return null;
     }
 
-    //@Test
+    @Test
     void aggregateForTiming() throws Exception {
         WorkStore works = new WorkStore(12500000, 12510000);
 
