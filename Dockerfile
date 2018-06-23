@@ -2,8 +2,8 @@ FROM maven:3-jdk-8
 
 ADD pom.xml pom.xml
 ADD src src
-RUN mvn clean
-RUN mvn install -DskipTests
+RUN mvn dependency:resolve
+
 RUN mvn package -DskipTests
 
 EXPOSE 4567

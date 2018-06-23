@@ -1,7 +1,6 @@
 package Search;
 
 import Database.CrossFieldSearcher;
-import Database.ElasticConnection;
 import com.fasterxml.jackson.databind.JsonNode;
 import jsonSerializer.JacksonSerializer;
 
@@ -15,10 +14,10 @@ public class SearchController {
     private static final int RESULT_SIZE = 20;
 
     public static void main(String[] args) {
-        //staticFileLocation("/public");
+//        staticFileLocation("/public");
         // a little hack that auto reloads the static files when they are changed. In production just use
         // staticFileLocation
-        staticFiles.externalLocation(System.getProperty("user.dir") + "/src/main/resources/public");
+        staticFiles.externalLocation(System.getProperty("user.dir") + "public");
 
 
         post("/api", (req, res) -> {
@@ -35,7 +34,7 @@ public class SearchController {
 
             String strResult;
             try {
-                strResult = new CrossFieldSearcher(2,1,2).
+                strResult = new CrossFieldSearcher(2, 1, 2).
                         search(query, composerQuery, artistQuery, from, 20);
             } catch (IOException e) {
                 throw new RuntimeException(e);

@@ -3,4 +3,4 @@
 *.iml
 target
 elm-stuff
-src/main/resources/public/main.js
+main.js

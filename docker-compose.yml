@@ -3,18 +3,27 @@ services:
   elasticsearch:
     build: elastic-docker
     ports:
-      - 9200:9200
-      - 9300:9300
+      - 9200
     volumes:
       - esdata:/usr/share/elasticsearch/data
+
+  frontend:
+    build: frontend
+    volumes:
+      - frdata:/public
 
   controller:
     build: .
     ports:
-      - 4567:4567
+      - 80:4567
+    volumes:
+      - frdata:/public
     depends_on:
       - elasticsearch
+      - frontend
 
 volumes:
   esdata:
+    driver: local
+  frdata:
     driver: local
