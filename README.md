@@ -1,36 +1,37 @@
-## Musicbrainz Search
+# Musicbrainz Search
 
-A simple search engine for the musicbrainz "work" database. 
+A free text search engine for the musicbrainz database. Results are aggregated by work. 
 Each work has a big range of keywords associated with it, ranging from the name of the composer to the name of the work on every album in the database.
 
 
-*Note that the information below here is mostly outdated!*
-
 ### Installation
 
-#### Download a virtual machine
-Download a fully functioning vm [here](https://drive.google.com/file/d/1HT7yKCQHXE8K3lXn8KVJ9Gck9XSZq_7t/view?usp=sharing). 
-Username is mvanniekerk and password is musicbrainz. 
-Try the following query to see a result.
-```http request
-http://localhost/api/haydn cello concerto d
-``` 
+To set up this database you will need to download the [musicbrainz virtual machine](https://musicbrainz.org/doc/MusicBrainz_Server/Setup).
+After following the setup instructions on the musicbrainz site you will need to open port 5432 to access the postgres database itself.
+You will need to do this once in virtualbox and once more in the docker compose file inside the vm.
+More detailed instructions can be found [here](doc/Initial_documentation.ipynb).
 
-#### Install from source
-*Note that this is no longer as straightforward.*
-*For the api to work, the whole musicbrainz data dump must be imported in the database volume.*
+This machine will still not give you access to some of the optimisation options that this project provides. 
+To get those to work correctly you will need my working copy of the musicbrainz vm. However those
+optimizations are not necessary for this project to work.
 
-It is also possible to run this on another machine. 
-Make sure docker and docker-compose are installed.
+Once the musicbrainz vm is up and running, you can set up the elasticsearch database.
+In the repository main directory: 
 
-```bash
-cd musicbrainz_search
-docker-compose up --build -d
-``` 
+```commandline
+$ mvn package -DskipTests
+$ MB_SEARCH=work-aggregate docker-compose up
+```
 
-Now copy the [up-to-date dump file](https://drive.google.com/file/d/1yFh2NsVqySOsIZHcKO-kD0RnLZx23Z6A/view?usp=sharing) to the machine. Make sure psql for postgres 9.5 is installed on the machine.
+Running the second command can take a couple of hours. When the aggregation is done, 
+you can stop the cluster again. After aggregation, you can run the search engine frontend.
 
-```bash
-create_db search
-pg_restore -d search -h localhost -U musicbrainz search.sql
+```commandline
+$ MB_SEARCH=webserver docker-compose up
+```
+
+To find optimal parameters run
+
+```commandline
+$ MB_SEARCH=optimize docker-compose up
 ```

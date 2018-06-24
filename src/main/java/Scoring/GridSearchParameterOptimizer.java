@@ -3,6 +3,7 @@ package Scoring;
 
 import lombok.AllArgsConstructor;
 import lombok.Setter;
+import org.apache.http.ConnectionClosedException;
 
 import java.io.IOException;
 
@@ -26,6 +27,11 @@ public class GridSearchParameterOptimizer extends ParameterOptimizer {
                 try {
                     scoring.updateParameters(k1, b);
                 } catch (IOException e) {
+                    if (e instanceof ConnectionClosedException) {
+                        System.out.println("Connection closed. Trying again in 10 seconds");
+                        Thread.sleep(10_000);
+                        optimize();
+                    }
                     throw new RuntimeException(e);
                 }
 
@@ -37,7 +43,7 @@ public class GridSearchParameterOptimizer extends ParameterOptimizer {
                     bestK1 = k1;
                     bestB = b;
                 }
-                System.out.println(k1 + " " + b + " " + score);
+                System.out.println("Running tests with parameters: k1=" + k1 + ", b=" + b + ", score=" + score);
             }
         }
         System.out.println(bestK1 + " " + bestB + " " + highestScore);

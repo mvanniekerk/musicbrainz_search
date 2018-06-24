@@ -146,22 +146,20 @@ public class Scoring {
 
     public static void run() throws Exception {
         double seed = new Random().nextDouble();
-//        seed = 0.8663059579405396;
 
         Scoring scoring = new Scoring()
                 .setLoader(new SqlArtistLoader(200, seed))
-                .setScorer(new PrecisionScore(true, 20))
+                .setScorer(new PrecisionScore(false, 20))
                 .setSearcher(new CrossFieldSearcher(2,1,2))
                 .setParameterOptimizer(new GridSearchParameterOptimizer(0.6, 3, 0.4, 0, 1, 0.2))
-                .setParameterOptimizer(new BoostParameterOptimizer(1, 3, 1))
                 ;
 
         scoring.loadTestCases();
+        scoring.optimize();
 
-        double artistScore = scoring.calculateScore();
-//        scoring.optimize();
+        scoring.setParameterOptimizer(new BoostParameterOptimizer(1, 3, 1));
+        scoring.optimize();
 
-        System.out.println("\nFinal score: " + artistScore);
         System.out.println("Seed: " + seed);
 
         ElasticConnection.getInstance().close();
