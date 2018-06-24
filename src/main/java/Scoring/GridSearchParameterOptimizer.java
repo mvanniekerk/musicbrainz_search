@@ -46,7 +46,7 @@ public class GridSearchParameterOptimizer extends ParameterOptimizer {
                 System.out.println("Running tests with parameters: k1=" + k1 + ", b=" + b + ", score=" + score);
             }
         }
-        System.out.println(bestK1 + " " + bestB + " " + highestScore);
+        System.out.println("Best search function parameters: k1=" + bestK1 + ", b=" + bestB + ", score=" + highestScore);
         try {
             scoring.updateParameters(bestK1, bestB);
         } catch (Exception e) {

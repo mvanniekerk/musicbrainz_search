@@ -28,11 +28,11 @@ public class BoostParameterOptimizer extends ParameterOptimizer {
                         bestNamesParameter = name;
                         bestScore = score;
                     }
-                    System.out.println("artist: " + artist + " composer: " + composer + " name: " + name + " score: " + score);
+                    System.out.println("Running tests with query boosts: artist=" + artist + ", composer=" + composer + ", name=" + name + ", score=" + score);
 
                 }
             }
         }
-        System.out.println("Best: artist: " + bestArtistParameter + " composer: " + bestComposerParameter + " name: " + bestNamesParameter + " score: " + bestScore);
+        System.out.println("Best search query boosts: artist=" + bestArtistParameter + ", composer=" + bestComposerParameter + ", name=" + bestNamesParameter + ", score=" + bestScore);
     }
 }
