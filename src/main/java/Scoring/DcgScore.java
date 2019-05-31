@@ -1,14 +1,9 @@
 package Scoring;
 
-import Database.ElasticConnection;
-import Database.Searcher;
-import Search.Result;
 import Search.Work;
-import lombok.AllArgsConstructor;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
 public class DcgScore extends Scorer {
 
