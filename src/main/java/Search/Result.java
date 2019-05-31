@@ -48,9 +48,7 @@ public class Result {
                     parent = Work.fromElastic(jsonNode);
                     storeTempWork(parent);
                 } else {
-                    System.out.println("Parent does not exist");
-                    System.out.println(work);
-                    System.out.println(jsonNode);
+                    System.out.println("Parent does not exist: {child: " + work.getGid() + ", parent: " + work.getParent() + "}");
                 }
             }
             if (parent != null) parent.addChild(work);

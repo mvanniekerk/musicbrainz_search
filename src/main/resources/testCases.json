@@ -103,6 +103,8 @@
   , "expected" : "7d078026-e006-3fe1-b5d2-2a865f82ccef"},
 
   { "query" : "elgar cello moderato"
-  , "expected" : "bcfe6060-b77b-354e-9cc3-543fe9d8d2b2"}
+  , "expected" : "bcfe6060-b77b-354e-9cc3-543fe9d8d2b2"},
 
+  { "query" : "souvenir de florence"
+  ,  "expected" : "8251f675-8ee2-3ec7-9d82-ae96d2515563"}
 ]
