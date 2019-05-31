@@ -30,6 +30,9 @@ you can stop the cluster again. After aggregation, you can run the search engine
 $ MB_SEARCH=webserver docker-compose up
 ```
 
+After running the webserver, you can access the search page at your docker ip address (localhost on unix)
+on port 4567. 
+
 To find optimal parameters run
 
 ```commandline
