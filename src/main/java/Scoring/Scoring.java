@@ -158,7 +158,7 @@ public class Scoring {
         scoring.loadTestCases();
         scoring.optimize();
 
-        scoring.setParameterOptimizer(new BoostParameterOptimizer(1, 3, 1));
+        scoring.setParameterOptimizer(new BoostParameterOptimizer(1, 3, 0.25f));
         scoring.optimize();
 
         System.out.println("Seed: " + seed);
@@ -166,7 +166,19 @@ public class Scoring {
         ElasticConnection.getInstance().close();
     }
 
+    public static void scoringRun() throws Exception {
+        Scoring scoring = new Scoring()
+                // .setLoader(new SqlArtistLoader(200, seed))
+                .setLoader(new FileLoader("testCases.json"))
+                .setScorer(new PrecisionScore(true, 20))
+                .setSearcher(new CrossFieldSearcher(2,1,2))
+                ;
+
+        scoring.loadTestCases();
+        System.out.println(scoring.calculateScore());
+    }
+
     public static void main(String[] args) throws Exception {
-        Scoring.run();
+        Scoring.scoringRun();
     }
 }
