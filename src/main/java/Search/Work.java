@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
-@ToString(of = {"gid", "children", "score"})
+@ToString(of = {"gid", "children", "score", "parent"})
 public class Work implements Comparable<Work> {
     private final List<String> artists = new ArrayList<>();
     private final List<String> composers = new ArrayList<>();

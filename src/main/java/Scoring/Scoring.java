@@ -148,7 +148,8 @@ public class Scoring {
         double seed = new Random().nextDouble();
 
         Scoring scoring = new Scoring()
-                .setLoader(new SqlArtistLoader(200, seed))
+                // .setLoader(new SqlArtistLoader(200, seed))
+                .setLoader(new FileLoader("testCases.json"))
                 .setScorer(new PrecisionScore(false, 20))
                 .setSearcher(new CrossFieldSearcher(2,1,2))
                 .setParameterOptimizer(new GridSearchParameterOptimizer(0.6, 3, 0.4, 0, 1, 0.2))
@@ -163,5 +164,9 @@ public class Scoring {
         System.out.println("Seed: " + seed);
 
         ElasticConnection.getInstance().close();
+    }
+
+    public static void main(String[] args) throws Exception {
+        Scoring.run();
     }
 }

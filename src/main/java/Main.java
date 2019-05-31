@@ -8,7 +8,7 @@ import java.sql.SQLException;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        if (args.length == 0 || args.length > 1) {
+        if (args.length != 1) {
             System.out.println(HELP_TEXT);
             return;
         }

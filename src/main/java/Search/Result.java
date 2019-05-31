@@ -45,10 +45,17 @@ public class Result {
             Work parent = tempWorks.get(parentGid);
             if (parent == null) {
                 String parentDoc = ElasticConnection.getInstance().getDocument(parentGid);
-                parent = Work.fromElastic(parentDoc);
-                storeTempWork(parent);
+                JsonNode jsonNode = JacksonSerializer.getInstance().readTree(parentDoc);
+                if (jsonNode.get("found").asBoolean()) {
+                    parent = Work.fromElastic(jsonNode);
+                    storeTempWork(parent);
+                } else {
+                    System.out.println("Parent does not exist");
+                    System.out.println(work);
+                    System.out.println(jsonNode);
+                }
             }
-            parent.addChild(work);
+            if (parent != null) parent.addChild(work);
         } else {
             works.add(work);
         }
