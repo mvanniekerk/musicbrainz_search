@@ -8,8 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @AllArgsConstructor
 @ToString(of = {"gid", "children", "score", "parent"})
@@ -99,6 +98,30 @@ public class Work implements Comparable<Work> {
             }
         }
         return leaves;
+    }
+
+    List<List<Work>> getDFSTraversals() {
+        List<List<Work>> traversals = new ArrayList<>();
+        Deque<Work> stack = new LinkedList<>();
+        Map<Work, Work> parentMap = new HashMap<>();
+        stack.push(this);
+        while (!stack.isEmpty()) {
+            Work parent = stack.pop();
+            stack.addAll(parent.children);
+            for (Work child : parent.children) {
+                parentMap.put(child, parent);
+            }
+            if (parent.children.isEmpty()) {
+                List<Work> traversal = new ArrayList<>();
+                Work curr = parent;
+                while (curr != null) {
+                    traversal.add(curr);
+                    curr = parentMap.get(curr);
+                }
+                traversals.add(traversal);
+            }
+        }
+        return traversals;
     }
 
     void sort() {

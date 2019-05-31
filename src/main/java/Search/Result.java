@@ -67,6 +67,13 @@ public class Result {
         return leaves;
     }
 
+    public List<List<Work>> getTraversals() {
+        return works.stream()
+                .map(Work::getDFSTraversals)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
     public static Result fromElastic(String resultString) throws IOException {
         JsonNode result = JacksonSerializer.getInstance().readTree(resultString);
         int took = result.get("took").asInt(0);

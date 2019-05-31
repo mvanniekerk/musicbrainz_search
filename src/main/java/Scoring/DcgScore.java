@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 public class DcgScore extends Scorer {
 
@@ -17,13 +18,13 @@ public class DcgScore extends Scorer {
 
 
     private double calculateScore(TestCase testCase) throws IOException {
-        List<Work> resultList = search(testCase, numResults);
+        List<List<Work>> resultList = search(testCase, numResults);
 
         double score = 0;
 
         int i = 1;
-        for (Work work : resultList) {
-            if (work.getGid().equals(testCase.getExpected())) {
+        for (List<Work> traversal : resultList) {
+            if (anyMatch(traversal, testCase.getExpected())) {
                 double dcg = 1 / (Math.log(i + 1) / Math.log(2));
                 score += dcg;
             }

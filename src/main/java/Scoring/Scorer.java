@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 abstract class Scorer {
     boolean printEachTestCase;
@@ -24,12 +25,18 @@ abstract class Scorer {
 
     abstract double calculateScore(TestCase[] testCases) throws IOException;
 
-    List<Work> search(TestCase testCase, int numResults) throws IOException {
+    List<List<Work>> search(TestCase testCase, int numResults) throws IOException {
         String resultString = scoring.getSearcher()
                 .search(testCase.getQuery(), "", "", 0, numResults);
 
         Result result = Result.fromElastic(resultString);
 
-        return result.getLeaves();
+        return result.getTraversals();
+    }
+
+    static boolean anyMatch(List<Work> traversal, String gid) {
+        return traversal.stream()
+                .map(Work::getGid)
+                .anyMatch(g -> g.equals(gid));
     }
 }

@@ -13,13 +13,13 @@ public class PrecisionScore extends Scorer {
     }
 
     private double calculateScore(TestCase testCase) throws IOException {
-        List<Work> resultList = search(testCase, numResults);
+        List<List<Work>> resultList = search(testCase, numResults);
         if (resultList.size() == 0) {
             return 0;
         }
-        Work head = resultList.get(0);
+        List<Work> head = resultList.get(0);
 
-        if (head.getGid().equals(testCase.getExpected())) {
+        if (anyMatch(head, testCase.getExpected())) {
             return 1;
         } else {
             return 0;
@@ -27,11 +27,11 @@ public class PrecisionScore extends Scorer {
     }
 
     private void printTestCase(TestCase testCase) throws IOException {
-        List<Work> resultList = search(testCase, numResults);
+        List<List<Work>> resultList = search(testCase, numResults);
 
         int position = 1;
-        for (Work work : resultList) {
-            if (work.getGid().equals(testCase.getExpected())) {
+        for (List<Work> traversal : resultList) {
+            if (anyMatch(traversal, testCase.getExpected())) {
                 System.out.println(position + ", " + testCase.getQuery() + ", " + testCase.getExpected());
                 return;
             }
