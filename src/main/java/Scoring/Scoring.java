@@ -109,6 +109,6 @@ public class Scoring {
     }
 
     public static void main(String[] args) throws Exception {
-        Scoring.run();
+        Scoring.scoringRun();
     }
 }

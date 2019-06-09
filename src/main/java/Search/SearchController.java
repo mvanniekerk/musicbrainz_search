@@ -17,7 +17,7 @@ public class SearchController {
 //        staticFileLocation("/public");
         // a little hack that auto reloads the static files when they are changed. In production just use
         // staticFileLocation
-        staticFiles.externalLocation(System.getProperty("user.dir") + "/public");
+        staticFiles.externalLocation(System.getProperty("user.dir") + "/frontend/public");
 
 
         post("/api", (req, res) -> {
