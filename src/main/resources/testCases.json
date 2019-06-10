@@ -105,6 +105,48 @@
   { "query" : "elgar cello moderato"
   , "expected" : "bcfe6060-b77b-354e-9cc3-543fe9d8d2b2"},
 
+  { "query" : "schubert fantasie c"
+  , "expected" : "40f46c9e-a64f-3e4e-bbdd-27a1ead8503a"},
+
+  { "query" : "john field nocturne a major 8"
+  , "expected" : "1582b7b9-211c-4160-841a-fa685a382b98"},
+
+  { "query" : "nun komm der heiden heiland"
+  , "expected" : "0364eb16-76e8-481e-bea1-92c34d20980f"},
+
+  { "query" : "gluck alceste"
+  , "expected" : "f51bdd6a-27d4-492c-ae4d-a76dd47471c1"},
+
+  { "query" : "franck quintent f"
+  , "expected" : "84876be1-9c8a-4af0-a259-0231a7104b40"},
+
+  { "query" : "hebriden mendelssohn"
+  , "expected" : "3329a6c8-4785-31ee-ab7e-8ded6804598e"},
+
+  { "query" : "Heinrich Marschner hans heiling"
+  , "expected" : "ccf6784d-a0c9-4072-95b8-f6e03c4a5dec"},
+
+  { "query" : "lortzing zar und zimmerman"
+  , "expected" : "67751c5c-2977-463a-a1aa-a736a3c5a148"},
+
+  { "query" : "mahler lied von der erde"
+  , "expected" : "14514e77-f06c-4d24-a4d5-9a5962acae64"},
+
+  { "query" : "pfitzner palestrina"
+  , "expected" : "cae7a4cd-5785-4aa5-82d1-9644edcf502b"},
+
+  { "query" : "balakirrev islamey"
+  , "expected" : "e4118c63-cf29-3487-a94b-b7d9962e0fc9"},
+
+  { "query" : "janacek glakolska"
+  , "expected" : "987e6de6-e7c3-440f-98ea-77b6cfb0dbe7"},
+
+  { "query" : "dukas apprenti sorcier"
+  , "expected" : "39c69a8c-9279-320e-b90e-c3ff4217c293"},
+
+  { "query" : "florent schmitt tragedie de salome"
+  , "expected" : "d74ce3a2-d967-4abc-a6bc-3625e8260b09"},
+
   { "query" : "souvenir de florence"
   ,  "expected" : "8251f675-8ee2-3ec7-9d82-ae96d2515563"}
 ]

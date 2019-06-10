@@ -82,9 +82,44 @@ quite aggressively.
 - result quality was good enough to see the promise of the idea
 - but the speed was unbearably slow
 - second approach, use of the shelf ElasticSearch.
+- ES is extremely fast, and almost as configurable as a hand crafted solution
+- For each work, three lists are stored
+- A list of all artists that performed the work
+- A list of all composers + all aliases of these composers
+- A list of all the names and titles that are associated with the work
+- ES can throw all words in these lists together to search through them as a bag of words for each work
+- The lists are stored separately for presentation and optimization reasons
+
+### testing performance of the search engine
+
 
 ### optimizations
+- ES gives the option to use custom similarity scoring modules
+- The similarity scoring determines the search results
+- The default is (BM25)[https://en.wikipedia.org/wiki/Okapi_BM25], which is a variant of TF-IDF.
+- BM25 takes two parameters that determine the behaviour of the algorithm.
+- Finding the optimal parameters is a question of trial and error
+
+- each work consists of three lists, artists, composers and work names.
+- the list of artists may not be as important as the list of work names.
+- ES can give a weight to each list.
 - weighted zone scoring
+
+- there are multiple methods available for combining the fields
+- search for the query in every list, and then add the resulting scores
+- ES calls this a most fields query
+- symphony is a common term in the name of a piece, so it will have a low IDF.
+But if an artist may have symphony in their name, it will be rare, so it will have a very high
+IDF. This may put this search result higher than it should
+- other method: combine the terms from all lists together, but keep the weights
+- ES calls this cross field search 
+- This will not suffer from these problems.
+- Empirically, using the cross field searcher gives a 10% increase in result quality on the test set.
+- The code allows for easy switching between the two methods. 
+
+
+## the search controller
+- the frontend uses a language that compiles to javascript: elm
 
 # future applications for this solution
 - a table based database can be searched very effectively by throwing fields

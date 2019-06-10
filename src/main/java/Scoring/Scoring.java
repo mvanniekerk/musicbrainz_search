@@ -2,6 +2,7 @@ package Scoring;
 
 import Database.ElasticConnection;
 import Database.CrossFieldSearcher;
+import Database.MostFieldSearcher;
 import Database.Searcher;
 import lombok.Getter;
 
@@ -77,7 +78,7 @@ public class Scoring {
         Scoring scoring = new Scoring()
                 // .setLoader(new SqlArtistLoader(200, seed))
                 .setLoader(new FileLoader("testCases.json"))
-                .setScorer(new DcgScore(false, 20))
+                .setScorer(new PrecisionScore(false, 20))
                 .setSearcher(new CrossFieldSearcher(2,1,2))
                 .setParameterOptimizer(new GridSearchParameterOptimizer(0.6, 3, 0.4, 0, 1, 0.2))
                 ;
@@ -99,8 +100,8 @@ public class Scoring {
         Scoring scoring = new Scoring()
                 // .setLoader(new SqlArtistLoader(200, seed))
                 .setLoader(new FileLoader("testCases.json"))
-                .setScorer(new DcgScore(true, 20))
-                .setSearcher(new CrossFieldSearcher(2,1,2))
+                .setScorer(new PrecisionScore(true, 20))
+                .setSearcher(new CrossFieldSearcher(1,1,1.75f))
                 ;
 
         scoring.loadTestCases();
