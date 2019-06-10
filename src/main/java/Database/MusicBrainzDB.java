@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class MusicBrainzDB extends DBConnection {
-    private static final String URL = "jdbc:postgresql:musicbrainz";
+    private static final String URL = "jdbc:postgresql://localhost:54320/musicbrainz";
 
 
     private static MusicBrainzDB musicBrainzDB;

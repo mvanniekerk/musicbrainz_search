@@ -37,6 +37,11 @@ public class WorkStore extends DataStore<MBWork> {
         );
     }
 
+    /**
+     * Each track must always be associated with a single recording,
+     * but a recording can be linked to any number of tracks.
+     * A track is a release of a recording.
+     */
     private PreparedStatement getTrackName() throws SQLException {
         Connection conn = getConnection();
 
@@ -60,6 +65,11 @@ public class WorkStore extends DataStore<MBWork> {
         );
     }
 
+    /**
+     * link type 281 indicates that a work is made up of
+     * multiple parts (e.g. an orchestral suite broken into movements).
+     * eg: work "is part of" workparent.
+     */
     private PreparedStatement getWorkParent() throws SQLException {
         Connection conn = getConnection();
 
@@ -80,7 +90,7 @@ public class WorkStore extends DataStore<MBWork> {
         "SELECT artist.sort_name as name, work.gid FROM recording " +
             "JOIN l_recording_work ON entity0=recording.id " +
             "JOIN work ON entity1=work.id " +
-            "JOIN artist_credit ON artist_credit.id=artist_credit " +
+            "JOIN artist_credit ON artist_credit.id=recording.artist_credit " +
             "JOIN artist_credit_name ON artist_credit_name.artist_credit=artist_credit.id " +
             "JOIN artist ON artist_credit_name.artist=artist.id " +
             "WHERE (work.id >= ?) AND (work.id < ?)"
