@@ -91,7 +91,19 @@ quite aggressively.
 - The lists are stored separately for presentation and optimization reasons
 
 ### testing performance of the search engine
-
+- about 50 hand made test cases
+- a typical search query, and the canonical musicbrainz uuid
+- during the development, there was no access to the newspaper sources that the project is about
+- another test source is available, the last fm million song dataset
+- in this dataset there are 960000 track names, together with a musicbrainz uuid
+- with the musicbrainz uuid, it is possible to get a "search string", by combining the track name
+and the composer found for the uuid in the musicbrainz database.
+- the two are appended together with a space in between
+- there are only 220000 tracks that have a corresponding "work"
+- of those tracks, about 10000 are likely to be classical
+- for each test run, 200 random last fm "search strings" are taken
+- note that the original producer of this dataset had to go through a similar process as I did
+- so the muscbrainz string match may not be 100% reliable
 
 ### optimizations
 - ES gives the option to use custom similarity scoring modules
@@ -117,6 +129,8 @@ IDF. This may put this search result higher than it should
 - Empirically, using the cross field searcher gives a 10% increase in result quality on the test set.
 - The code allows for easy switching between the two methods. 
 
+- optimizing for the last fm dataset: 96% accuracy. However, the hand crafted accuracy becomes 52%
+- optimizing for the hand crafted dataset: 82% accuracy. However, the last fm accuracy becomes 50% 
 
 ## the search controller
 - the frontend uses a language that compiles to javascript: elm

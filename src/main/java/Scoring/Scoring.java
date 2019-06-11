@@ -79,14 +79,14 @@ public class Scoring {
                 // .setLoader(new SqlArtistLoader(200, seed))
                 .setLoader(new FileLoader("testCases.json"))
                 .setScorer(new PrecisionScore(false, 20))
-                .setSearcher(new CrossFieldSearcher(2,1,2))
+                .setSearcher(new CrossFieldSearcher(1,1,1.75f))
                 .setParameterOptimizer(new GridSearchParameterOptimizer(0.6, 3, 0.4, 0, 1, 0.2))
                 ;
 
         scoring.loadTestCases();
         scoring.optimize();
 
-        scoring.setParameterOptimizer(new BoostParameterOptimizer(1, 3, 0.25f));
+        scoring.setParameterOptimizer(new BoostParameterOptimizer(1, 3, 0.5f));
         scoring.optimize();
 
         System.out.println("Seed: " + seed);
@@ -101,7 +101,7 @@ public class Scoring {
                 // .setLoader(new SqlArtistLoader(200, seed))
                 .setLoader(new FileLoader("testCases.json"))
                 .setScorer(new PrecisionScore(true, 20))
-                .setSearcher(new CrossFieldSearcher(1,1,1.75f))
+                .setSearcher(new CrossFieldSearcher(1,1.5f,2))
                 ;
 
         scoring.loadTestCases();
