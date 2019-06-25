@@ -35,7 +35,7 @@ public class SearchController {
 
             String strResult;
             try {
-                strResult = new CrossFieldSearcher(1, 1, 1.75f).
+                strResult = new CrossFieldSearcher(1, 1, 1).
                         search(query, composerQuery, artistQuery, from, 20);
             } catch (IOException e) {
                 throw new RuntimeException(e);

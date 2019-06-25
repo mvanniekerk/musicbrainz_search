@@ -147,5 +147,158 @@
   , "expected" : "d74ce3a2-d967-4abc-a6bc-3625e8260b09"},
 
   { "query" : "souvenir de florence"
-  ,  "expected" : "8251f675-8ee2-3ec7-9d82-ae96d2515563"}
+  ,  "expected" : "8251f675-8ee2-3ec7-9d82-ae96d2515563"},
+
+  { "query" : "Symphony in E-flat major, Op.33 (Eberl, Anton)"
+  ,  "expected" : "aa24c0bd-dbdd-486b-a539-8cb0d8455439"},
+
+  { "query" : "Trio Sonata in C minor, GraunWV Av:XV:19 (Graun, Johann Gottlieb)"
+  ,  "expected" : "70023f63-18f7-474e-abd3-51b214bf0887"},
+
+  { "query" : "Carnyx (Nichifor, Serban)"
+  ,  "expected" : "979e7bf2-86b4-492c-8207-b186f7c029cd"},
+
+  { "query" : "Piano Sonata in E-flat minor (Scriabin, Aleksandr)"
+  ,  "expected" : "91357bbe-d47d-4902-9072-70816e9b3fbc"},
+
+  { "query" : "Triptyque symphonique (Blockx, Jan)"
+  ,  "expected" : "bcad0048-2c5f-4089-9d12-6c49731883ec"},
+
+  { "query" : "Kirie, Mass No.3, D.324 (Schubert, Franz)"
+  ,  "expected" : "c7f059f9-f43b-338e-b3c6-0b84456af01d"},
+
+  { "query" : "Keyboard Sonata in B-flat major, K.544 (Scarlatti, Domenico)"
+  ,  "expected" : "da0919ed-6ad1-3679-88c9-602659c432f1"},
+
+  { "query" : "Sonata for Viola and Double Bass, D dur (Sperger, Johann Matthias)"
+  ,  "expected" : "039decfe-c554-4302-b230-5631f44c66cc"},
+
+  { "query" : "Violin Concerto in B-flat major, RV 359 (Vivaldi, Antonio)"
+  ,  "expected" : "8ee72091-bc0a-4642-8de9-ccc287f1f36c"},
+
+  { "query" : "Rompeltier (Obrecht, Jacob)"
+  ,  "expected" : "f6059e3d-8e70-46ff-a274-fab0c6b8e63d"},
+
+  { "query" : "Studio per il pianoforte, Op.50 (Cramer, Johann Baptist)"
+  ,  "expected" : "da770589-e0b5-44ab-bed5-1a5c72a2e5ae"},
+
+  { "query" : "Synagogen-Melodieen, Op.47 (Lewandowski, Louis)"
+  ,  "expected" : "2327feea-d97d-4868-8099-039639410007"},
+
+  { "query" : "12 German Dances, D.790 (Schubert, Franz)"
+  ,  "expected" : "97c1440d-6782-369c-bf94-a644eca8557a"},
+
+  { "query" : "Trio Sonata in F major, W.B 40 (Bach, Johann Christian)"
+  ,  "expected" : "ccd403d0-4718-40f7-8569-f52c6a67ffa8"},
+
+  { "query" : "3 Songs, Op.29a (Kuula, Toivo)"
+  ,  "expected" : "9a2ef80b-d73b-4cf9-bc55-db6ea12722a4"},
+
+  { "query" : "Symphony No.2, Op.8 (Steinberg, Maksimilian)"
+  ,  "expected" : "9746fbf8-8fc4-4f88-a936-7ed8db3587ab"},
+
+  { "query" : "Modulierendes Präludium (F-e), K.deest (Mozart, Wolfgang Amadeus)"
+  ,  "expected" : "8b612adf-88c0-33e7-8ea1-04ce8929bc39"},
+
+  { "query" : "Biondina (Gounod, Charles)"
+  ,  "expected" : "4e4d712b-40fd-4e70-b0b5-ffaf5a3a68da"},
+
+  { "query" : "The Banner of St. George, Op.33 (Elgar, Edward)"
+  ,  "expected" : "6ffb5d1c-f893-400a-b6b9-c5e77acf7340"},
+
+  { "query" : "Kappaleet, Op.73 (Merikanto, Oskar)"
+  ,  "expected" : "5eef5dbd-e26f-46e6-9a85-504e1ea5cf49"},
+
+  { "query" : "6 Offertoires, Op.35 (Lefébure-Wély, Louis James Alfred)"
+  ,  "expected" : "e311f3e7-4946-4988-9be3-57e01b8b2829"},
+
+  { "query" : "An die Laute (Schubert, Franz)"
+  ,  "expected" : "ef2aa1d0-3570-3ff9-875b-863d8f94e84b"},
+
+  { "query" : "4 Lieder, Op.237 (Abt, Franz)"
+  ,  "expected" : "97cb8cbd-c9fc-4510-8da2-f3cdc4120df9"},
+
+  { "query" : "Clarinet Sonata, Op.129 (Stanford, Charles Villiers)"
+  ,  "expected" : "1a3f3150-c896-48b3-8a02-4df370895532"},
+
+  { "query" : "Padmâvatî Suite 1 (Roussel, Albert)"
+  ,  "expected" : "3d94faf6-1c52-4b80-bb43-e4d5237342c4"},
+
+  { "query" : "Slavonic Dances, Op.72 8 (Dvořák, Antonín)"
+  ,  "expected" : "8714aec1-a16d-3da2-ad56-6c36a3af4cfa"},
+
+  { "query" : "Prelude and Fugue in G major, BWV 884 (Bach, Johann Sebastian)"
+  ,  "expected" : "59a83c9b-1136-3d70-9b8c-0836be180cc7"},
+
+  { "query" : "Borová, H.195 (Martinů, Bohuslav)"
+  ,  "expected" : "b1c7de2b-de0e-42e3-b950-0b7f168c736f"},
+
+  { "query" : "Concerto for Flute d'amore, Oboe d'amore and Viola d'amore in G major, GWV 333 (Graupner, Christoph)"
+  ,  "expected" : "b39b64fd-512a-4a0e-8374-9a41a4762573"},
+
+  { "query" : "El arreglito (Yradier, Sebastián)"
+  ,  "expected" : "9a8f92de-13c4-4174-803f-a9c657978775"},
+
+  { "query" : "Cantilène in A major (Faulkes, William)"
+  ,  "expected" : "1a5f8af4-f7f0-4261-b944-48616a64ded8"},
+
+  { "query" : "herodiade hindemith"
+  ,  "expected" : "ba8c4cc1-ef52-4cca-8ee7-b3a08732c029"},
+
+  { "query" : "Le Sylphe (Oberthür, Charles)"
+  ,  "expected" : "88dfbdb8-fb12-4597-9149-1a85fe4fbcc5"},
+
+  { "query" : "Scène de ballet, Op.100 (Bériot, Charles-Auguste de)"
+  ,  "expected" : "68ea614a-90bd-49aa-92b2-5bb44ff64d68"},
+
+  { "query" : "Scène de ballet, Op.100 (Bériot, Charles-Auguste de)"
+  ,  "expected" : "68ea614a-90bd-49aa-92b2-5bb44ff64d68"},
+
+  { "query" : "Trio Sonata in C minor, Op.4 No.11 (Corelli, Arcangelo)"
+  ,  "expected" : "054c3063-b871-4834-89ff-9e2037545ef4"},
+
+  { "query" : "Fugue on a Russian Christmas Song (Glière, Reinhold)"
+  ,  "expected" : "1d7356df-6b64-4d81-9bab-cceac393771b"},
+
+  { "query" : "Fantaisie and Variations on The Carnival of Venice (Arban, Jean-Baptiste)"
+  ,  "expected" : "920cb7c3-39b3-457b-922e-4323a453c2a5"},
+
+  { "query" : "I Looked, and Behold a White Cloud, HWC 344 (Willan, Healey)"
+  ,  "expected" : "ef806f9b-2170-44ef-bec4-4341da9f1c99"},
+
+  { "query" : "Ruggiero, Op.12 No.18 (Merula, Tarquinio)"
+  ,  "expected" : "09d22cfc-47f6-319d-b27f-8958298596f3"},
+
+  { "query" : "Gesù al calvario, ZWV 62 (Zelenka, Jan Dismas)"
+  ,  "expected" : "83b74bf7-5bee-4e38-b376-5b499034a347"},
+
+  { "query" : "Dimitrij, Op.64 (Dvořák, Antonín)"
+  ,  "expected" : "0cc86e33-3918-4195-a61e-23f7389542be"},
+
+  { "query" : "Concerto No.1 for 2 Clarinets, Op.35 (Krommer, Franz)"
+  ,  "expected" : "a23944cb-17ae-48f7-bd0a-4a40c7ff098c"},
+
+  { "query" : "Frühlingsboten, Op.55 (Raff, Joachim)"
+  ,  "expected" : "53aff8fb-b0dc-4497-a96b-8ee677347051"},
+
+  { "query" : "Concerto No.2 for 2 Clarinets, Op.91 (Krommer, Franz)"
+  ,  "expected" : "e8c478c7-b2d5-4416-a9df-95ab32342453"},
+
+  { "query" : "Allegretto, WoO 53 (Beethoven, Ludwig van)"
+  ,  "expected" : "1e272ca3-9238-3bf8-95a6-498546afa4c6"},
+
+  { "query" : "Phantasie for String Quartet, H.55 (Bridge, Frank)"
+  ,  "expected" : "eb8b6cd2-cc0f-4673-9e7a-545fa4c359d8"},
+
+  { "query" : "Piano Concerto, Op.5 (Thalberg, Sigismond)"
+  ,  "expected" : "85e5983e-34a9-49bc-8450-e4c55c020eb6"},
+
+  { "query" : "Jocelyn, Op.100 (Godard, Benjamin)"
+  ,  "expected" : "91565de6-7da4-49fd-9f0c-e09a5c9aced2"},
+
+  { "query" : "Piano Trio in E major, K.542 (Mozart, Wolfgang Amadeus)"
+  ,  "expected" : "dc6bd7e2-b43b-4d06-96b2-4e214b5b9cb0"},
+
+  { "query" : "String Trio in E-flat major, Hob.V:17 (Haydn, Joseph)"
+  ,  "expected" : "bb9f23e0-f6f2-4948-ba93-32b63c4febd4"}
 ]
