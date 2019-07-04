@@ -32,12 +32,12 @@ public class PrecisionScore extends Scorer {
         int position = 1;
         for (List<Work> traversal : resultList) {
             if (anyMatch(traversal, testCase.getExpected())) {
-                System.out.println(position + ", " + testCase.getQuery() + ", " + testCase.getExpected());
+                System.out.println(position + "\t" + testCase.getQuery() + "\t" + testCase.getExpected());
                 return;
             }
             position++;
         }
-        System.out.println(-1 + ", " + testCase.getQuery() + ", " + testCase.getExpected());
+        System.out.println(-1 + "\t" + testCase.getQuery() + "\t" + testCase.getExpected());
     }
 
     @Override

@@ -15,9 +15,9 @@ public class BoostParameterOptimizer extends ParameterOptimizer {
         float bestNamesParameter = -1;
         double bestScore = -1;
 
-        for (float artist = lower; artist < higher; artist += step) {
-            for (float composer = lower; composer < higher; composer += step) {
-                for (float name = lower; name < higher; name += step) {
+        for (float artist = lower; artist <= higher; artist += step) {
+            for (float composer = lower; composer <= higher; composer += step) {
+                for (float name = lower; name <= higher; name += step) {
                     scoring.getSearcher().setArtistBoost(artist);
                     scoring.getSearcher().setComposerBoost(composer);
                     scoring.getSearcher().setNamesBoost(name);

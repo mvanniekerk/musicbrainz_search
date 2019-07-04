@@ -47,9 +47,6 @@
   { "query" : "swan lake"
   , "expected" : "11f48c5e-5ee9-4646-9826-fb7c2fccce7f"},
 
-  { "query" : "zwanen meer"
-  , "expected" : "11f48c5e-5ee9-4646-9826-fb7c2fccce7f"},
-
   { "query" : "dvorak quintet 2"
   , "expected" : "5adbc202-905f-4184-bddc-d46b9bc452e8"},
 
@@ -66,7 +63,7 @@
   , "expected" : "f90c60d1-11b5-32e1-b633-bcfd088c0e15"},
 
   { "query" : "rondo alla turca"
-  , "expected" : "9f213234-ecbc-34bf-9d9b-8962bd3557e6"},
+  , "expected" : "892625c7-8e72-3e98-823b-123dada6109c"},
 
   { "query" : "hungarian rhapsody no 2"
   , "expected" : "90929826-5064-3212-89c1-689be90e1d4d"},
@@ -251,8 +248,8 @@
   { "query" : "Scène de ballet, Op.100 (Bériot, Charles-Auguste de)"
   ,  "expected" : "68ea614a-90bd-49aa-92b2-5bb44ff64d68"},
 
-  { "query" : "Scène de ballet, Op.100 (Bériot, Charles-Auguste de)"
-  ,  "expected" : "68ea614a-90bd-49aa-92b2-5bb44ff64d68"},
+  { "query" : "Trio Sonata in G minor, Z.780 (Purcell, Henry)"
+  ,  "expected" : "69a0de34-6780-4d7e-9a1f-b8791f171760"},
 
   { "query" : "Trio Sonata in C minor, Op.4 No.11 (Corelli, Arcangelo)"
   ,  "expected" : "054c3063-b871-4834-89ff-9e2037545ef4"},

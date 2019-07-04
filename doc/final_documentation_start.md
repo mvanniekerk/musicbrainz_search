@@ -140,3 +140,22 @@ IDF. This may put this search result higher than it should
 - a table based database can be searched very effectively by throwing fields
 together in a bag-of-words model
 - there is a similar problem with books
+
+## Recommendations
+- more test cases
+- spelling correction, remove stop words
+- include IMSLP, wikipedia works
+- combine different works that are actually the same
+
+# process
+- process spanned over three years
+- development mostly end of 2017, start of 2018
+- first read book
+- then implemented own search engine
+- then used elasticsearch
+- original purpose never tested
+- no access to historical newspapers
+- try to use method for muziekweb
+- no significant interest
+- not really a purpose for the search engine
+- learn about elasticsearch, java, postgres, docker, elm
